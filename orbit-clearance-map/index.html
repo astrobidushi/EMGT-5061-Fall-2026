@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Orbit Clearance Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --surface-2:#EEF1F5; --ink:#17202E; --muted:#566173; --line:#D5DBE3;
+  --accent:#2C5FA8; --focus:#2C5FA8;
+  --c-invest:#A8681A; --c-export:#7A4FB5; --c-fcc:#C8452D; --c-noaa:#1F7A6D; --c-launch:#2C5FA8;
+  --c-reentry:#0F6A8C; --c-gap:#8A6D00; --c-fda:#A23B72; --c-intl:#4A5A7A; --c-common:#3B4556;
+  --tint:0.09; --dropped:#9AA3B2; --crit:#C8452D;
+  --m-monsoon:#2E7D4F; --m-beacon:#C27C0E; --m-kestrel:#3A6EA5; --mtint:13%;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F141C; --surface:#171E29; --surface-2:#1E2734; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746;
+    --accent:#7FA7E6; --focus:#9CBBF0;
+    --c-invest:#E0A355; --c-export:#B196E0; --c-fcc:#F0876F; --c-noaa:#5CC0AE; --c-launch:#7FA7E6;
+    --c-reentry:#5DB6D6; --c-gap:#D9BC4A; --c-fda:#E283B3; --c-intl:#9EAACB; --c-common:#B3BDCC;
+    --tint:0.14; --dropped:#5E6878; --crit:#F0876F;
+    --m-monsoon:#5FBF86; --m-beacon:#E5A84A; --m-kestrel:#7FAEE0; --mtint:18%;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F141C; --surface:#171E29; --surface-2:#1E2734; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746;
+  --accent:#7FA7E6; --focus:#9CBBF0;
+  --c-invest:#E0A355; --c-export:#B196E0; --c-fcc:#F0876F; --c-noaa:#5CC0AE; --c-launch:#7FA7E6;
+  --c-reentry:#5DB6D6; --c-gap:#D9BC4A; --c-fda:#E283B3; --c-intl:#9EAACB; --c-common:#B3BDCC;
+  --tint:0.14; --dropped:#5E6878; --crit:#F0876F;
+    --m-monsoon:#5FBF86; --m-beacon:#E5A84A; --m-kestrel:#7FAEE0; --mtint:18%;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:20px;padding-block:28px 48px;display:grid;gap:28px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-0.01em}
+h2{font-size:20px;font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:68ch;margin:6px 0 0}
+header.top{display:grid;gap:4px}
+
+/* mission picker */
+.missions{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.mission{all:unset;cursor:pointer;display:grid;gap:8px;align-content:start;padding:16px 18px;border-radius:12px;background:color-mix(in srgb,var(--mc) var(--mtint),var(--surface));border:1.5px solid color-mix(in srgb,var(--mc) 35%,var(--line));transition:border-color .15s,transform .15s}
+.mission:hover{border-color:var(--muted)}
+.mission:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.mission[aria-pressed="true"]{border-color:var(--mc);box-shadow:inset 0 0 0 2px var(--mc)}
+.mission .mname::before{content:"";display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--mc);margin-right:8px;vertical-align:1px}
+.mission .mname{font-family:var(--display);font-weight:700;font-size:19px}
+.mission .mtag{color:var(--muted);font-size:14px}
+.mission .mrow{display:flex;gap:8px;flex-wrap:wrap}
+.chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.chip.draft{border-style:dashed}
+
+/* summary */
+.summary{display:grid;grid-template-columns:1.4fr repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.summary>div{background:var(--surface);padding:14px 16px;display:grid;gap:2px;align-content:start}
+.summary>div{background:color-mix(in srgb,var(--mc) var(--mtint),var(--surface))}
+.summary{background:color-mix(in srgb,var(--mc) 35%,var(--line));border-color:color-mix(in srgb,var(--mc) 35%,var(--line))}
+.summary .big{font-family:var(--display);font-size:34px;font-weight:800;font-variant-numeric:tabular-nums}
+.summary .lbl{font-size:15px;line-height:1.35;color:var(--ink)}
+.summary .crit-name{font-size:22px!important;line-height:1.2!important}
+.summary .brief{font-size:15px;box-shadow:inset 4px 0 0 var(--mc)}
+.summary .brief .defbox{margin-top:8px}
+.summary .brief ul{margin:6px 0 0;padding-left:18px;color:var(--ink)}
+@media (max-width:820px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.summary .brief{grid-column:1/-1}}
+
+/* workspace */
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 420px;gap:20px;align-items:start}
+@media (max-width:1000px){.workspace{grid-template-columns:1fr}}
+.map{display:grid;gap:10px}
+.legend-box{display:grid;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+.legend-intro{margin:0;font-size:15.5px}
+.legend{margin:0;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:8px 18px;font-size:14.5px;color:var(--muted)}
+.legend>div{display:flex;align-items:baseline;gap:8px}
+.legend dt{flex:none}
+.legend dd{margin:0}
+.pill{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;padding:2px 7px;border-radius:4px;white-space:nowrap}
+.pill.core{background:var(--surface-2);color:var(--ink)}
+.pill.heavy{background:var(--ink);color:var(--surface)}
+.pill.new{background:var(--c-gap);color:var(--surface)}
+.pill.light{border:1px solid var(--muted);color:var(--muted)}
+.pill.dropped{border:1px dashed var(--dropped);color:var(--dropped)}
+.pill.crit{background:var(--crit);color:#fff}
+
+.lane{display:grid;grid-template-columns:260px minmax(0,1fr);border-radius:12px;overflow:hidden;background:color-mix(in srgb,var(--lc) calc(var(--tint)*100%),var(--surface));border:1px solid color-mix(in srgb,var(--lc) 30%,var(--line))}
+.lane.dropped{--lc:var(--dropped);background:var(--surface);border-style:dashed}
+.lane.crit{border:2px solid var(--crit)}
+.lhead{background:var(--lc);color:#fff;padding:16px 18px;display:grid;gap:8px;align-content:start}
+.lane.dropped .lhead{background:transparent;color:var(--muted);border-right:1px dashed var(--dropped)}
+.lhead .lname{font-family:var(--display);font-weight:700;font-size:23px;line-height:1.15}
+.lhead .lagency{font-size:15.5px;opacity:.95}
+.lhead .pills{display:flex;gap:6px;flex-wrap:wrap}
+.lhead .pill{background:rgba(255,255,255,.2);color:#fff;border:none;font-size:12.5px;padding:3px 8px}
+.lane.dropped .lhead .pill{background:transparent;border:1px dashed var(--dropped);color:var(--muted)}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lhead{color:#0F141C}:root:not([data-theme="light"]) .lhead .pill{background:rgba(0,0,0,.18);color:#0F141C}}
+:root[data-theme="dark"] .lhead{color:#0F141C}
+:root[data-theme="dark"] .lhead .pill{background:rgba(0,0,0,.18);color:#0F141C}
+.steps{display:flex;gap:12px;padding:14px;flex-wrap:wrap;align-items:stretch}
+.step{all:unset;cursor:pointer;flex:1 1 180px;min-width:0;display:grid;gap:6px;align-content:start;padding:14px 16px;border-radius:8px;background:var(--surface);border:1px solid color-mix(in srgb,var(--lc) 45%,var(--line));position:relative}
+.step:hover{border-color:var(--lc)}
+.step:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.step[aria-pressed="true"]{box-shadow:inset 0 0 0 2px var(--lc);border-color:var(--lc)}
+.step .n{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.step .t{font-weight:600;font-size:18px;line-height:1.3}
+.step .cb{font-family:var(--mono);font-size:12.5px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--c-gap)}
+.lane.dropped .step{border-style:dashed;background:transparent}
+@media (max-width:640px){.lane{grid-template-columns:1fr}.lane.dropped .lhead{border-right:none;border-bottom:1px dashed var(--dropped)}}
+
+/* detail panel */
+.detail{font-size:16.5px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:14px;max-height:calc(100vh - 32px);overflow:auto}
+@media (max-width:1000px){.detail{position:static;max-height:none}}
+.detail .dtop{display:grid;gap:6px;padding-left:12px;border-left:4px solid var(--lc)}
+.detail h3{font-size:24px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:15.5px}
+.kv dt{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:2px}
+.kv dd{margin:0}
+.detail p{margin:0}
+.detail .why{background:var(--surface-2);border-radius:8px;padding:12px 14px;font-size:16px}
+.detail .why b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;display:block;color:var(--muted);font-weight:500;margin-bottom:2px}
+.curve{border:1.5px dashed var(--c-gap);border-radius:10px;padding:12px 14px;display:grid;gap:8px}
+.curve .ch{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--c-gap)}
+.curve q{font-weight:600;quotes:none}
+.btn{all:unset;cursor:pointer;font-weight:600;font-size:13.5px;padding:7px 12px;border-radius:8px;background:var(--ink);color:var(--surface);justify-self:start}
+.btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.btn.ghost{background:transparent;color:var(--ink);border:1px solid var(--line)}
+.src a{color:var(--accent);text-underline-offset:2px}
+.src{font-size:15px;display:grid;gap:4px}
+.navrow{display:flex;gap:8px;flex-wrap:wrap}
+
+/* timeline */
+.timeline{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:12px}
+.tl-scroll{overflow-x:auto}
+.tl{min-width:640px;display:grid;gap:6px;position:relative}
+.tl-row{display:grid;grid-template-columns:210px 1fr;align-items:center;gap:10px;font-size:15.5px}
+.tl-track{position:relative;height:28px;background:repeating-linear-gradient(90deg,var(--line) 0,var(--line) 1px,transparent 1px,transparent calc(100% / 6))}
+.tl-bar{position:absolute;top:3px;bottom:3px;border-radius:4px;background:var(--lc);opacity:.9}
+.tl-bar.crit{outline:2px solid var(--crit);outline-offset:1px}
+.tl-axis{display:grid;grid-template-columns:210px 1fr;gap:10px;font-family:var(--mono);font-size:11px;color:var(--muted)}
+.tl-axis .ticks{position:relative;height:16px}
+.tl-axis .ticks span{position:absolute;transform:translateX(-50%);white-space:nowrap}
+.tl-launch{position:absolute;top:0;bottom:0;width:2px;background:var(--ink)}
+.note{font-size:14.5px;color:var(--muted)}
+.toplink{color:var(--accent);font-weight:600;text-underline-offset:3px}
+.glossary{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:14px;scroll-margin-top:16px}
+.gl-head{display:flex;flex-wrap:wrap;gap:12px 24px;justify-content:space-between;align-items:end}
+.gl-search{display:grid;gap:4px;min-width:0;flex:0 1 280px}
+.gl-search input{font:inherit;font-size:14px;padding:8px 10px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.gl-search input:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.gl-list{margin:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px 28px}
+.gl-item{display:grid;gap:3px;align-content:start;padding-top:10px;border-top:1px solid var(--line);scroll-margin-top:16px}
+.gl-item dt{font-family:var(--display);font-weight:700;font-size:16px}
+.gl-item dt .full{font-family:var(--body);font-weight:500;font-size:13.5px;color:var(--muted);display:block}
+.gl-item dd{margin:0;font-size:14px;max-width:65ch}
+.gl-item dd .ctx{display:block;color:var(--muted);font-size:13px;margin-top:3px}
+.gl-item:target{background:color-mix(in srgb,var(--c-gap) 12%,transparent);border-radius:6px;padding-inline:8px}
+.term{all:unset;cursor:pointer;color:var(--accent);font-weight:600;border-bottom:2px dotted var(--accent);background:color-mix(in srgb,var(--accent) 10%,transparent);border-radius:3px 3px 0 0;padding:0 2px}
+.term:hover{background:color-mix(in srgb,var(--accent) 20%,transparent)}
+.defbox[hidden]{display:none}
+.hint{font-size:14px;color:var(--muted);margin:0}
+.term:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.defbox{border:1px solid var(--line);background:var(--surface-2);border-radius:8px;padding:10px 12px;font-size:13.5px;display:grid;gap:4px}
+.defbox b{font-family:var(--display);font-size:15px}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap" id="top">
+  <header class="top">
+    <div class="eyebrow"><a href="../" style="color:inherit">EMGT 5061</a> · U.S. Regulatory Environment</div>
+    <h1>Orbit Clearance Map</h1>
+    <p class="lede">Pick a mission to see which approvals it needs, which drop away, and which new ones appear. Tracks are listed in the order you would start them. Click any step for details, sources, and a curveball to discuss.</p>
+    <p class="lede"><a class="toplink" href="#glossary">Glossary of acronyms and terms</a> · Highlighted terms in the mission brief and the step details panel can be clicked for a quick definition.</p>
+  </header>
+
+  <section aria-label="Choose a mission">
+    <div class="missions" id="missions"></div>
+  </section>
+
+  <section class="summary" id="summary" aria-live="polite"></section>
+
+  <section class="workspace">
+    <div class="map">
+      <div class="legend-box">
+        <p class="legend-intro">Each track is compared with a standard U.S. satellite launched from the U.S., the path on the class flowchart.</p>
+        <dl class="legend" aria-label="What the labels mean">
+          <div><dt><span class="pill core">Standard</span></dt><dd>Applies as it would for any satellite</dd></div>
+          <div><dt><span class="pill heavy">Heavier</span></dt><dd>Applies, with more steps, risk, or time than usual</dd></div>
+          <div><dt><span class="pill new">Added</span></dt><dd>Not on the flowchart; this mission brings it in</dd></div>
+          <div><dt><span class="pill light">Lighter</span></dt><dd>Applies, with less to do than usual</dd></div>
+          <div><dt><span class="pill dropped">Not required</span></dt><dd>On the flowchart, but this mission skips it</dd></div>
+          <div><dt><span class="pill crit">Critical path</span></dt><dd>Most likely to set the launch date</dd></div>
+        </dl>
+      </div>
+      <div id="lanes" class="map"></div>
+    </div>
+    <aside class="detail" id="detail" aria-live="polite"></aside>
+  </section>
+
+  <section class="timeline">
+    <div>
+      <h2>Schedule view</h2>
+      <p class="note"><b>How to read this:</b> each bar is  one approval track. The left end is roughly how far ahead of launch you need to start it; the right end is when it should be finished. Bars that run past the launch line continue after launch (operations, reporting, reentry, product sales). A red outline marks the critical path, the track most likely to delay launch if it slips.</p>
+      <p class="note">Durations are rough estimates for class discussion, based on published review times and typical industry experience. Real timelines vary widely by mission and agency workload.</p>
+    </div>
+    <div class="tl-scroll"><div class="tl" id="tl"></div></div>
+  </section>
+
+  <section class="glossary" id="glossary" aria-labelledby="gl-h">
+    <div class="gl-head">
+      <div>
+        <h2 id="gl-h">Glossary</h2>
+        <p class="note">Acronyms and terms used on this page, in plain language.</p>
+      </div>
+      <label class="gl-search" for="gl-q"><span class="eyebrow">Search</span>
+        <input id="gl-q" type="search" placeholder="e.g. ITAR, launching state" autocomplete="off">
+      </label>
+    </div>
+    <dl class="gl-list" id="gl-list"></dl>
+    <p class="note" id="gl-empty" hidden>No matching terms.</p>
+    <a class="toplink" href="#top">Back to the map</a>
+  </section>
+
+  <footer>
+    Missions are fictional composites modeled on real ones. Content reflects U.S. rules as of September 2026 and is a teaching aid, not legal advice. Sources are linked on each step.
+  </footer>
+</div>
+
+<script>
+/* ==================================================================
+   CONTENT — edit this section to change missions, lanes, and steps.
+   Lane status: "core" | "heavy" | "new" | "light" | "dropped"
+   Timeline "tl": [startMonth, endMonth] relative to launch (0).
+   ================================================================== */
+
+const LANE_INFO = {
+  invest:  {name:"Foreign investment", agency:"Treasury (CFIUS) · DOJ-led Team Telecom", color:"--c-invest"},
+  export:  {name:"Export controls",    agency:"State (ITAR) · Commerce (EAR)",          color:"--c-export"},
+  fcc:     {name:"Spectrum",           agency:"FCC · ITU · NTIA",                        color:"--c-fcc"},
+  noaa:    {name:"Remote sensing",     agency:"NOAA / Commerce",                         color:"--c-noaa"},
+  launch:  {name:"Launch",             agency:"FAA (via launch provider)",               color:"--c-launch"},
+  reentry: {name:"Reentry & landing",  agency:"FAA · landing-site range",                color:"--c-reentry"},
+  gap:     {name:"Mission authorization", agency:"Commerce · Office of Space Commerce",  color:"--c-gap"},
+  fda:     {name:"Drug manufacturing", agency:"FDA",                                     color:"--c-fda"},
+  astro:   {name:"Astronomy & night sky", agency:"NSF · raised in FCC proceedings",     color:"--c-gap"},
+  intl:    {name:"Foreign governments", agency:"Other nations' regulators",              color:"--c-intl"},
+  gov:     {name:"Government customers", agency:"NASA · Air Force (as customers)",      color:"--c-noaa"},
+  common:  {name:"Pre-launch & operations", agency:"Space Force · Commerce · State",     color:"--c-common"},
+};
+
+const SRC = {
+  cfr12415: {label:"22 CFR 124.15 — satellite launch export controls", url:"https://www.ecfr.gov/current/title-22/chapter-I/subchapter-M/part-124/section-124.15"},
+  bis:      {label:"BIS — Dual-use export controls for aerospace", url:"https://space.commerce.gov/wp-content/uploads/BIS_EXPORT_CONTROL.pdf"},
+  wiley:    {label:"Wiley — 2024 space export control reforms", url:"https://www.wiley.law/alert-Commerce-and-State-Modernize-US-Space-Related-Export-Controls"},
+  teamtel:  {label:"DOJ — Team Telecom", url:"https://www.justice.gov/nsd/team-telecom"},
+  eo13913:  {label:"Executive Order 13913 (Team Telecom)", url:"https://www.federalregister.gov/documents/2020/04/08/2020-07530/establishing-the-committee-for-the-assessment-of-foreign-participation-in-the-united-states"},
+  fccmod:   {label:"FCC — Space Modernization fact sheet (July 2026)", url:"https://docs.fcc.gov/public/attachments/DOC-422740A1.pdf"},
+  noaalic:  {label:"NOAA — Remote sensing licensing (15 CFR 960)", url:"https://space.commerce.gov/regulations/commercial-remote-sensing-regulatory-affairs/licensing/"},
+  noaa2023: {label:"NOAA — X-band SAR conditions removed (2023)", url:"https://space.commerce.gov/noaa-eliminates-restrictive-operating-conditions-from-commercial-remote-sensing-satellite-licenses/"},
+  nsil:     {label:"NSIL — Launch services", url:"https://www.nsilindia.co.in/launch-services"},
+  pslv:     {label:"SpaceNews — U.S. terms for PSLV customers", url:"https://spacenews.com/customers-of-indias-pslv-rocket-say-india-unlikely-to-accept-u-s-terms/"},
+  liab:     {label:"Liability Convention (UNOOSA)", url:"https://www.unoosa.org/oosa/en/ourwork/spacelaw/treaties/liability-convention.html"},
+  ost:      {label:"Outer Space Treaty (UNOOSA)", url:"https://www.unoosa.org/oosa/en/ourwork/spacelaw/treaties/outerspacetreaty.html"},
+  crs48582: {label:"CRS R48582 — Launch and reentry regulations", url:"https://www.congress.gov/crs-product/R48582"},
+  scs:      {label:"FCC — Supplemental Coverage from Space fact sheet", url:"https://docs.fcc.gov/public/attachments/DOC-401208A1.pdf"},
+  scs911:   {label:"FCC — Interim 911 rules for SCS", url:"https://www.fcc.gov/Interim911Requirments-SupplementalCoveragefromSpace"},
+  nsf:      {label:"NSF — AST SpaceMobile coordination agreement", url:"https://www.nsf.gov/mps/updates/nsf-ast-spacemobile-establish-satellite-coordination"},
+  reentryPolicy: {label:"SpaceNews — Reentry license required before launch", url:"https://spacenews.com/faa-to-require-reentry-vehicles-licensed-before-launch/"},
+  varda:    {label:"Payload — Varda reentry denied (2023)", url:"https://payloadspace.com/usaf-and-faa-deny-varda-reentry-and-recovery-permission/"},
+  pilot:    {label:"Federal Register — Mission Authorization Pilot (Aug 2026)", url:"https://www.federalregister.gov/documents/2026/08/20/2026-17016/notice-of-mission-authorization-pilot-program"},
+  scsRules: {label:"Covington — FCC's SCS rules explained (May 2024)", url:"https://www.globalpolicywatch.com/2024/05/fccs-supplemental-coverage-from-space-rules-take-effect-may-30-new-licensing-framework-expands-satellite-to-smartphone-coverage/"},
+  astFcc:   {label:"Via Satellite — FCC authorizes AST SpaceMobile (Apr 2026)", url:"https://www.satellitetoday.com/connectivity/2026/04/22/fcc-grants-ast-spacemobile-commercial-authorization-for-direct-to-device-service/"},
+  gsoa:     {label:"GSOA — WRC-27 Agenda Item 1.13 explainer", url:"https://gsoa.space/wp-content/uploads/WRC-27_AI-1.13.pdf"},
+  wrc27news:{label:"SatNews — ITU spectrum chief on direct-to-device at WRC-27 (Sept 2026)", url:"https://satnews.com/2026/09/24/the-itus-outgoing-spectrum-chief-expects-wrc-27-to-find-room-for-direct-to-device-151-mobile-operators-are-already-building-toward-it/"},
+  ausLand:  {label:"Australian Aviation — Varda W-2 lands at Koonibba (Feb 2025)", url:"https://australianaviation.com.au/2025/02/historic-moment-as-capsule-touches-down-at-koonibba-test-range/"},
+  ausApproval:{label:"Southern Launch — Australian approval for Varda reentries (Oct 2024)", url:"https://www.southernlaunch.space/news-feed/southern-launch-and-varda-granted-australian-government-approval-for-the-first-spacecraft-re-entries-at-the-koonibba-test-range"},
+  nasaPartner:{label:"NASA — Partnering with NASA", url:"https://www.nasa.gov/partnerships/how-to-partner/"},
+  cgmp:     {label:"FDA — CGMP regulations", url:"https://www.fda.gov/drugs/pharmaceutical-quality-resources/current-good-manufacturing-practice-cgmp-regulations"},
+};
+
+const COMMON_LANE = {
+  lane:"common", status:"core", tl:[-4,6],
+  steps:[
+    {title:"Register for space traffic services", time:"Months before launch", src:["ost"],
+     detail:"Register with Space-Track (U.S. Space Force) and Commerce's TraCSS space traffic system. Set up conjunction screening so you are warned of close approaches, and plan to share your satellites' position data. The FCC's new rules now require that data sharing.",
+     why:"Applies to every mission, wherever it launches."},
+    {title:"UN registration", time:"After launch", src:["ost"],
+     detail:"The State Department registers U.S. space objects with the UN under the Registration Convention. The operator supplies orbital data.",
+     why:"Every U.S.-authorized object needs a registering state."},
+    {title:"Operate and dispose", time:"Mission life", src:["fccmod"],
+     detail:"File FCC milestone notices, report maneuvers, keep license reporting current, and dispose of the satellite at end of life according to the debris plan (the 5-year deorbit rule in low Earth orbit).",
+     why:"Supervision continues for the whole mission (Outer Space Treaty Art. VI)."},
+  ]
+};
+
+const MISSIONS = [
+{
+  id:"monsoon", name:"Monsoon Radar", tagline:"Eyes Over the Indo-Pacific", focus:"Export controls · international", draft:false,
+  brief:["U.S. startup; Singapore fund holds ~25% and a board seat","4 X-band radar (SAR) imaging smallsats, sub-meter resolution","European radar parts; two Singapore-national engineers","Launch on India's PSLV via NSIL; ground stations in Alaska, Singapore, India"],
+  governments:"U.S. + India (+ Singapore, EU)",
+  lanes:[
+    {lane:"invest", status:"new", tl:[-26,-14], steps:[
+      {title:"Map the cap table", time:"Before the term sheet", src:["teamtel"],
+       detail:"Identify every foreign owner and the rights they get: board seats, information access, vetoes. At 10% or more reportable foreign ownership, the FCC application will be referred for national security review. Board seats and access to technical information can trigger CFIUS.",
+       why:"The Singapore fund's 25% stake and board seat trigger both reviews."},
+      {title:"CFIUS declaration", time:"30-day assessment; a full notice takes 45 days, plus 45 more if investigated", src:["wiley"],
+       detail:"CFIUS reviews foreign investment in U.S. businesses for national security risk. An investment in a company producing export-controlled 'critical technology' that gives the investor a board seat may require a mandatory filing.",
+       why:"SAR imaging technology is export-controlled, so a filing is likely mandatory.",
+       curve:{q:"The fund wants its technical partner to see the radar design files before closing. Can Monsoon share them?",
+              a:"Not freely. Showing controlled technical data to foreign nationals is an export. Under ITAR it needs State Department authorization before any access; under the EAR it may need a BIS license. Use a data room limited to non-controlled information, and write the access limits into the investment terms. CFIUS will look at the same access rights."}},
+      {title:"Team Telecom review", time:"120-day initial review, plus up to 90 days", src:["eo13913","teamtel"],
+       detail:"When the FCC receives an application with reportable foreign ownership, it refers it to the DOJ-led Committee for the Assessment of Foreign Participation in the U.S. Telecommunications Services Sector (Team Telecom). The review can end with a mitigation agreement, such as commitments on data storage, access, and personnel screening.",
+       why:"This review runs inside the FCC's timeline, so it can delay the critical path."},
+    ]},
+    {lane:"export", status:"heavy", tl:[-24,-2], steps:[
+      {title:"Decide ITAR or EAR", time:"Months; longer if a jurisdiction ruling is needed", src:["bis","wiley"],
+       detail:"Determine whether the satellite and its SAR payload fall on the State Department's U.S. Munitions List (Category XV, ITAR) or under Commerce's Export Administration Regulations (9x515 series). It depends on performance specifications. If it's unclear, request a commodity jurisdiction ruling from State.",
+       why:"High-resolution radar sits close to the ITAR line. Everything downstream depends on this answer."},
+      {title:"Foreign parts and people", time:"Ongoing", src:["bis"],
+       detail:"Sharing controlled technical data with non-U.S. staff is a 'deemed export' and needs authorization. Foreign-made parts carry their own country's export rules, and any controlled U.S. content inside them can still be subject to U.S. controls.",
+       why:"Two Singapore-national engineers and European radar electronics bring both issues into play."},
+      {title:"Ship to India for launch", time:"6–12 months", src:["cfr12415","nsil","pslv"],
+       detail:"Exporting the satellites to India needs an export license, plus a Technical Assistance Agreement with NSIL for launch integration. If the satellite is ITAR-controlled, 22 CFR 124.15 adds a technology transfer control plan and Defense Department monitoring of the launch campaign.",
+       why:"India was not among the countries given relief in the 2024 space export reforms.",
+       curve:{q:"The European supplier ships a replacement radar part straight to the launch site in India. Who needs which license?",
+              a:"The supplier needs its own government's export authorization. If the part contains controlled U.S.-origin content, U.S. rules still follow it. Monsoon's Technical Assistance Agreement and transfer control plan must also cover the new part and any integration help. Lesson: put spares logistics in the export plan from the start."}},
+    ]},
+    {lane:"fcc", status:"core", crit:true, tl:[-24,-3], steps:[
+      {title:"Choose the licensing path", time:"Planning", src:["fccmod"],
+       detail:"A commercial imaging constellation files under the FCC's commercial satellite rules (Part 25, now being replaced by the new Part 100 adopted July 2026). The radar operates in the Earth exploration-satellite service.",
+       why:"Commercial operation rules out experimental or amateur licenses."},
+      {title:"File the application", time:"Several months to over a year", src:["fccmod"],
+       detail:"The application covers frequencies, interference analysis, the orbital debris plan (5-year deorbit rule), and ownership. The radar and X-band downlink bands are shared with federal users, so NTIA coordinates.",
+       why:"The ownership disclosure is what sends this application to Team Telecom."},
+      {title:"ITU filing and ground stations", time:"Runs alongside, often the longest item", src:["fccmod"],
+       detail:"The FCC files the system with the ITU, and Monsoon coordinates with other operators. The Alaska ground station needs an FCC earth station license. The Singapore and India stations need licenses from those countries.",
+       why:"Three countries' ground stations mean three sets of spectrum approvals.",
+       curve:{q:"A Japanese operator files an ITU interference objection to the downlink plan. What happens to the schedule?",
+              a:"Coordination is operator to operator, with the FCC and Japan's regulator acting for each side. Expect technical negotiation over power limits, sub-bands, or timing. The license can be conditioned on finishing coordination, so without schedule margin, launch slips. This is why spectrum is the critical path."}},
+    ]},
+    {lane:"noaa", status:"core", tl:[-16,-4], steps:[
+      {title:"Confirm a license is needed", time:"Early", src:["noaalic"],
+       detail:"Any U.S. operator of a system that can actively or passively sense the Earth needs a NOAA license under 15 CFR Part 960. Radar counts.",
+       why:"Imaging is the business, so there's no question here."},
+      {title:"Tiering and conditions", time:"Review of weeks to months", src:["noaalic","noaa2023"],
+       detail:"NOAA sorts licenses into tiers based on whether comparable data is already available from other sources. In 2023 NOAA removed all temporary X-band SAR conditions and cut imaging restrictions to less than 1% of Earth's surface. A few national-security conditions remain.",
+       why:"Foreign SAR providers already sell similar data, which argues for a lower tier."},
+      {title:"Foreign agreements and reporting", time:"Ongoing", src:["noaalic"],
+       detail:"Licensees must notify NOAA of significant agreements with foreign parties, notify it of launch and deviations, and file annual reports.",
+       why:"The Singapore investor and Indian government customers are both reportable.",
+       curve:{q:"An Indian government agency wants priority imaging of a disputed border region. What should Monsoon do?",
+              a:"A priority-tasking deal with a foreign government is a significant foreign agreement that must be reported to NOAA in advance. NOAA can consult Defense and State, and the deal could draw conditions. It may also raise export questions about the imagery-processing technology involved."}},
+    ]},
+    {lane:"launch", status:"dropped", tl:null, steps:[
+      {title:"No FAA launch license", time:"—", src:["crs48582"],
+       detail:"FAA licensing covers launches in the U.S. and launches by U.S. entities abroad. A U.S. customer buying a launch from a foreign provider, from foreign soil, does not need one.",
+       why:"What's lost: FAA safety review, the FAA-set insurance requirement, and U.S. government indemnification. The launch contract has to cover those risks instead."},
+    ]},
+    {lane:"intl", status:"new", tl:[-18,0], steps:[
+      {title:"Launch contract with NSIL", time:"12–18 months before launch", src:["nsil"],
+       detail:"NewSpace India Ltd sells PSLV rideshare. The launch services agreement sets schedule, insurance, cross-waivers of liability, and what happens if the launch slips. India's side (IN-SPACe, ISRO) authorizes the launch itself.",
+       why:"The contract replaces the protections the FAA license would have provided."},
+      {title:"Liability and registration", time:"Settled before launch", src:["liab","ost"],
+       detail:"Under the Liability Convention, a 'launching state' is one that launches or procures a launch, or whose territory or facility is used. Both the U.S. (its national procured the launch) and India (launch site) qualify and are jointly liable. The two states should agree who registers the satellites with the UN.",
+       why:"Two launching states means two governments on the hook.",
+       curve:{q:"Eighteen months after launch, debris from a Monsoon satellite damages a third country's satellite. Who pays?",
+              a:"The U.S. and India are jointly and severally liable as launching states. Damage in orbit is fault-based, so the injured country must show fault. The two states can settle between themselves, and the launch contract's cross-waivers and insurance decide which companies ultimately pay. Under Outer Space Treaty Art. VI, the U.S. must still supervise Monsoon's operations."}},
+    ]},
+    COMMON_LANE,
+  ]
+},
+{
+  id:"beacon", name:"Beacon Mobile", tagline:"Phones From Space", focus:"Scale and spectrum", draft:false,
+  brief:["U.S. company partnered with a national wireless carrier","Leases the carrier's low-band spectrum to reach ordinary phones","A constellation of hundreds of large satellites in low Earth orbit","U.S.-built; launches from the U.S.; service abroad planned later"],
+  governments:"U.S. (+ each country served, via the ITU)",
+  lanes:[
+    {lane:"fcc", status:"heavy", crit:true, tl:[-30,-3], steps:[
+      {title:"Lease the carrier's spectrum", time:"Negotiated first; leases approved before the satellite license", src:["scs","scsRules"],
+       detail:"Under the FCC's Supplemental Coverage from Space framework (adopted March 2024), a satellite operator may use a wireless carrier's licensed spectrum to reach phones. Its carrier partners must together hold every co-channel license across a whole geographic area, such as the continental U.S., Alaska, or Hawaii. The carrier files spectrum lease notifications, and all leases must be approved before the FCC grants the satellite application. Eligible bands are 600, 700, and 800 MHz, broadband PCS, and AWS-H.",
+       why:"Beacon's entire service depends on one carrier contract. No lease, no license.",
+       curve:{q:"Beacon's carrier holds the 800 MHz license everywhere in the continental U.S. except a few rural counties owned by a small regional carrier. Can Beacon launch service?",
+              a:"Not in that band yet. The rules require the partners to hold all co-channel licenses in the whole area, though they allow more than one carrier to partner with the satellite operator. Beacon either signs the regional carrier too or uses a band where its partner has full coverage. The small carrier suddenly has real bargaining power."}},
+      {title:"Constellation license and milestones", time:"A year or more", src:["fccmod","astFcc"],
+       detail:"The satellite operator files a satellite application (Part 25, moving to Part 100) covering orbits, frequencies, interference analysis, and a debris plan for hundreds of satellites. Large constellation licenses carry deployment milestones: half the satellites within 6 years and all within 9, plus a surety bond. In April 2026 the FCC authorized AST SpaceMobile's 248-satellite system with deadlines of August 2030 (124 satellites) and August 2033 (all 248).",
+       why:"Milestones turn launch availability into a regulatory deadline."},
+      {title:"Secondary status and interference limits", time:"Conditions on the license", src:["scsRules"],
+       detail:"Satellite-to-phone service is authorized on a secondary basis. Beacon may not cause harmful interference to ground-based networks using the same frequencies and cannot claim protection from them. Strict limits apply to emissions outside the leased channels.",
+       why:"The satellite is a guest in spectrum built for cell towers.",
+       curve:{q:"A neighboring carrier reports interference near a market boundary. Now what?",
+              a:"As a secondary service, Beacon must fix it, not the carrier on the ground. Expect power reductions, beam changes, or shutting off service near the boundary. Build interference monitoring and a fast response process into operations before launch."}},
+      {title:"Phones and 911", time:"Before commercial service", src:["scsRules","scs911"],
+       detail:"Customers' phones don't need their own licenses; they are covered by rule, though manufacturers must update the FCC equipment certification to show satellite operation. Under interim rules, the carrier must route satellite 911 calls and texts to an emergency call center, pass location and callback number, disclose limits to customers, and report annually. The FCC is still considering whether satellite operators should share these duties.",
+       why:"Public safety obligations sit mainly with the carrier partner for now.",
+       curve:{q:"A hiker with no cell signal texts 911 through Beacon. Who is responsible for getting that text to the right dispatcher?",
+              a:"Under the interim rules, the carrier. It must deliver the message to a 911 call center, either by routing based on location or through an emergency call center, and pass along location and callback information. The contract between Beacon and the carrier should spell out who does what, since the FCC may add satellite-operator duties later."}},
+    ]},
+    {lane:"intl", status:"new", tl:[-24,6], steps:[
+      {title:"ITU filing for a non-standard use", time:"Years", src:["fccmod","gsoa"],
+       detail:"The FCC files the constellation with the ITU. Satellite service in bands allocated internationally to ground-based mobile networks doesn't match the ITU's Radio Regulations, so it runs on a non-interference, non-protection basis. Some countries, including the U.S., rely on Radio Regulations Article 4.4 for this.",
+       why:"Beacon operates without international protection until the rules change."},
+      {title:"WRC-27: the rules being written", time:"Conference in 2027", src:["gsoa","wrc27news"],
+       detail:"Agenda item 1.13 of the 2027 World Radiocommunication Conference studies new mobile-satellite allocations for direct connectivity to phones in several bands between 694 MHz and 2.69 GHz, with power limits and protection for ground networks.",
+       why:"The outcome could make Beacon's service primary internationally, or constrain it."},
+      {title:"Landing rights abroad", time:"Country by country", src:["gsoa"],
+       detail:"Serving another country needs that country's authorization and, in practice, a local carrier partner whose spectrum Beacon would use.",
+       why:"The U.S. license covers only the U.S. market.",
+       curve:{q:"Beacon's beams over Texas spill across the border into Mexico. What has to happen?",
+              a:"Beacon may not serve or interfere in Mexico without Mexican authorization. It must shape beams and limit power near the border, and coordinate through the regulators. Border areas are a common source of cross-border interference complaints for satellite-to-phone systems."}},
+    ]},
+    {lane:"launch", status:"core", tl:[-18,0], steps:[
+      {title:"Book many launches", time:"Rolling, over years", src:["crs48582"],
+       detail:"Deploying hundreds of satellites takes many launches. Each U.S. launch is licensed by the FAA to the launch provider.",
+       why:"The deployment schedule depends on launch availability."},
+      {title:"Payload review", time:"Part of each launch license", src:["crs48582"],
+       detail:"Because Beacon's satellites hold an FCC license, the FAA doesn't run a separate payload review on them. The launch provider still supplies payload information for its license.",
+       why:"The FCC license smooths the FAA side."},
+      {title:"When a launch goes wrong", time:"Any time", src:["astFcc"],
+       detail:"Launch failures and wrong orbits happen. In April 2026, days before its FCC approval, AST SpaceMobile lost a satellite when a Blue Origin New Glenn rocket placed it too low; the satellite was deorbited and insured.",
+       why:"A lost satellite doesn't pause the FCC milestone clock.",
+       curve:{q:"A rocket leaves six Beacon satellites in an orbit too low to use. What are the regulatory consequences?",
+              a:"The satellites must be safely deorbited under the debris plan, and Beacon should report to the FCC. Insurance may cover the hardware, but the milestone deadlines keep running. If Beacon falls behind, it can ask the FCC for an extension, which isn't guaranteed. Missing a milestone can reduce the number of satellites the license allows and cost Beacon its bond."}},
+    ]},
+    {lane:"export", status:"light", tl:[-12,-6], steps:[
+      {title:"Classify the satellites", time:"Early", src:["bis"],
+       detail:"Commercial communications satellites generally fall under the Commerce Department's EAR rather than ITAR. U.S.-built satellites on U.S. launches keep export issues light.",
+       why:"Lighter for now."},
+      {title:"Watch foreign partners and ground stations", time:"As the service expands", src:["bis","wiley"],
+       detail:"Foreign gateway stations, foreign engineers, or foreign carrier partners who receive technical data bring export controls back in.",
+       why:"Expansion abroad turns this lane back on."},
+    ]},
+    {lane:"astro", status:"new", tl:[-12,6], steps:[
+      {title:"Brightness and radio interference", time:"Before and during deployment", src:["nsf"],
+       detail:"Direct-to-phone satellites carry very large antennas, which can be bright in the night sky, and their downlinks can reach radio telescopes. No agency licenses 'dark skies,' but astronomers raise these issues in FCC proceedings.",
+       why:"Large antennas make Beacon's satellites unusually visible."},
+      {title:"Coordination agreements", time:"Voluntary, ongoing", src:["nsf"],
+       detail:"In May 2025 AST SpaceMobile signed a coordination agreement with the National Science Foundation covering brightness reduction, keeping orbits at 700 km or lower, sharing orbit data, and field tests with radio observatories.",
+       why:"A voluntary agreement fills a gap the rules don't cover.",
+       curve:{q:"Astronomers file objections with the FCC about Beacon's brightness and radio emissions. How should Beacon respond?",
+              a:"Expect possible license conditions. Get ahead of them with a coordination agreement like NSF's with AST SpaceMobile: reduce brightness, share orbit data, and protect radio observatories."}},
+    ]},
+    {lane:"noaa", status:"dropped", tl:null, steps:[
+      {title:"Not required, unless there's a camera", time:"—", src:["noaalic"],
+       detail:"No Earth-imaging payload means no NOAA license. But any onboard camera able to see the Earth, even for engineering, would trigger one.",
+       why:"Check the design before assuming this lane is empty."},
+    ]},
+    COMMON_LANE,
+  ]
+},
+{
+  id:"kestrel", name:"Kestrel Orbital", tagline:"Factory in Orbit", focus:"Frontier activity · reentry", draft:false,
+  brief:["Small satellite grows pharmaceutical crystals in microgravity","A capsule returns the product to the Utah desert","Also carries a NASA heatshield experiment","U.S.-built; launches from the U.S. on a rideshare"],
+  governments:"U.S. (+ Australia if it lands there)",
+  lanes:[
+    {lane:"reentry", status:"new", crit:true, tl:[-20,4], steps:[
+      {title:"Reentry license first", time:"Must be in hand before launch", src:["reentryPolicy","crs48582"],
+       detail:"Kestrel operates the returning capsule, so it needs its own FAA reentry license under Part 450. Since April 2024, the FAA won't clear the launch of a spacecraft designed to reenter unless its reentry license is already in place.",
+       why:"This policy came directly out of Varda's experience."},
+      {title:"Safety and environmental review", time:"Several months", src:["crs48582"],
+       detail:"The license application shows the capsule's reentry path and landing zone are safe for people and property, and covers the environmental effects of the landing under NEPA. It also sets insurance requirements for third-party damage.",
+       why:"A falling capsule is judged like a launch in reverse."},
+      {title:"Landing site agreement", time:"Before license approval", src:["varda"],
+       detail:"Secure permission from the landing range and schedule the return window. Varda's first capsule used the Air Force's Utah Test and Training Range, which has its own military schedule and approvals.",
+       why:"No range, no reentry.",
+       curve:{q:"The range isn't available on the planned return date. What happens?",
+              a:"The capsule waits in orbit. Varda's W-1 launched in June 2023, was denied reentry that fall, and landed in Utah in February 2024, a week after its license came through. Lesson: lock in the range and the license before launch, with backup dates."}},
+      {title:"Return and recovery", time:"Weeks to months after launch", src:["ausLand","ausApproval"],
+       detail:"The capsule deorbits in its licensed window, lands by parachute, and is recovered and shipped for analysis.",
+       why:"The mission isn't over, and the license isn't used, until the capsule is on the ground.",
+       curve:{q:"Kestrel decides to land in Australia instead, like Varda's later missions. What changes?",
+              a:"Kestrel still needs its FAA reentry license as a U.S. operator, and now also an Australian return authorization under Australia's Space (Launches and Returns) Act 2018. Varda received that approval in October 2024 and landed W-2 at the Koonibba Test Range in February 2025. Shipping the capsule and supporting technical data to Australia may also need export authorization, though Australia is one of the closest U.S. space partners under the 2024 export reforms."}},
+    ]},
+    {lane:"gov", status:"new", tl:[-18,4], steps:[
+      {title:"Fly government payloads", time:"Contract before integration", src:["nasaPartner","ausLand"],
+       detail:"Kestrel carries a NASA heatshield experiment, the way Varda's W-2 carried a NASA heatshield and an Air Force instrument. NASA buys services or partners through contracts and Space Act Agreements; it is a customer here, not a regulator.",
+       why:"Government customers can anchor a startup's revenue and credibility."},
+      {title:"Data and hardware rights", time:"Set in the agreement", src:["nasaPartner"],
+       detail:"The agreement spells out who owns the experiment data, how the payload is returned, and who pays if the capsule is lost.",
+       why:"These terms matter when the product and the experiment share one capsule."},
+    ]},
+    {lane:"fcc", status:"core", tl:[-16,-3], steps:[
+      {title:"Pick the license type", time:"Planning", src:["fccmod"],
+       detail:"A first demonstration flight can use an FCC experimental license (Part 5); a repeating commercial service needs a full satellite license (Part 25, moving to Part 100).",
+       why:"Commercial product sales point to a full license."},
+      {title:"Command links and capsule beacon", time:"Several months", src:["fccmod"],
+       detail:"License the satellite's command and telemetry links and the capsule's radio beacon used to track it during descent and recovery.",
+       why:"Recovery teams rely on the beacon to find the capsule."},
+      {title:"Debris plan for what stays up", time:"Part of the application", src:["fccmod"],
+       detail:"The spacecraft bus remains in orbit after the capsule separates. The debris plan must show it deorbits within 5 years of the mission's end.",
+       why:"Only the capsule comes home by design."},
+    ]},
+    {lane:"launch", status:"core", tl:[-14,0], steps:[
+      {title:"Rideshare contract", time:"12+ months before launch", src:["crs48582"],
+       detail:"Kestrel books a slot on a rideshare mission. The launch provider holds the FAA launch license.",
+       why:"Standard for a small spacecraft."},
+      {title:"Payload review checks reentry", time:"Part of the launch license", src:["reentryPolicy"],
+       detail:"The FAA's payload review now confirms that a spacecraft designed to reenter already holds its reentry license.",
+       why:"The launch depends on the reentry lane."},
+    ]},
+    {lane:"fda", status:"new", tl:[-12,6], steps:[
+      {title:"Manufacturing quality rules", time:"Before any drug product is sold", src:["cgmp"],
+       detail:"Drug ingredients must meet the FDA's current good manufacturing practice rules, which cover methods, facilities, and controls, wherever they are made.",
+       why:"The product has to meet Earth's rules even though the factory is in orbit."},
+      {title:"Drug application and site information", time:"Years, on the drug-approval timeline", src:["cgmp"],
+       detail:"A drug made with a space-grown ingredient goes through the normal FDA approval pathway, which includes information about manufacturing sites and FDA review of them. How the FDA would evaluate an orbital facility is an open question.",
+       why:"Kestrel's customer, the drug company, carries this approval.",
+       curve:{q:"The FDA asks to inspect Kestrel's manufacturing site. What can Kestrel offer?",
+              a:"No inspector can visit orbit. Kestrel would need to show control another way: detailed process data from each flight, ground-based analog runs, testing of every returned batch, and early meetings with the FDA to agree on an approach. This would be a first-of-its-kind conversation."}},
+    ]},
+    {lane:"gap", status:"new", tl:[-10,-2], steps:[
+      {title:"Who approves the factory?", time:"Unclear", src:["pilot"],
+       detail:"The FAA licenses the reentry, the FCC licenses the radios, and the FDA regulates the product. No agency clearly authorizes the manufacturing activity itself in orbit.",
+       why:"This is the authority gap from the flowchart."},
+      {title:"Commerce's mission authorization pilot", time:"Expressions of interest due Oct 5, 2026", src:["pilot"],
+       detail:"The Office of Space Commerce's pilot offers a single application and coordinated agency review for novel activities, leading to a Space Commerce Certification. It is voluntary and non-binding: it has no direct legal effect, and FAA and FCC approvals are still required.",
+       why:"Joining the pilot could shape the rules Kestrel will live under.",
+       curve:{q:"A competitor claims Kestrel's process releases contaminants that could damage nearby spacecraft. Who hears the complaint?",
+              a:"No agency clearly does. The FCC reviews debris plans and the FAA reviews reentry safety, but neither licenses the manufacturing. A Space Commerce Certification is non-binding. This is the argument for Congress to give an agency real mission authorization power."}},
+    ]},
+    {lane:"export", status:"light", tl:[-8,4], steps:[
+      {title:"Light, unless the capsule goes abroad", time:"Only if needed", src:["bis","wiley"],
+       detail:"A U.S.-built spacecraft launched and landed in the U.S. has few export issues. Landing abroad, foreign engineers, or foreign customers would bring export controls in.",
+       why:"The Australian landing option would turn this lane on."},
+    ]},
+    {lane:"noaa", status:"dropped", tl:null, steps:[
+      {title:"Not required, unless there's a camera", time:"—", src:["noaalic"],
+       detail:"No imaging mission means no NOAA license, unless cameras able to see the Earth fly on board.",
+       why:"Check the design."},
+    ]},
+    COMMON_LANE,
+  ]
+},
+];
+
+/* Glossary: "match" lists the exact spellings to underline in step text. */
+const GLOSSARY = [
+  {id:"bis", term:"BIS", full:"Bureau of Industry and Security", match:["BIS"],
+   def:"The Commerce Department office that runs the Export Administration Regulations (EAR), the export rules for commercial and dual-use items, including most satellites."},
+  {id:"cfius", term:"CFIUS", full:"Committee on Foreign Investment in the United States", match:["CFIUS"],
+   def:"An interagency committee chaired by the Treasury Department that reviews foreign investments in U.S. companies for national security risk. It can require changes to a deal or recommend blocking it.",
+   ctx:"Monsoon Radar: the Singapore fund's stake and board seat likely require a filing."},
+  {id:"cgmp", term:"CGMP", full:"Current Good Manufacturing Practice", match:["good manufacturing practice"],
+   def:"FDA rules on the methods, facilities, and controls used to make drugs, so products are safe and have the strength and quality they claim.",
+   ctx:"Kestrel Orbital: the rules apply wherever the drug ingredient is made, including in orbit."},
+  {id:"conj", term:"Conjunction screening", full:"", match:["conjunction screening"],
+   def:"Routine checks of a satellite's predicted path against other objects in orbit, so operators are warned of close approaches and can maneuver to avoid a collision."},
+  {id:"crit", term:"Critical path", full:"", match:[],
+   def:"The chain of tasks that sets the earliest possible finish date. If any item on it slips, the whole project slips. On this page, it marks the approval track most likely to delay launch."},
+  {id:"deemed", term:"Deemed export", full:"", match:["deemed export"],
+   def:"Sharing controlled technology or technical data with a foreign person inside the U.S. It counts as an export to that person's home country and can need a license.",
+   ctx:"Monsoon Radar: its two Singapore-national engineers."},
+  {id:"doj", term:"DOJ", full:"Department of Justice", match:["DOJ"],
+   def:"Leads Team Telecom, the national security review of FCC applications with foreign ownership."},
+  {id:"ear", term:"EAR", full:"Export Administration Regulations", match:["EAR"],
+   def:"Commerce Department export rules for commercial and dual-use items. Most commercial satellites and parts fall here, under the '9x515' categories, rather than under the stricter ITAR."},
+  {id:"eess", term:"EESS", full:"Earth exploration-satellite service", match:["Earth exploration-satellite service"],
+   def:"The international spectrum category for satellites that observe the Earth, including radar imaging satellites like Monsoon's."},
+  {id:"faa", term:"FAA", full:"Federal Aviation Administration", match:["FAA"],
+   def:"Its Office of Commercial Space Transportation licenses commercial launches and reentries from the U.S., and those by U.S. companies abroad. It reviews public safety, environmental effects, and insurance."},
+  {id:"fcc", term:"FCC", full:"Federal Communications Commission", match:["FCC"],
+   def:"The independent agency that licenses non-federal use of radio spectrum. Every commercial satellite that transmits needs an FCC license, and the FCC files U.S. satellite systems with the ITU."},
+  {id:"fda", term:"FDA", full:"Food and Drug Administration", match:["FDA"],
+   def:"Regulates drugs, including how and where they are manufactured."},
+  {id:"indem", term:"Indemnification", full:"", match:["indemnification"],
+   def:"For FAA-licensed launches, the U.S. government may pay third-party damage claims above the launch company's required insurance, up to a cap set by law. It does not apply to a foreign launch like Monsoon's."},
+  {id:"inspace", term:"IN-SPACe", full:"Indian National Space Promotion and Authorization Centre", match:["IN-SPACe"],
+   def:"India's body, set up in 2020, that authorizes space activities by non-government entities from India. Its launch approval role is loosely comparable to the FAA's."},
+  {id:"isro", term:"ISRO", full:"Indian Space Research Organisation", match:["ISRO"],
+   def:"India's national space agency. It builds and operates India's rockets, including PSLV."},
+  {id:"itar", term:"ITAR", full:"International Traffic in Arms Regulations", match:["ITAR"],
+   def:"State Department export rules for defense items on the U.S. Munitions List. Stricter than the EAR: almost any export or sharing of technical data with foreign persons needs approval.",
+   ctx:"Monsoon Radar: high-resolution radar sits close to the line between ITAR and EAR."},
+  {id:"itu", term:"ITU", full:"International Telecommunication Union", match:["ITU"],
+   def:"The UN agency that coordinates radio frequencies and satellite orbits worldwide. National regulators (the FCC for the U.S.) file satellite systems with it, and operators coordinate to avoid interfering with each other."},
+  {id:"launchstate", term:"Launching state", full:"", match:["launching state"],
+   def:"Under the Liability and Registration Conventions: a country that launches or procures a launch, or from whose territory or facility an object is launched. A single launch can have several.",
+   ctx:"Monsoon Radar: both the U.S. and India."},
+  {id:"leo", term:"LEO", full:"Low Earth orbit", match:["low Earth orbit"],
+   def:"Orbits up to about 2,000 km altitude, where most imaging and broadband satellites fly."},
+  {id:"liab", term:"Liability Convention", full:"Convention on International Liability for Damage Caused by Space Objects (1972)", match:["Liability Convention"],
+   def:"Makes launching states liable for damage their space objects cause: absolutely for damage on Earth or to aircraft, and based on fault for damage in space."},
+  {id:"mission", term:"Mission authorization", full:"", match:["Mission Authorization"],
+   def:"Government approval for new kinds of space activity that no agency clearly covers today, such as in-orbit servicing or manufacturing. The U.S. has no binding process yet; Commerce is running a voluntary pilot."},
+  {id:"nasa", term:"NASA", full:"National Aeronautics and Space Administration", match:["NASA"],
+   def:"The civil space agency. It is a customer and partner for commercial companies (contracts, Space Act Agreements), not a regulator of them."},
+  {id:"nepa", term:"NEPA", full:"National Environmental Policy Act (1970)", match:["NEPA"],
+   def:"Requires federal agencies to review the environmental effects of their actions, including issuing launch and reentry licenses."},
+  {id:"noaa", term:"NOAA", full:"National Oceanic and Atmospheric Administration", match:["NOAA"],
+   def:"Part of the Commerce Department. Its Commercial Remote Sensing Regulatory Affairs office licenses private U.S. satellites that can image the Earth, under 15 CFR Part 960."},
+  {id:"nsf", term:"NSF", full:"National Science Foundation", match:["NSF"],
+   def:"Funds major U.S. astronomical observatories, and negotiates coordination agreements with satellite operators to limit harm to astronomy."},
+  {id:"nsil", term:"NSIL", full:"NewSpace India Limited", match:["NSIL","NewSpace India Ltd"],
+   def:"The commercial arm of ISRO, a government-owned company set up in 2019 under India's Department of Space. It sells launches on India's rockets (PSLV, GSLV, LVM3, SSLV) and other ISRO services.",
+   ctx:"Monsoon Radar: the company Monsoon signs its launch contract with."},
+  {id:"ntia", term:"NTIA", full:"National Telecommunications and Information Administration", match:["NTIA"],
+   def:"Part of the Commerce Department. It manages the federal government's own use of spectrum and coordinates when commercial users share bands with federal users."},
+  {id:"osc", term:"OSC", full:"Office of Space Commerce", match:["Office of Space Commerce"],
+   def:"The Commerce Department office for commercial space. It runs the TraCSS space traffic service and the mission authorization pilot program."},
+  {id:"ost", term:"Outer Space Treaty", full:"Treaty on Principles Governing the Activities of States in the Exploration and Use of Outer Space (1967)", match:["Outer Space Treaty"],
+   def:"The foundation of space law. Article VI makes each country responsible for its companies' space activities and requires it to authorize and continually supervise them. That is why U.S. agencies license private satellites."},
+  {id:"p100", term:"Part 25 / Part 100", full:"FCC satellite licensing rules", match:["Part 25","Part 100"],
+   def:"Part 25 has been the FCC's main rulebook for commercial satellites. In July 2026 the FCC adopted a new Part 100 to replace it with a faster, more modular licensing process."},
+  {id:"p450", term:"Part 450", full:"FAA launch and reentry licensing rules", match:["Part 450"],
+   def:"The FAA's performance-based rules for launch and reentry licenses, which replaced older vehicle-specific rules. All licenses had to comply by March 10, 2026."},
+  {id:"p960", term:"Part 960", full:"15 CFR Part 960, NOAA remote sensing rules", match:["Part 960"],
+   def:"NOAA's licensing rules for private remote sensing satellites. Licenses are sorted into tiers based on whether similar data is already available from other sources."},
+  {id:"pslv", term:"PSLV", full:"Polar Satellite Launch Vehicle", match:["PSLV"],
+   def:"India's workhorse rocket, widely used for rideshare launches of small satellites from around the world."},
+  {id:"reg", term:"Registration Convention", full:"Convention on Registration of Objects Launched into Outer Space (1975)", match:["Registration Convention"],
+   def:"Requires a launching state to register its space objects with the UN. The State Department handles U.S. registrations."},
+  {id:"smallsat", term:"Smallsat", full:"Small satellite", match:["smallsats","smallsat"],
+   def:"A satellite light enough to fly as a rideshare, typically under about 500 kg. Most new commercial constellations use them."},
+  {id:"rideshare", term:"Rideshare", full:"", match:["rideshare"],
+   def:"A launch that carries many customers' satellites together, splitting the cost. The launch provider holds the launch license."},
+  {id:"ground", term:"Ground station", full:"", match:["ground stations","ground station"],
+   def:"An antenna site on Earth that commands a satellite and receives its data. Each one needs a license from the country it sits in."},
+  {id:"micro", term:"Microgravity", full:"", match:["microgravity"],
+   def:"The near-weightless conditions in orbit. Some materials, such as certain drug crystals, form differently there than on Earth."},
+  {id:"carrier", term:"Wireless carrier", full:"", match:["wireless carrier"],
+   def:"A mobile phone company, such as a national cell network, that holds FCC licenses for spectrum used by phones and towers on the ground."},
+  {id:"secondary", term:"Secondary basis", full:"", match:["secondary basis"],
+   def:"A service allowed to use frequencies only if it causes no harmful interference to the main (primary) users, and with no right to protection from them."},
+  {id:"milestones", term:"Deployment milestones", full:"", match:["milestones"],
+   def:"FCC deadlines for launching a licensed constellation: generally half the satellites within 6 years and all within 9. Missing them can shrink the license and cost the operator its bond."},
+  {id:"bond", term:"Surety bond", full:"", match:["surety bond"],
+   def:"Money an operator guarantees to the FCC when it gets a large satellite license, forfeited if it misses deployment milestones. It discourages placeholder filings."},
+  {id:"saa", term:"Space Act Agreement", full:"", match:["Space Act Agreements","Space Act Agreement"],
+   def:"A flexible agreement NASA uses to partner with companies and others outside standard procurement contracts, under the National Aeronautics and Space Act."},
+  {id:"rr44", term:"Article 4.4", full:"ITU Radio Regulations, No. 4.4", match:["Article 4.4"],
+   def:"The ITU rule letting a country authorize a radio use that doesn't match the international allocation tables, on the condition that it causes no harmful interference to, and claims no protection from, services that do conform."},
+  {id:"sar", term:"SAR", full:"Synthetic aperture radar", match:["SAR"],
+   def:"A radar imaging technique that sees through clouds and works day or night. High-resolution SAR is sensitive for national security."},
+  {id:"scc", term:"SCC", full:"Space Commerce Certification", match:["Space Commerce Certification"],
+   def:"The Office of Space Commerce's proposed single application and joint agency review for novel space missions. In the August 2026 pilot it is voluntary and non-binding."},
+  {id:"scs", term:"SCS", full:"Supplemental Coverage from Space", match:["Supplemental Coverage from Space"],
+   def:"The FCC framework, adopted in March 2024, that lets a satellite operator lease a wireless carrier's spectrum to connect directly to ordinary phones."},
+  {id:"spacetrack", term:"Space-Track", full:"", match:["Space-Track"],
+   def:"The U.S. Space Force website that shares tracking data on objects in orbit with satellite operators."},
+  {id:"taa", term:"TAA", full:"Technical Assistance Agreement", match:["Technical Assistance Agreement"],
+   def:"A State Department-approved agreement under ITAR that lets a U.S. company give technical help or data to a foreign party, such as a foreign launch provider integrating a satellite."},
+  {id:"teamtel", term:"Team Telecom", full:"Committee for the Assessment of Foreign Participation in the U.S. Telecommunications Services Sector", match:["Team Telecom"],
+   def:"A DOJ-led group, with Defense and Homeland Security, that reviews FCC applications involving foreign ownership for national security risk. Formalized by Executive Order 13913 in 2020."},
+  {id:"tracss", term:"TraCSS", full:"Traffic Coordination System for Space", match:["TraCSS"],
+   def:"The Commerce Department's civil space traffic coordination service, which gives operators collision warnings and orbit data."},
+  {id:"usml", term:"USML", full:"U.S. Munitions List", match:["Munitions List"],
+   def:"The list of defense items controlled under ITAR. Category XV covers spacecraft and related items."},
+  {id:"wrc", term:"WRC", full:"World Radiocommunication Conference", match:["World Radiocommunication Conference"],
+   def:"The ITU conference, held every few years, that updates international spectrum rules. WRC-27 will consider rules for satellite service direct to phones."},
+  {id:"xband", term:"X-band", full:"", match:["X-band"],
+   def:"Radio frequencies of roughly 8 to 12 GHz, used for radar imaging and for downlinking satellite data."},
+  {id:"fiveyr", term:"5-year rule", full:"", match:["5-year deorbit rule","5-year rule"],
+   def:"FCC rule adopted in 2022 requiring satellites in low Earth orbit to leave orbit within 5 years after their mission ends, to limit space debris."},
+];
+/* ================== END CONTENT ================== */
+
+/* Show tracks in timeline order: earliest start first; tracks with no schedule (not required) last. */
+MISSIONS.forEach(m => m.lanes.sort((a, b) => (a.tl ? a.tl[0] : 999) - (b.tl ? b.tl[0] : 999)));
+const STATUS_HELP = {core:"Applies as it would for any satellite", heavy:"Applies, with more steps, risk, or time than usual", new:"Not on the flowchart; this mission brings it in", light:"Applies, with less to do than usual", dropped:"On the flowchart, but this mission skips it"};
+const STATUS_LABEL = {core:"Standard", heavy:"Heavier", new:"Added", light:"Lighter", dropped:"Not required"};
+let current = MISSIONS[0], sel = {lane:0, step:0};
+try{ const m = localStorage.getItem("ocm-mission"); if(m){ const f=MISSIONS.find(x=>x.id===m); if(f) current=f; } }catch(e){}
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const laneColor = key => `var(${LANE_INFO[key].color})`;
+
+function renderMissions(){
+  $("#missions").innerHTML = MISSIONS.map(m => `
+    <button class="mission" style="--mc:var(--m-${m.id})" id="m-${m.id}" aria-pressed="${m===current}" data-id="${m.id}">
+      <span class="eyebrow">${esc(m.focus)}</span>
+      <span class="mname">${esc(m.name)}</span>
+      <span class="mtag">${esc(m.tagline)}</span>
+      <span class="mrow">${m.draft ? '<span class="chip draft">Draft content</span>' : '<span class="chip">Full walkthrough</span>'}</span>
+    </button>`).join("");
+  document.querySelectorAll(".mission").forEach(b => b.onclick = () => {
+    current = MISSIONS.find(x => x.id === b.dataset.id); sel = {lane:0, step:0};
+    try{ localStorage.setItem("ocm-mission", current.id); }catch(e){}
+    renderAll();
+  });
+}
+
+function renderSummary(){
+  const L = current.lanes;
+  const active = L.filter(l => l.status !== "dropped").length;
+  const added = L.filter(l => l.status === "new").length;
+  const dropped = L.filter(l => l.status === "dropped").length;
+  const crit = L.find(l => l.crit);
+  $("#summary").style.setProperty("--mc", `var(--m-${current.id})`);
+  $("#summary").innerHTML = `
+    <div class="brief"><div class="eyebrow">Mission brief · ${esc(current.name)}</div><ul>${(u => current.brief.map(b=>`<li>${linkTerms(b, u)}</li>`).join(""))(new Set())}</ul><div class="defbox" id="brief-def" hidden></div></div>
+    <div><span class="big">${active}</span><span class="lbl">approval tracks in play</span></div>
+    <div><span class="big">${added}</span><span class="lbl">tracks added for this mission</span></div>
+    <div><span class="big">${dropped}</span><span class="lbl">tracks not required</span></div>
+    <div><span class="big crit-name">${esc(crit ? LANE_INFO[crit.lane].name : "—")}</span><span class="lbl">critical path</span><span class="lbl" style="margin-top:10px"><b>Governments involved:</b> ${esc(current.governments)}</span></div>`;
+  document.querySelectorAll("#summary .term").forEach(t => t.onclick = () => showDef(t.dataset.g, "#brief-def"));
+}
+
+function renderLanes(){
+  let n = 0;
+  $("#lanes").innerHTML = current.lanes.map((l, li) => {
+    const info = LANE_INFO[l.lane];
+    const cls = ["lane", l.status==="dropped"?"dropped":"", l.crit?"crit":""].join(" ");
+    return `<div class="${cls}" style="--lc:${laneColor(l.lane)}">
+      <div class="lhead">
+        <span class="lname">${esc(info.name)}</span>
+        <span class="lagency">${esc(info.agency)}</span>
+        <span class="pills"><span class="pill" title="${STATUS_HELP[l.status]}">${STATUS_LABEL[l.status]}</span>${l.crit?'<span class="pill" title="Most likely to set the launch date">Critical path</span>':''}</span>
+      </div>
+      <div class="steps">${l.steps.map((s, si) => { n++; return `
+        <button class="step" id="s-${li}-${si}" data-l="${li}" data-s="${si}" aria-pressed="${sel.lane===li && sel.step===si}">
+          <span class="n">${l.status==="dropped" ? "—" : "Step " + (si+1)}</span>
+          <span class="t">${esc(s.title)}</span>
+          ${s.curve ? '<span class="cb">Curveball</span>' : ''}
+        </button>`}).join("")}</div>
+    </div>`;
+  }).join("");
+  document.querySelectorAll(".step").forEach(b => b.onclick = () => {
+    sel = {lane:+b.dataset.l, step:+b.dataset.s};
+    document.querySelectorAll(".step").forEach(x => x.setAttribute("aria-pressed", x===b));
+    renderDetail();
+    if (window.matchMedia("(max-width:1000px)").matches) $("#detail").scrollIntoView({behavior:"smooth", block:"start"});
+  });
+}
+
+function flatSteps(){ const out=[]; current.lanes.forEach((l,li)=>l.steps.forEach((s,si)=>out.push([li,si]))); return out; }
+
+const TERM_INDEX = GLOSSARY.flatMap(g => g.match.map(m => ({m, id:g.id}))).sort((a,b) => b.m.length - a.m.length);
+function linkTerms(text, used = new Set()){
+  let html = esc(text); const slots = [];
+  TERM_INDEX.forEach(({m, id}) => {
+    if (used.has(id)) return;
+    const re = new RegExp("(^|[^A-Za-z0-9-])(" + esc(m).replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")(?![A-Za-z0-9])", /[a-z]/.test(m) ? "i" : "");
+    const hit = html.match(re); if (!hit) return;
+    used.add(id); const token = "\u0000" + slots.length + "\u0000";
+    slots.push(`<button class="term" data-g="${id}">${hit[2]}</button>`);
+    html = html.replace(re, (all, pre) => pre + token);
+  });
+  return html.replace(/\u0000(\d+)\u0000/g, (a, i) => slots[+i]);
+}
+function showDef(id, sel = "#defbox"){
+  const g = GLOSSARY.find(x => x.id === id), box = $(sel); if (!g || !box) return;
+  box.hidden = false;
+  box.innerHTML = `<b>${esc(g.term)}</b>${g.full ? `<span class="note">${esc(g.full)}</span>` : ""}<span>${esc(g.def)}</span><a class="toplink" href="#g-${g.id}">Open in glossary</a>`;
+}
+function renderGlossary(){
+  const q = ($("#gl-q").value || "").trim().toLowerCase();
+  const items = [...GLOSSARY].sort((a,b) => a.term.localeCompare(b.term)).filter(g => !q || (g.term+" "+g.full+" "+g.def).toLowerCase().includes(q));
+  $("#gl-list").innerHTML = items.map(g => `<div class="gl-item" id="g-${g.id}"><dt>${esc(g.term)}${g.full ? `<span class="full">${esc(g.full)}</span>` : ""}</dt><dd>${esc(g.def)}${g.ctx ? `<span class="ctx">${esc(g.ctx)}</span>` : ""}</dd></div>`).join("");
+  $("#gl-empty").hidden = items.length > 0;
+}
+function renderDetail(){
+  const l = current.lanes[sel.lane], s = l.steps[sel.step], info = LANE_INFO[l.lane];
+  const flat = flatSteps(), idx = flat.findIndex(([a,b]) => a===sel.lane && b===sel.step);
+  $("#detail").style.setProperty("--lc", laneColor(l.lane));
+  $("#detail").innerHTML = `
+    <div class="dtop">
+      <span class="eyebrow">${esc(info.name)} · ${STATUS_LABEL[l.status]}</span>
+      <span class="note">${STATUS_HELP[l.status]}.</span>
+      <h3>${esc(s.title)}</h3>
+    </div>
+    <dl class="kv"><dt>Who</dt><dd>${linkTerms(info.agency)}</dd><dt>Timing</dt><dd>${esc(s.time)}</dd></dl>
+    <p>${linkTerms(s.detail)}</p>
+    <div class="why"><b>For ${esc(current.name)}</b>${linkTerms(s.why)}</div>
+    <p class="hint">Tip: click a highlighted term for a quick definition.</p>
+    <div class="defbox" id="defbox" hidden></div>
+    ${s.curve ? `<div class="curve">
+        <span class="ch">Curveball</span>
+        <q>${esc(s.curve.q)}</q>
+        <button class="btn ghost" id="reveal" aria-expanded="false">Reveal answer</button>
+        <p id="ans" hidden>${esc(s.curve.a)}</p>
+      </div>` : ""}
+    <div class="src"><span class="eyebrow">Sources</span>${(s.src||[]).map(k => `<a href="${SRC[k].url}" target="_blank" rel="noopener">${esc(SRC[k].label)}</a>`).join("")}</div>
+    <div class="navrow">
+      <button class="btn ghost" id="prev" ${idx<=0?"disabled":""}>Previous step</button>
+      <button class="btn" id="next" ${idx>=flat.length-1?"disabled":""}>Next step</button>
+    </div>`;
+  document.querySelectorAll("#detail .term").forEach(t => t.onclick = () => showDef(t.dataset.g));
+  const r = $("#reveal"); if (r) r.onclick = () => { const a=$("#ans"); a.hidden=!a.hidden; r.textContent=a.hidden?"Reveal answer":"Hide answer"; r.setAttribute("aria-expanded", !a.hidden); };
+  const go = d => { const t = flat[idx+d]; if(!t) return; sel={lane:t[0],step:t[1]}; document.querySelectorAll(".step").forEach(x=>x.setAttribute("aria-pressed", +x.dataset.l===sel.lane && +x.dataset.s===sel.step)); renderDetail(); };
+  $("#prev").onclick = () => go(-1); $("#next").onclick = () => go(1);
+}
+
+function renderTimeline(){
+  const MIN=-30, MAX=6, pct = m => ((m-MIN)/(MAX-MIN))*100;
+  const rows = current.lanes.filter(l => l.tl).map(l => `
+    <div class="tl-row" style="--lc:${laneColor(l.lane)}">
+      <span>${esc(LANE_INFO[l.lane].name)}</span>
+      <div class="tl-track">
+        <div class="tl-bar ${l.crit?"crit":""}" style="left:${pct(l.tl[0])}%;width:${pct(l.tl[1])-pct(l.tl[0])}%" title="${l.tl[0]} to ${l.tl[1]} months"></div>
+        <div class="tl-launch" style="left:${pct(0)}%"></div>
+      </div>
+    </div>`).join("");
+  const ticks = [-30,-24,-18,-12,-6,0,6].map(m => `<span style="left:${pct(m)}%">${m===0?"Launch":(m>0?"+"+m:m)+" mo"}</span>`).join("");
+  const dropped = current.lanes.filter(l => !l.tl).map(l => LANE_INFO[l.lane].name);
+  $("#tl").innerHTML = rows + `<div class="tl-axis"><span></span><div class="ticks">${ticks}</div></div>` +
+    (dropped.length ? `<p class="note" style="margin:6px 0 0">Not on the schedule: ${esc(dropped.join(", "))}.</p>` : "");
+}
+
+renderGlossary();
+$("#gl-q").addEventListener("input", renderGlossary);
+function renderAll(){ renderMissions(); renderSummary(); renderLanes(); renderDetail(); renderTimeline(); }
+renderAll();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,388 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Legal Links Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sibling to the Orbit Clearance Map. Header, controls, summary strip, then category "lanes" (left) with a sticky detail panel (right). */
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --surface-2:#EEF1F5; --ink:#17202E; --muted:#566173; --line:#D5DBE3;
+  --accent:#2C5FA8; --focus:#2C5FA8; --flag:#8A6D00;
+  --c-fcc:#C8452D; --c-faa:#2C5FA8; --c-noaa:#1F7A6D; --c-export:#7A4FB5; --c-trade:#A8681A;
+  --c-treaty:#4A5A7A; --c-gov:#0F6A8C; --c-misc:#3B4556;
+  --m-monsoon:#2E7D4F; --m-beacon:#C27C0E; --m-kestrel:#3A6EA5; --tint:9%;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F141C; --surface:#171E29; --surface-2:#1E2734; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746;
+    --accent:#7FA7E6; --focus:#9CBBF0; --flag:#D9BC4A;
+    --c-fcc:#F0876F; --c-faa:#7FA7E6; --c-noaa:#5CC0AE; --c-export:#B196E0; --c-trade:#E0A355;
+    --c-treaty:#9EAACB; --c-gov:#5DB6D6; --c-misc:#B3BDCC;
+    --m-monsoon:#5FBF86; --m-beacon:#E5A84A; --m-kestrel:#7FAEE0; --tint:13%;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F141C; --surface:#171E29; --surface-2:#1E2734; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746;
+  --accent:#7FA7E6; --focus:#9CBBF0; --flag:#D9BC4A;
+  --c-fcc:#F0876F; --c-faa:#7FA7E6; --c-noaa:#5CC0AE; --c-export:#B196E0; --c-trade:#E0A355;
+  --c-treaty:#9EAACB; --c-gov:#5DB6D6; --c-misc:#B3BDCC;
+  --m-monsoon:#5FBF86; --m-beacon:#E5A84A; --m-kestrel:#7FAEE0; --tint:13%;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:20px;padding-block:28px 48px;display:grid;gap:24px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-0.01em}
+h2{font-size:20px;font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:72ch;margin:6px 0 0}
+header.top{display:grid;gap:4px}
+
+.controls{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:end;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.search{display:grid;gap:4px;flex:1 1 260px;min-width:0}
+.search input{font:inherit;font-size:15px;padding:9px 12px;border-radius:8px;border:1px solid var(--line);background:var(--bg);color:var(--ink);width:100%}
+.search input:focus-visible{outline:3px solid var(--focus);outline-offset:1px}
+.mfilter{display:grid;gap:4px;min-width:0}
+.mbtns{display:flex;gap:8px;flex-wrap:wrap}
+.mbtn{all:unset;cursor:pointer;font-size:14px;font-weight:500;padding:7px 12px;border-radius:999px;border:1.5px solid var(--line);display:inline-flex;align-items:center;gap:7px}
+.mbtn::before{content:"";width:9px;height:9px;border-radius:50%;background:var(--mc,var(--muted))}
+.mbtn[data-m="all"]::before{display:none}
+.mbtn:hover{border-color:var(--muted)}
+.mbtn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.mbtn[aria-pressed="true"]{border-color:var(--mc,var(--ink));background:color-mix(in srgb,var(--mc,var(--ink)) 12%,var(--surface))}
+
+.summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.summary>div{background:var(--surface);padding:12px 16px;display:grid;gap:2px;align-content:start}
+.summary .big{font-family:var(--display);font-size:30px;font-weight:800;font-variant-numeric:tabular-nums}
+.summary .lbl{font-size:14px;color:var(--muted)}
+@media (max-width:720px){.summary{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+.workspace{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:20px;align-items:start}
+@media (max-width:1000px){.workspace{grid-template-columns:1fr}}
+.lanes{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,400px),1fr));gap:14px;align-items:start}
+
+.lane{border-radius:12px;overflow:hidden;background:color-mix(in srgb,var(--lc) var(--tint),var(--surface));border:1px solid color-mix(in srgb,var(--lc) 30%,var(--line))}
+.lhead{background:var(--lc);color:#fff;padding:12px 16px;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.lhead .lname{font-family:var(--display);font-weight:700;font-size:19px;line-height:1.2}
+.lhead .lcount{font-family:var(--mono);font-size:12px;white-space:nowrap;opacity:.95}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .lhead{color:#0F141C}}
+:root[data-theme="dark"] .lhead{color:#0F141C}
+.lbody{padding:10px 12px 12px}
+.flagnote{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;color:var(--flag);border:1px dashed var(--flag);border-radius:6px;padding:4px 8px;margin:4px 4px 0}
+
+ul.tree{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+ul.tree ul.tree{margin:2px 0 4px 14px;padding-left:12px;border-left:1.5px solid color-mix(in srgb,var(--lc) 40%,var(--line))}
+.item{all:unset;cursor:pointer;display:flex;gap:8px;align-items:baseline;width:100%;box-sizing:border-box;padding:5px 8px;border-radius:6px;font-size:14.5px;line-height:1.35}
+.item:hover{background:color-mix(in srgb,var(--lc) 14%,transparent)}
+.item:focus-visible{outline:2px solid var(--focus);outline-offset:1px}
+.item[aria-pressed="true"]{background:var(--surface);box-shadow:inset 0 0 0 2px var(--lc)}
+.item .txt{flex:1;min-width:0}
+.item.fly .txt{font-weight:600}
+.item .arrow{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.dots{display:inline-flex;gap:3px;flex:none}
+.dots i{width:8px;height:8px;border-radius:50%;display:inline-block}
+.dots i.m{background:var(--m-monsoon)}.dots i.b{background:var(--m-beacon)}.dots i.k{background:var(--m-kestrel)}
+.dim>.item{opacity:.38}
+.hide{display:none!important}
+mark{background:color-mix(in srgb,var(--flag) 28%,transparent);color:inherit;border-radius:2px}
+
+.detail{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:14px;max-height:calc(100vh - 32px);overflow:auto}
+@media (max-width:1000px){.detail{position:static;max-height:none}}
+.dtop{display:grid;gap:6px;padding-left:12px;border-left:4px solid var(--lc)}
+.detail h3{font-size:22px}
+.crumbs{display:flex;flex-wrap:wrap;gap:4px 6px;font-size:13px;color:var(--muted);align-items:center}
+.crumbs span+span::before{content:"›";margin-right:6px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:15px;margin:0}
+.kv dt{font-family:var(--mono);font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding-top:2px}
+.kv dd{margin:0}
+.why{background:var(--surface-2);border-radius:8px;padding:12px 14px;font-size:15.5px}
+.why b{font-family:var(--mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;display:block;color:var(--muted);font-weight:500;margin-bottom:4px}
+.mtags{display:flex;gap:6px;flex-wrap:wrap}
+.mtag{font-size:13px;padding:2px 9px;border-radius:999px;border:1.5px solid var(--mc);background:color-mix(in srgb,var(--mc) 12%,var(--surface))}
+.kids{margin:0;padding-left:18px;font-size:14.5px;display:grid;gap:2px}
+.kids button{all:unset;cursor:pointer;color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+.kids button:focus-visible{outline:2px solid var(--focus)}
+.note{font-size:14px;color:var(--muted);margin:0}
+.empty{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:20px;text-align:center;color:var(--muted)}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap" id="top">
+  <header class="top">
+    <div class="eyebrow"><a href="../" style="color:inherit">EMGT 5061</a> · Regulatory reference</div>
+    <h1>Legal Links Map</h1>
+    <p class="lede">Every page in the Wilco site's Legal Links menu, laid out as one tree: 8 categories, their links, and the flyouts nested inside them. Click any item to see where it sits in the menu and how it connects to our three case-study missions.</p>
+  </header>
+
+  <section class="controls" aria-label="Search and filter">
+    <label class="search" for="q"><span class="eyebrow">Search the menu</span>
+      <input id="q" type="search" placeholder="Try ITAR, Part 450, or Space Act" autocomplete="off">
+    </label>
+    <div class="mfilter">
+      <span class="eyebrow">Highlight links for a mission</span>
+      <div class="mbtns" id="mbtns">
+        <button class="mbtn" data-m="all" aria-pressed="true">All links</button>
+        <button class="mbtn" data-m="m" style="--mc:var(--m-monsoon)" aria-pressed="false">Monsoon Radar</button>
+        <button class="mbtn" data-m="b" style="--mc:var(--m-beacon)" aria-pressed="false">Beacon Mobile</button>
+        <button class="mbtn" data-m="k" style="--mc:var(--m-kestrel)" aria-pressed="false">Kestrel Orbital</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="summary" id="summary" aria-live="polite"></section>
+
+  <section class="workspace">
+    <div>
+      <div class="lanes" id="lanes"></div>
+      <div class="empty hide" id="empty">No menu items match that search.</div>
+    </div>
+    <aside class="detail" id="detail" aria-live="polite"></aside>
+  </section>
+
+  <footer>
+    Built from screenshots of the Wilco site's Legal Links menu taken October 2026. Lists marked "may continue" reached the edge of a screenshot, so a few items may be missing, and the live menu may have changed since. Mission notes link this menu to the class case studies; they are a teaching aid, not legal advice.
+  </footer>
+</div>
+
+<script>
+/* ==================================================================
+   CONTENT — edit this section to change the tree.
+   n: name · t: missions it relates to (m = Monsoon, b = Beacon, k = Kestrel)
+   note: class connection shown in the detail panel · c: flyout children
+   more: true when the captured list may continue past the screenshot
+   ================================================================== */
+const MISSIONS = {
+  m:{name:"Monsoon Radar", color:"--m-monsoon"},
+  b:{name:"Beacon Mobile", color:"--m-beacon"},
+  k:{name:"Kestrel Orbital", color:"--m-kestrel"},
+};
+
+const TREE = [
+{n:"FCC Regs", color:"--c-fcc", c:[
+  {n:"Part 25 Commercial Licenses", t:"mb", note:"The commercial satellite licensing rules. The FCC adopted a new Part 100 in July 2026 to replace Part 25, so check which rules apply when you file. Monsoon and Beacon both license here; it is the critical path for each."},
+  {n:"Experimental Licenses", t:"k", note:"Part 5 experimental licenses cover demonstrations and test flights. A first-of-its-kind mission like Kestrel's may start here before moving to a commercial license."},
+  {n:"Application Fees", t:"mbk", note:"One-time fees charged when an application is filed. Every mission with a transmitter pays them."},
+  {n:"Regulatory Fees", t:"mbk", note:"Annual fees licensees pay to fund the FCC. Part of the ongoing cost of holding a license."},
+]},
+{n:"FAA Regulations", color:"--c-faa", more:true, c:[
+  {n:"Part 401: Definitions", t:"bk", note:"Defines the terms used across the FAA's commercial space rules, such as launch, reentry, and launch site."},
+  {n:"Part 413: License Application Procedures", t:"bk", note:"How to apply, including pre-application consultation and the 180-day review clock discussed in CRS R48582."},
+  {n:"Part 414: Safety Element Approvals", note:"Lets the FAA approve a vehicle, system, or safety process once so later license applicants can reuse that approval."},
+  {n:"Part 420: License to Operate a Launch Site", note:"Licenses spaceports, such as Spaceport America in New Mexico."},
+  {n:"Part 433: License to Operate a Reentry Site", t:"k", note:"Licenses commercial reentry sites. Kestrel's capsule lands on a government range in Utah, which matters for the landing-site agreement."},
+  {n:"Part 437: Experimental Permits", note:"Permits for testing reusable suborbital rockets, an alternative to a full license."},
+  {n:"Part 440: Financial Responsibility", t:"bk", note:"Insurance requirements and government indemnification above the insured amount. Monsoon loses this protection by launching from India without an FAA license."},
+  {n:"Part 450: Launch & Reentry License Requirements", t:"bk", note:"The consolidated launch and reentry rule, with a compliance deadline of March 10, 2026. Beacon's launch provider and Kestrel's reentry license both fall under it."},
+  {n:"Part 460: Human Spaceflight Requirements", note:"Informed consent and crew rules for human spaceflight. The learning period still limits FAA passenger-safety rules."},
+]},
+{n:"NOAA Remote Sensing Regs", color:"--c-noaa", c:[
+  {n:"Definitions", t:"m", note:"Defines a remote sensing system under 15 CFR Part 960. Radar imaging counts, which is why Monsoon needs a NOAA license."},
+  {n:"Tiers", t:"m", note:"NOAA sorts licenses into tiers by whether comparable data is already available. Foreign commercial SAR data argues for a lower tier for Monsoon."},
+  {n:"Application Review and License Conditions", t:"m", note:"Review process and conditions. The 2023 reforms removed all temporary X-band SAR conditions. Monsoon must still report significant foreign agreements."},
+]},
+{n:"Export Controls", color:"--c-export", c:[
+  {n:"International Traffic in Arms Regulations (ITAR)", t:"m", c:[
+    {n:"Definitions", t:"m", note:"Defines export, defense article, defense service, and technical data. Sharing controlled data with Monsoon's Singapore-national engineers is a deemed export."},
+    {n:"U.S. Munitions List", t:"m", note:"Category XV covers spacecraft. Whether Monsoon's SAR payload falls here or under the EAR's 9x515 series is the first export question."},
+    {n:"DDTC Enforcement Actions", note:"Past penalties and consent agreements from the State Department's Directorate of Defense Trade Controls. Useful as real-world cautionary cases."},
+  ]},
+  {n:"Export Administration Regulations", t:"mbk", c:[
+    {n:"Definitions", t:"mbk", note:"Defines the terms used throughout the EAR."},
+    {n:"General Prohibitions", t:"m", note:"The ten general prohibitions that decide whether an export needs a license."},
+    {n:"Commerce Control List", t:"mb", note:"Lists controlled items. Spacecraft fall in the 9x515 series. Commercial communications satellites like Beacon's generally sit here rather than on the ITAR list."},
+    {n:"Commerce Country Chart", t:"mk", note:"Shows which destinations need a license for which reasons. Compare India (Monsoon's launch site) with Australia (Kestrel's alternate landing site)."},
+    {n:"Country Groups", t:"mk", note:"Groups countries for license exceptions and policy. The 2024 space reforms gave relief to close allies, and India was not among them."},
+    {n:"BIS Enforcement Actions", note:"Past Commerce Department penalties for export violations."},
+    {n:"BIS Advisory Opinions", note:"Commerce's published answers to companies' questions about how the EAR applies."},
+  ]},
+  {n:"Department of Energy Export Regs", note:"Controls on nuclear technology and assistance."},
+  {n:"Nuclear Regulatory Commission Export Regs", note:"Licenses exports of nuclear equipment and material, relevant to space nuclear power."},
+  {n:"OFAC Sanctions Regulations", note:"Treasury's sanctions programs, which bar dealings with certain countries and parties."},
+  {n:"OFAC Sanctions Summaries", note:"Plain summaries of each sanctions program."},
+  {n:"DOJ Guidance: Complying with ITAR/EAR and Immigration & Nationality Act", t:"m", note:"How employers can follow export rules without unlawful hiring discrimination by citizenship. Directly relevant to Monsoon's Singapore-national engineers."},
+  {n:"Consolidated Screening Tool", t:"m", note:"Searches U.S. restricted-party lists in one place. Screen investors, suppliers, and launch partners before sharing anything."},
+  {n:"OFAC Search Tool", note:"Searches Treasury's sanctions lists."},
+  {n:"Trade Integrity Project – Diversion Risk", note:"Helps companies spot buyers likely to divert goods to restricted destinations."},
+]},
+{n:"International Trade & Finance", color:"--c-trade", more:true, c:[
+  {n:"Economic Espionage Act", note:"Criminalizes trade secret theft. Ties to the intellectual property reading in Business & Regulatory Considerations."},
+  {n:"Foreign Corrupt Practices Act Resource Guide", note:"Bars bribing foreign officials. Relevant when negotiating launches, landing rights, or spectrum abroad."},
+  {n:"UN Convention Against Corruption", note:"The international counterpart to the FCPA."},
+  {n:"General Data Protection Regulation (GDPR)", note:"EU data protection law. Applies to personal data of people in the EU, such as subscriber data if a service expands there."},
+  {n:"CFIUS Regulations", t:"m", note:"Treasury-led review of foreign investment. The Singapore fund's 25% stake and board seat in Monsoon likely require a mandatory filing."},
+  {n:"CFIUS FAQs", t:"m", note:"Practical answers on filing, timelines, and mandatory declarations."},
+  {n:"ATF Regulations", note:"Alcohol, Tobacco, Firearms and Explosives rules, including permits for explosives such as pyrotechnic devices."},
+  {n:"US Harmonized Tariff", note:"Import classification and duties."},
+  {n:"Schedule B – Census Bureau", t:"m", note:"Export classification codes used in export filings, such as shipping Monsoon's satellites to India."},
+  {n:"CBP Regulations", t:"k", note:"Customs and Border Protection rules for moving goods in and out of the U.S., such as returning a capsule that lands in Australia."},
+  {n:"Carriage of Goods by Sea Act", note:"Liability rules for goods shipped by sea."},
+]},
+{n:"International Treaties & Intergovernmental Agreements", color:"--c-treaty", c:[
+  {n:"Outer Space Treaty of 1967", t:"mbk", note:"Article VI makes states responsible for authorizing and supervising their nationals' space activities. Every U.S. license traces back to it, including for Monsoon's launch from India."},
+  {n:"Rescue Agreement", t:"k", note:"Covers rescue of astronauts and the return of space objects that land in another country. Relevant if Kestrel's capsule came down outside its planned site."},
+  {n:"Registration Convention", t:"mbk", note:"States register space objects with the UN. For Monsoon, the U.S. and India must decide who registers."},
+  {n:"Space Liability Convention", t:"mk", note:"Defines the launching state. Liability is absolute for damage on the ground and fault-based in orbit. Monsoon makes both the U.S. and India launching states; Kestrel's capsule lands on Earth."},
+  {n:"Artemis Accords", note:"Non-binding principles for lunar and deep-space exploration. Ties to the lunar economy module."},
+  {n:"International Space Station Intergovernmental Agreement", note:"The treaty framework among the ISS partner nations."},
+  {n:"U.N. Resolution 1540 – Nonproliferation", note:"Requires states to control weapons of mass destruction and their delivery systems."},
+  {n:"UN Guidelines for the Long-Term Sustainability of Outer Space Activities", t:"mbk", note:"Voluntary guidelines on debris and space safety. The FCC's 5-year deorbit rule reflects the same goals."},
+  {n:"Missile Technology Control Regime Guidelines", c:[
+    {n:"MTCR Annex (2023)", note:"The list of controlled missile and launch-vehicle technology."},
+    {n:"MTCR Annex Handbook (2017)", note:"Explains each annex item with pictures and examples."},
+    {n:"US-New Zealand Technology Safeguards Agreement (TSA)", note:"Protects U.S. technology when U.S. hardware launches from New Zealand, as on Rocket Lab's Electron."},
+    {n:"US-Brazil Technology Safeguards Agreement (TSA)", note:"Allows U.S.-controlled technology to launch from Brazil's Alcântara site."},
+    {n:"US-UK Technology Safeguards Agreement", more:true, note:"Allows U.S. launch technology to operate from UK spaceports.", c:[
+      {n:"US-UK Side Arrangement", note:"A supplementary arrangement under the US-UK TSA."},
+      {n:"US-UK Correction Slip", note:"A correction to the agreement text."},
+    ]},
+  ]},
+  {n:"ITU", t:"mb", c:[
+    {n:"Constitution & Convention of the ITU", t:"mb", note:"The treaties that create the ITU and bind member states to its rules."},
+    {n:"Radio Regulations", t:"mb", note:"The international treaty on spectrum use. Beacon relies on Article 4.4 to run direct-to-phone service on a non-interference basis."},
+    {n:"International Telecommunication Regulations", note:"Treaty rules for international telecom services between countries."},
+    {n:"ITU Cost Recovery Fees", t:"mb", note:"Fees the ITU charges to process satellite network filings."},
+    {n:"WRC23", t:"b", note:"The 2023 World Radiocommunication Conference. It set the agenda for WRC-27, including item 1.13 on direct-to-device service that matters for Beacon."},
+  ]},
+  {n:"UN Treaty Glossary", note:"Definitions of treaty terms such as ratification, accession, and reservation."},
+]},
+{n:"Government Contracting", color:"--c-gov", c:[
+  {n:"Federal Acquisition Regulation (FAR) & Supplements", note:"The rules for federal procurement contracts, plus agency supplements such as the DFARS and NASA's NFS."},
+  {n:"Space Act Agreements Guide", t:"k", note:"How NASA partners outside normal contracts. Kestrel's NASA heatshield payload could fly under one."},
+  {n:"Current Space Act Agreements", t:"k", note:"NASA's list of active agreements. Good for finding real examples."},
+  {n:"SBIR & STTR: Size & Eligibility Requirements", note:"Who qualifies for small-business research funding. Ties to SpaceWERX in the Entrepreneurship and Space Economics session."},
+  {n:"STRATFI & TACFI", note:"Air Force and Space Force programs that match private investment to scale SBIR technologies."},
+  {n:"Technical and Business Assistance (TABA)", note:"SBIR funds a small business can spend on outside commercialization help."},
+  {n:"DoD Grant and Agreement Regs", note:"Rules for Defense Department grants, cooperative agreements, and other transactions."},
+  {n:"CMMC Model and Assessment Guides", note:"The Defense Department's cybersecurity certification for contractors."},
+  {n:"CUI", more:true, c:[
+    {n:"Executive Order 13556", note:"Created the government-wide Controlled Unclassified Information program."},
+    {n:"32 CFR Part 2002", note:"The implementing rule for the CUI program."},
+    {n:"DoD Instruction 5200.48", note:"How the Defense Department handles CUI."},
+    {n:"DFARS 252.204-7008", note:"Contract clause on compliance with safeguarding requirements."},
+    {n:"DFARS 252.204-7012", note:"Contract clause requiring contractors to protect defense information and report cyber incidents."},
+    {n:"CUI Notice 2020-03"},
+    {n:"ISOO Registry", note:"The government-wide list of CUI categories."},
+    {n:"DoD CUI Registry", note:"The Defense Department's list of CUI categories."},
+    {n:"DoD Manual 5200.1 Vol2"},
+    {n:"DoD Instruction 5230.09", note:"Clearance of Defense Department information for public release."},
+    {n:"DoD Instruction 5230.29", note:"Security and policy review of information before public release."},
+    {n:"NIST SP 800-171 (Rev3)", note:"The security requirements contractors must meet to protect CUI."},
+    {n:"FIPS Publication 199", note:"Standard for categorizing information systems by security impact."},
+    {n:"DoD Manual 5200.01 – Vol3"},
+    {n:"CUI Notice 2019-03"},
+  ]},
+]},
+{n:"Miscellaneous", color:"--c-misc", more:true, c:[
+  {n:"OSHA", note:"Workplace safety rules, which apply to manufacturing floors and integration facilities."},
+  {n:"Immigration and Nationality Act", t:"m", note:"Pairs with the DOJ export guidance on hiring non-U.S. staff."},
+  {n:"GDPR", note:"Also listed under International Trade & Finance."},
+  {n:"Fair Labor Standards Act", note:"Federal wage and hour rules."},
+  {n:"Family and Medical Leave Act", note:"Federal job-protected leave."},
+  {n:"Form I9", note:"Employment eligibility verification for new hires."},
+  {n:"The BR-DGE Rideshare Board", note:"Name as shown in the menu. The captured list ends here."},
+]},
+];
+
+/* ================= rendering ================= */
+const $ = s => document.querySelector(s);
+let filterM = "all", query = "", selected = null;
+const nodes = [];
+
+function index(list, path, cat, depth){
+  list.forEach(n=>{
+    n.path = path; n.cat = cat; n.depth = depth; n.id = nodes.length; nodes.push(n);
+    if(n.c) index(n.c, path.concat(n.n), cat, depth+1);
+  });
+}
+TREE.forEach(cat=>{ cat.isCat = true; index(cat.c, ["Legal Links", cat.n], cat, 3); });
+
+const links = nodes.filter(n=>!n.c);
+const flyouts = nodes.filter(n=>n.c);
+const maxDepth = Math.max(...nodes.map(n=>n.depth));
+
+const esc = s => s.replace(/[&<>"]/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[ch]));
+function hl(text){
+  if(!query) return esc(text);
+  const i = text.toLowerCase().indexOf(query);
+  if(i<0) return esc(text);
+  return esc(text.slice(0,i))+"<mark>"+esc(text.slice(i,i+query.length))+"</mark>"+esc(text.slice(i+query.length));
+}
+const dots = t => t ? '<span class="dots" aria-hidden="true">'+[...t].map(m=>'<i class="'+m+'"></i>').join("")+'</span>' : "";
+const matchesQ = n => !query || n.n.toLowerCase().includes(query) || (n.note||"").toLowerCase().includes(query);
+function visible(n){ return matchesQ(n) || (n.c && n.c.some(visible)); }
+const tagged = n => filterM==="all" || (n.t||"").includes(filterM);
+
+function renderList(list){
+  return '<ul class="tree">'+list.filter(visible).map(n=>{
+    const dim = filterM!=="all" && !tagged(n) && !(n.c && n.c.some(tagged));
+    return '<li class="'+(dim?"dim":"")+'"><button class="item'+(n.c?" fly":"")+'" data-id="'+n.id+'" aria-pressed="'+(selected===n.id)+'">'+
+      '<span class="txt">'+hl(n.n)+'</span>'+dots(n.t)+(n.c?'<span class="arrow">'+n.c.length+' ▸</span>':"")+
+      '</button>'+(n.c?renderList(n.c):"")+'</li>';
+  }).join("")+'</ul>';
+}
+function countLinks(list){ return list.reduce((a,n)=>a+(n.c?countLinks(n.c):1),0); }
+function countTagged(list){ return list.reduce((a,n)=>a+(n.c?countTagged(n.c):((n.t||"").includes(filterM)?1:0)),0); }
+
+function render(){
+  let shown = 0;
+  $("#lanes").innerHTML = TREE.map(cat=>{
+    if(!cat.c.some(visible)) return "";
+    shown++;
+    const total = countLinks(cat.c);
+    const count = filterM==="all" ? total+" links" : countTagged(cat.c)+" of "+total+" links";
+    return '<section class="lane" style="--lc:var('+cat.color+')"><div class="lhead"><h2 class="lname">'+esc(cat.n)+'</h2><span class="lcount">'+count+'</span></div>'+
+      '<div class="lbody">'+renderList(cat.c)+(cat.more?'<div class="flagnote">List may continue past what was captured</div>':"")+'</div></section>';
+  }).join("");
+  $("#empty").classList.toggle("hide", shown>0);
+  renderSummary();
+}
+
+function renderSummary(){
+  const cell = (big,lbl)=>'<div><span class="big">'+big+'</span><span class="lbl">'+lbl+'</span></div>';
+  const rel = filterM==="all" ? cell(links.filter(n=>n.t).length, "links tied to a class mission") :
+    cell(links.filter(n=>(n.t||"").includes(filterM)).length, "links for "+MISSIONS[filterM].name);
+  $("#summary").innerHTML = cell(TREE.length,"categories")+cell(links.length,"links")+cell(flyouts.length,"nested flyouts, up to level "+maxDepth)+rel;
+}
+
+function renderDetail(){
+  const n = nodes[selected];
+  const kids = n.c ? '<div><span class="eyebrow">Opens a flyout with '+n.c.length+' items</span><ul class="kids">'+
+    n.c.map(k=>'<li><button data-id="'+k.id+'">'+esc(k.n)+'</button></li>').join("")+'</ul></div>' : "";
+  const tags = n.t ? '<div class="mtags">'+[...n.t].map(m=>'<span class="mtag" style="--mc:var('+MISSIONS[m].color+')">'+MISSIONS[m].name+'</span>').join("")+'</div>' : '<span class="note">Not tied to a case-study mission</span>';
+  $("#detail").style.setProperty("--lc","var("+n.cat.color+")");
+  $("#detail").innerHTML =
+    '<div class="dtop"><div class="crumbs">'+n.path.map(p=>'<span>'+esc(p)+'</span>').join("")+'</div><h3>'+esc(n.n)+'</h3></div>'+
+    '<dl class="kv"><dt>Menu level</dt><dd>Level '+n.depth+(n.depth>3?' (nested flyout)':'')+'</dd><dt>Missions</dt><dd>'+tags+'</dd></dl>'+
+    (n.note?'<div class="why"><b>Why it matters</b>'+esc(n.note)+'</div>':'<p class="note">No class note for this item yet.</p>')+
+    (n.more?'<p class="note">This flyout reached the edge of the screenshot, so it may have more items.</p>':"")+
+    kids;
+}
+
+function select(id){ selected = id; render(); renderDetail();
+  const b = document.querySelector('.item[data-id="'+id+'"]'); if(b && window.innerWidth>1000) b.focus({preventScroll:false}); }
+
+document.addEventListener("click", e=>{
+  const b = e.target.closest("[data-id]"); if(b){ select(+b.dataset.id); return; }
+  const m = e.target.closest(".mbtn");
+  if(m){ filterM = m.dataset.m; document.querySelectorAll(".mbtn").forEach(x=>x.setAttribute("aria-pressed", x===m)); render(); }
+});
+$("#q").addEventListener("input", e=>{ query = e.target.value.trim().toLowerCase(); render(); });
+
+selected = nodes.find(n=>n.n==="Outer Space Treaty of 1967").id;
+render(); renderDetail();
+</script>
+
+</body>
+</html>
