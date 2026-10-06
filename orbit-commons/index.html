@@ -1,0 +1,706 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Orbit Commons</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: sibling of the Orbit Clearance Map. Header, scenario chips, then controls (left) beside verdict, tiles and two charts (right); discussion, model notes and sources below. */
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --surface-2:#EEF1F5; --ink:#17202E; --muted:#566173; --line:#D5DBE3; --grid:#E6EAF0;
+  --accent:#2C5FA8; --focus:#2C5FA8;
+  --s-debris:#2a78d6; --s-dead:#eb6834; --s-active:#1baf7a; --s-made:#e87ba4; --s-removed:#008300;
+  --good:#1F7A4D; --warn:#9A6200; --crit:#C8452D; --good-bg:#E4F3EA; --warn-bg:#FBF0DA; --crit-bg:#FBE6E1;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F141C; --surface:#171E29; --surface-2:#1E2734; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746; --grid:#243041;
+    --accent:#7FA7E6; --focus:#9CBBF0;
+    --s-debris:#3987e5; --s-dead:#d95926; --s-active:#199e70; --s-made:#d55181; --s-removed:#008300;
+    --good:#5FBF86; --warn:#E5A84A; --crit:#F0876F; --good-bg:#16302A; --warn-bg:#33291A; --crit-bg:#3A221F;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F141C; --surface:#171E29; --surface-2:#1E2734; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746; --grid:#243041;
+  --accent:#7FA7E6; --focus:#9CBBF0;
+  --s-debris:#3987e5; --s-dead:#d95926; --s-active:#199e70; --s-made:#d55181; --s-removed:#008300;
+  --good:#5FBF86; --warn:#E5A84A; --crit:#F0876F; --good-bg:#16302A; --warn-bg:#33291A; --crit-bg:#3A221F;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1280px;margin:0 auto;padding-inline:20px;padding-block:28px 48px;display:grid;gap:22px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(28px,4vw,40px);font-weight:800;letter-spacing:-0.01em}
+h2{font-size:20px;font-weight:700}
+h3{font-size:16px;font-weight:700}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.eyebrow a{color:inherit}
+.lede{color:var(--muted);max-width:72ch;margin:6px 0 0}
+header.top{display:grid;gap:4px}
+a{color:var(--accent);text-underline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px}
+
+.presets{display:grid;gap:8px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{all:unset;cursor:pointer;font-size:14px;font-weight:500;padding:7px 13px;border-radius:999px;border:1.5px solid var(--line);background:var(--surface)}
+.chip:hover{border-color:var(--muted)}
+.chip:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.chip[aria-pressed="true"]{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 12%,var(--surface))}
+.preset-note{font-size:14px;color:var(--muted);margin:0;min-height:1.5em}
+.preset-group{display:grid;gap:8px}
+.chips.class .chip{border-color:var(--accent);font-weight:600}
+.chips.class .chip[aria-pressed="true"]{background:var(--accent);color:var(--surface)}
+details.more summary{cursor:pointer;font-size:14px;font-weight:600;color:var(--accent);padding:4px 0}
+details.more[open] summary{margin-bottom:10px}
+details.more-set{display:grid;gap:18px;border-top:1px solid var(--line);padding-top:12px}
+details.more-set[open]>div+div{margin-top:18px}
+
+.workspace{display:grid;grid-template-columns:330px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:960px){.workspace{grid-template-columns:1fr}}
+.controls{display:grid;gap:18px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px)}
+@media (max-width:960px){.controls{position:static}}
+.ctl{display:grid;gap:6px}
+.ctl-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ctl label,.ctl .lbl{font-weight:600;font-size:14.5px}
+.ctl output{font-family:var(--mono);font-size:13.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.ctl .help{font-size:13px;color:var(--muted);margin:0}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.seg{display:flex;border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label{flex:1;text-align:center;padding:7px 6px;font-size:13.5px;font-weight:500;cursor:pointer;border-left:1px solid var(--line)}
+.seg label:first-of-type{border-left:none}
+.seg input:checked+label{background:var(--ink);color:var(--surface)}
+.seg input:focus-visible+label{outline:3px solid var(--focus);outline-offset:-3px}
+.check{display:flex;gap:8px;align-items:flex-start;font-size:13.5px}
+.check input{margin-top:3px;accent-color:var(--accent)}
+
+.results{display:grid;gap:16px;min-width:0}
+.verdict{display:grid;gap:6px;border-radius:12px;padding:14px 18px;border:1px solid var(--line);background:var(--surface)}
+.verdict[data-s="runaway"]{background:var(--crit-bg);border-color:var(--crit)}
+.verdict[data-s="growing"]{background:var(--warn-bg);border-color:var(--warn)}
+.verdict[data-s="stable"],.verdict[data-s="shrinking"]{background:var(--good-bg);border-color:var(--good)}
+.status{display:inline-flex;align-items:center;gap:7px;font-family:var(--mono);font-size:12.5px;font-weight:500;letter-spacing:.06em;text-transform:uppercase}
+.status svg{width:16px;height:16px;flex:none}
+.verdict[data-s="runaway"] .status{color:var(--crit)}
+.verdict[data-s="growing"] .status{color:var(--warn)}
+.verdict[data-s="stable"] .status,.verdict[data-s="shrinking"] .status{color:var(--good)}
+.verdict p{margin:0;font-size:16px;max-width:75ch}
+
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.tile{background:var(--surface);padding:12px 16px;display:grid;gap:2px;align-content:start}
+.tile .big{font-family:var(--display);font-size:clamp(21px,2.4vw,28px);font-weight:800;font-variant-numeric:tabular-nums;line-height:1.1}
+.tile .lbl{font-size:13.5px;color:var(--muted)}
+.tile .sub{font-size:13px;color:var(--muted);font-family:var(--mono)}
+
+.chart-card{display:grid;gap:10px}
+.chart-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:10px 16px}
+.chart-head p{margin:2px 0 0;font-size:13.5px;color:var(--muted);max-width:70ch}
+.chart-tools{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.seg.small label{padding:5px 9px;font-size:12.5px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.legend i{width:16px;height:3px;border-radius:2px;display:inline-block}
+.legend i.dash{background:repeating-linear-gradient(90deg,var(--s-debris) 0 5px,transparent 5px 8px)!important}
+.chart{position:relative;width:100%;height:300px;outline:none}
+.chart:focus-visible{outline:3px solid var(--focus);outline-offset:3px;border-radius:6px}
+.chart svg{display:block;width:100%;height:100%;overflow:visible}
+.chart text{font-family:var(--mono);font-size:11px;fill:var(--muted)}
+.chart .endlbl{font-family:var(--body);font-size:12.5px;font-weight:600;fill:var(--ink)}
+.tip{position:absolute;pointer-events:none;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:8px 10px;font-size:12.5px;box-shadow:0 6px 18px rgba(0,0,0,.12);min-width:170px;z-index:2}
+.tip b{font-family:var(--mono);font-size:12px;display:block;margin-bottom:4px}
+.tip div{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.tip i{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+.btn{all:unset;cursor:pointer;font-weight:600;font-size:13px;padding:6px 11px;border-radius:8px;border:1px solid var(--line);background:var(--surface)}
+.btn:hover{border-color:var(--muted)}
+.btn:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+details.numbers summary{cursor:pointer;font-size:13.5px;font-weight:600;color:var(--accent)}
+.tbl-wrap{overflow-x:auto;margin-top:8px}
+table{border-collapse:collapse;font-size:13px;font-variant-numeric:tabular-nums;min-width:520px;width:100%}
+th,td{padding:5px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+th:first-child,td:first-child{text-align:left}
+th{font-family:var(--mono);font-size:11.5px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
+
+.about{display:grid;gap:12px}
+.about p{margin:0;max-width:80ch}
+.about td,.about th{text-align:left;white-space:normal;vertical-align:top}
+.about td:nth-child(2){font-family:var(--mono);font-size:12.5px;white-space:nowrap}
+.sources .note{margin:4px 0 0;font-size:14px;color:var(--muted)}
+.instr .note{font-size:14px;color:var(--muted);max-width:62ch}
+.sources ul{margin:6px 0 0;padding-left:18px;display:grid;gap:4px;font-size:14px}
+footer{font-size:12.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.class-sec,.hw-sec{display:grid;gap:18px}
+.sec-head{display:grid;gap:4px}
+.sec-title{font-size:clamp(24px,3vw,30px);font-weight:800}
+.hw-sep{display:flex;align-items:center;gap:20px;margin-block:28px 6px}
+.hw-sep::before,.hw-sep::after{content:"";flex:1;border-top:3px solid var(--ink)}
+.sec-sub{margin:-6px 0 6px;text-align:center;font-family:var(--display);font-weight:700;font-size:clamp(20px,2.6vw,26px);color:var(--ink)}
+.hw-due{margin:-6px 0 6px;text-align:center;font-family:var(--display);font-weight:700;font-size:clamp(20px,2.6vw,26px);color:var(--crit)}
+.hw-sep span{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);letter-spacing:.12em;color:var(--ink)}
+.instr{display:grid;gap:14px}
+.instr h3{font-size:18px;margin-top:6px}
+.instr p{margin:0;max-width:80ch}
+.instr ol,.instr ul{margin:0;padding-left:22px;display:grid;gap:6px;max-width:80ch}
+.instr table.plain{min-width:0}
+.instr table.plain th,.instr table.plain td{text-align:left;white-space:normal;vertical-align:top}
+.instr table.plain td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.instr .fill td{height:34px}
+.step-label{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin:0}
+.sim-intro{max-width:78ch}.sim-intro p{margin:8px 0}.sim-intro ul{margin:8px 0;padding-left:22px}.sim-intro li{margin:4px 0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+</head>
+<body>
+<div class="wrap" id="top">
+  <header class="top">
+    <div class="eyebrow"><a href="../">EMGT 5061</a> · Current policy challenges</div>
+    <h1>Orbit Commons</h1>
+    <p class="lede">Every satellite launched, abandoned, or hit adds to a commons that all operators share. The IN CLASS section is for class. The full simulator for your homework is in the HOMEWORK section below it.</p>
+  </header>
+
+  <div class="hw-sep" role="separator" aria-label="In class">
+    <span>IN CLASS</span>
+  </div>
+  <section class="class-sec" aria-labelledby="c-title">
+    <h2 class="sec-sub" id="c-title">The disposal decision</h2>
+    <div class="card instr">
+      <h3>The decision</h3>
+      <p>Your company, Sky Island Wildfire Watch, will fly a satellite fleet that images wildfires across the Southwest. Engineering has narrowed it to three options. The customer requires images at 5 m resolution or better, and all three options meet that.</p>
+      <div class="tbl-wrap"><table class="plain">
+          <thead><tr><th>Option</th><th>The fleet</th><th>Image sharpness</th><th>Fleet cost</th><th>What happens to satellites that die</th></tr></thead>
+          <tbody>
+            <tr><td><b>A. Lower orbit</b> (about 400–700 km)</td><td>18 satellites</td><td>3 m</td><td class="num">$90M</td><td>They fall back to Earth on their own within about 5 years.</td></tr>
+            <tr><td><b>B. Higher orbit, full disposal</b> (about 700–1,000 km)</td><td>10 satellites, each with a deorbit thruster plus backup power and radio</td><td>About 5 m</td><td class="num">$65M</td><td>Nearly all are deorbited on time.</td></tr>
+            <tr><td><b>C. Higher orbit, thruster only</b> (about 700–1,000 km)</td><td>10 satellites with a deorbit thruster but no backup systems</td><td>About 5 m</td><td class="num">$59M</td><td>About 1 in 10 dies before it can deorbit, and stays in orbit for centuries.</td></tr>
+          </tbody>
+        </table></div>
+      <h3>Questions</h3>
+      <ol>
+        <li><b>Which option would your CFO pick? Which would you pick as the engineering manager responsible for this mission?</b> If your answers differ, explain why.</li>
+        <li><b>What would make sustainability the business choice for other reasons?</b> Choose two of these stakeholders and give a reason for each that could change the CFO's mind: insurers, customers, investors and lenders, regulators, the public, or the orbit itself.</li>
+      </ol>
+    </div>
+    <div class="card instr">
+      <h3>What if 100 companies chose the same way?</h3>
+      <p>Your company will launch either 18 or 10 satellites. On its own, that won't make a noticeable difference: about 17,000 satellites are already operating in orbit. But hundreds of companies are making choices like yours.</p>
+      <p>Suppose 100 companies each launch a fleet like yours, and keep it flying by replacing satellites as they wear out. Click <b>Baseline: Unchanged number of active satellites</b> and pin it. The dashed line is the debris already in orbit, if no one, including your company, adds anything new. Then click each option. The gap between the solid line and the dashed line is what that choice adds.</p>
+      <p class="note"><b>Note:</b> In every run, including the baseline, today's operators keep their 17,000 satellites flying by replacing them as they wear out. Only the 100 new fleets change from run to run.</p>
+      <ol start="3">
+        <li><b>What does the gap between the lines tell you about one company's responsibility when it shares orbit with many others?</b></li>
+      </ol>
+    </div>
+    <div class="presets" id="c-presets">
+      <div class="chips class" id="c-chips"></div>
+      <p class="preset-note" id="c-note"></p>
+    </div>
+    <div class="verdict" id="c-verdict" aria-live="polite"></div>
+    <div class="card chart-card">
+      <div class="chart-head">
+        <div>
+          <h2>Objects in orbit</h2>
+          <p>Tracked objects larger than about 10 cm, 2026–2126. Hover or use the arrow keys to read a year.</p>
+        </div>
+      </div>
+      <div class="legend" id="c-legend1"></div>
+      <div class="chart" id="c-chart1" tabindex="0" role="img" aria-label="Objects in orbit over time, class decision"></div>
+      <div class="chart-tools">
+        <button type="button" class="btn" id="c-pin">Pin this run for comparison</button>
+        <button type="button" class="btn" id="c-unpin" hidden>Clear pinned run</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="hw-sep" role="separator" aria-label="Homework">
+    <span>HOMEWORK</span>
+  </div>
+  <p class="hw-due">Due before October 14, 3 pm</p>
+
+  <section class="hw-sec" aria-label="Homework simulator">
+    <div class="card instr">
+      <p>An individual assignment, about 45 minutes.</p>
+      <p>In class, you and your partner chose how Sky Island Wildfire Watch should fly its fleet. This homework has three parts:</p>
+      <ol>
+        <li>Test what happens if the whole industry (100 companies) makes the same choice that your company has made.</li>
+        <li>See what an orbital-use fee would do.</li>
+        <li>Now that you have a better understanding of the different scenarios, make the case to your CEO.</li>
+      </ol>
+      <h3>The three options</h3>
+      <p>The customer requires images at 5 m resolution or better. All three options meet that.</p>
+      <div class="tbl-wrap"><table class="plain">
+          <thead><tr><th>Option</th><th>The fleet</th><th>Image sharpness</th><th>Fleet cost</th><th>What happens to satellites that die</th></tr></thead>
+          <tbody>
+            <tr><td><b>A. Lower orbit</b> (about 400–700 km)</td><td>18 satellites</td><td>3 m</td><td class="num">$90M</td><td>They fall back to Earth on their own within about 5 years.</td></tr>
+            <tr><td><b>B. Higher orbit, full disposal</b> (about 700–1,000 km)</td><td>10 satellites, each with a deorbit thruster plus backup power and radio</td><td>About 5 m</td><td class="num">$65M</td><td>Nearly all are deorbited on time.</td></tr>
+            <tr><td><b>C. Higher orbit, thruster only</b> (about 700–1,000 km)</td><td>10 satellites with a deorbit thruster but no backup systems</td><td>About 5 m</td><td class="num">$59M</td><td>About 1 in 10 dies before it can deorbit, and stays in orbit for centuries.</td></tr>
+          </tbody>
+        </table></div>
+      <h3>Part 1: What if 100 companies chose the same way?</h3>
+      <p>Use the simulator below. The buttons under <b>Your in-class decision</b> set everything up for you.</p>
+      <ol>
+        <li>Click <b>Baseline: Unchanged number of active satellites</b>, then click <b>Pin this run for comparison</b>. This is the debris already in orbit, with today's 17,000 satellites replaced as they wear out but nothing new added.</li>
+        <li>Click <b>Option A</b>, <b>Option B</b>, and <b>Option C</b> in turn. For each, record the tracked debris in 2126, the verdict, and how it compares with the pinned baseline (the last sentence in the verdict box).</li>
+      </ol>
+      <div class="tbl-wrap"><table class="plain fill">
+        <thead><tr><th>Run</th><th>Tracked debris in 2126</th><th>Verdict</th><th>Compared with the baseline</th></tr></thead>
+        <tbody><tr><td>Baseline</td><td></td><td></td><td>—</td></tr><tr><td>Option A</td><td></td><td></td><td></td></tr><tr><td>Option B</td><td></td><td></td><td></td></tr><tr><td>Option C</td><td></td><td></td><td></td></tr></tbody>
+      </table></div>
+      <ol>
+        <li>Which option adds the least debris compared with the baseline, and which adds the most?</li>
+        <li>Option B costs $6M more than option C. What does that $6M buy for the orbital environment?</li>
+        <li>Who pays for the extra debris from option C: your company, other operators, or someone else?</li>
+      </ol>
+      <h3>Part 2: An orbital-use fee</h3>
+      <p>Some economists propose charging operators a fee for every satellite they keep in orbit. One study (Rao, Burgess &amp; Kaffine, <i>PNAS</i>, 2020) proposed a fee that rises annually to about $235,000 per satellite per year by 2040. On that path, the fee in 2026 works out to about $37,500 per satellite. Suppose that fee applies to your company's fleet starting in 2026.</p>
+      <ol>
+        <li>What would the fee cost each option per year in 2026? Keep in mind that it rises to $235,000 per satellite per year by 2040.</li>
+        <li>Which option does the fee favor, and why?</li>
+        <li>Is that the outcome a regulator worried about debris would want? Suggest one way to design the fee so it rewards responsible disposal.</li>
+      </ol>
+      <h3>Part 3: Your recommendation to the CEO</h3>
+      <p>Choose one format: a <b>one-page memo</b>, or a <b>short slide deck</b> of 3–5 slides. Either way, cover:</p>
+      <ol>
+        <li>The option you recommend, and whether Parts 1 and 2 changed your in-class choice.</li>
+        <li>The business case for sustainability: how responsible disposal pays off for the company, through customers, investors, insurers, regulators, reputation, or the long-term value of the orbit you depend on.</li>
+        <li>The evidence: the costs above and your simulator results.</li>
+        <li>The one assumption you would most want an expert to check before the company commits.</li>
+      </ol>
+      <h3>What to submit</h3>
+      <p>Answer on the student slide deck, then submit the whole deck before October 14, 3 pm. It holds your in-class answers and all three homework parts:</p>
+      <ul>
+        <li>Your answers to in-class questions 1–3.</li>
+        <li>Your Part 1 results table and answers.</li>
+        <li>Your Part 2 fee table and answers.</li>
+        <li>Your Part 3 recommendation: 3–5 slides added to the deck, or a one-page memo attached instead.</li>
+      </ul>
+      <p>Want to go further? The <b>More scenarios</b> buttons and every setting below are yours to explore.</p>
+    </div>
+    <div class="sim-intro">
+      <p class="step-label">The simulator</p>
+      <p>This runs the same model as the in-class chart, so the same option draws the same lines. It adds more ways to look at each run:</p>
+      <ul>
+        <li><b>More scenarios</b> buttons, beyond the in-class decision.</li>
+        <li><b>Sliders and settings</b> for every input. They rerun the model as soon as you change them. Moving one turns off the highlighted scenario button. Pin a run first if you want to compare.</li>
+        <li><b>All LEO, Lower orbit</b> (about 400–700 km), <b>and Higher orbit</b> (about 700–1,000 km) buttons on the first chart. The in-class chart always shows all of LEO combined. Splitting it shows which altitude range the orbital debris grows in.</li>
+        <li><b>Log scale</b>, which keeps very large runs readable.</li>
+        <li><b>The Kessler test chart</b>, which compares the fragments collisions create each year in higher orbit with the fragments the atmosphere removes. When the pink line stays above the green one, debris grows on its own.</li>
+        <li><b>Summary numbers</b> above the charts, and a year-by-year table at the bottom.</li>
+      </ul>
+      <p>In short, the in-class chart shows what happens. These charts show why.</p>
+    </div>
+    <div class="presets" id="h-presets">
+      <div class="preset-group">
+        <span class="eyebrow">Your in-class decision: 100 companies like yours</span>
+        <div class="chips class" id="h-chips-class"></div>
+      </div>
+      <div class="preset-group">
+        <span class="eyebrow">More scenarios</span>
+        <div class="chips" id="h-chips-more"></div>
+      </div>
+      <p class="preset-note" id="h-note"></p>
+    </div>
+
+    <div class="workspace">
+      <form class="card controls" id="h-controls" aria-label="Policy and industry settings">
+        <div class="ctl">
+          <div class="ctl-head"><label for="h-launch">New satellites per year, beyond today's fleet</label><output id="h-launch-out" for="h-launch"></output></div>
+          <input type="range" id="h-launch" min="0" max="12000" step="20" value="3000">
+          <p class="help">Added on top of the 17,000 satellites already flying, which are always replaced as they wear out. The active count has grown by about 3,000 a year recently (McDowell).</p>
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="h-life">Working life of a satellite</label><output id="h-life-out" for="h-life"></output></div>
+          <input type="range" id="h-life" min="3" max="15" step="1" value="5">
+        </div>
+        <div class="ctl">
+          <span class="lbl" id="h-band-lbl">Where new satellites fly</span>
+          <div class="seg" role="radiogroup" aria-labelledby="h-band-lbl">
+            <input type="radio" name="band" id="h-band-low" value="low" checked><label for="h-band-low">Lower orbit, about 400–700 km</label>
+            <input type="radio" name="band" id="h-band-high" value="high"><label for="h-band-high">Higher orbit, about 700–1,000 km</label>
+          </div>
+          <p class="help">Dead objects fall back within years from lower orbit, but stay for centuries in higher orbit.</p>
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="h-comp">Satellites disposed of on time</label><output id="h-comp-out" for="h-comp"></output></div>
+          <input type="range" id="h-comp" min="50" max="100" step="1" value="90">
+          <p class="help">The rest die in orbit and drift as derelicts.</p>
+        </div>
+        <div class="ctl">
+          <span class="lbl" id="h-dl-lbl">Deorbit deadline after end of mission</span>
+          <div class="seg" role="radiogroup" aria-labelledby="h-dl-lbl">
+            <input type="radio" name="deadline" id="h-dl-25" value="25"><label for="h-dl-25">25 years</label>
+            <input type="radio" name="deadline" id="h-dl-5" value="5" checked><label for="h-dl-5">5 years (FCC)</label>
+            <input type="radio" name="deadline" id="h-dl-1" value="1"><label for="h-dl-1">1 year</label>
+          </div>
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="h-adr">Derelicts removed per year</label><output id="h-adr-out" for="h-adr"></output></div>
+          <input type="range" id="h-adr" min="0" max="50" step="1" value="0">
+          <p class="help">Active debris removal, largest dead objects first.</p>
+        </div>
+        <div class="ctl">
+          <div class="ctl-head"><label for="h-fee">Orbital-use fee, 2026</label><output id="h-fee-out" for="h-fee"></output></div>
+          <input type="range" id="h-fee" min="0" max="250000" step="2500" value="0">
+          <label class="check" for="h-feegrow"><input type="checkbox" id="h-feegrow"> Raise it 14% a year until 2040, as Rao et al. propose</label>
+          <p class="help">Charged per satellite per year. Satellites worth less than the fee don't get launched.</p>
+        </div>
+      </form>
+
+      <div class="results">
+        <div class="verdict" id="h-verdict" aria-live="polite"></div>
+        <div class="tiles" id="h-tiles"></div>
+
+        <div class="card chart-card">
+          <div class="chart-head">
+            <div>
+              <h2>Objects in orbit</h2>
+              <p>Tracked objects larger than about 10 cm, 2026–2126. Hover or use the arrow keys to read a year.</p>
+            </div>
+            <div class="chart-tools">
+              <div class="seg small" role="radiogroup" aria-label="Orbit shown">
+                <input type="radio" name="h-view" id="h-v-all" value="all" checked><label for="h-v-all">All LEO</label>
+                <input type="radio" name="h-view" id="h-v-low" value="low"><label for="h-v-low">Lower orbit</label>
+                <input type="radio" name="h-view" id="h-v-high" value="high"><label for="h-v-high">Higher orbit</label>
+              </div>
+              <label class="check" for="h-logscale"><input type="checkbox" id="h-logscale"> Log scale</label>
+            </div>
+          </div>
+          <div class="legend" id="h-legend1"></div>
+          <div class="chart" id="h-chart1" tabindex="0" role="img" aria-label="Objects in orbit over time, homework simulator"></div>
+          <div class="chart-tools">
+            <button type="button" class="btn" id="h-pin">Pin this run for comparison</button>
+            <button type="button" class="btn" id="h-unpin" hidden>Clear pinned run</button>
+          </div>
+        </div>
+
+        <div class="card chart-card">
+          <div class="chart-head">
+            <div>
+              <h2>The Kessler test: higher orbit</h2>
+              <p>New fragments from collisions each year, against fragments the atmosphere removes. When the pink line stays above the green one, debris grows on its own.</p>
+            </div>
+          </div>
+          <div class="legend" id="h-legend2"></div>
+          <div class="chart" id="h-chart2" tabindex="0" role="img" aria-label="Fragments created versus removed per year in higher orbit"></div>
+        </div>
+
+        <details class="card numbers">
+          <summary>Show the numbers for this run</summary>
+          <div class="tbl-wrap"><table id="h-numtable"></table></div>
+        </details>
+      </div>
+    </div>
+  </section>
+
+
+  <section class="card about" id="about">
+    <h2>About the model</h2>
+    <p><b>This is a teaching model, not a forecast.</b> It follows the structure of published source-sink debris models such as MIT's MOCAT: launches add satellites, drag and disposal remove objects, and collisions turn intact objects into fragments. It collapses low Earth orbit into two orbits, lower (about 400–700 km, modeled at 550 km) and higher (about 700–1,000 km, modeled at 900 km), and steps forward in fractions of a year. Starting counts come from ESA. The rates inside the model are tuned so it behaves the way published studies describe, and the table marks which values are which.</p>
+    <p>In every run, today's 17,000 satellites stay in orbit: operators replace them as they wear out, so the number of active satellites never drops below today's level. The launch setting and the scenarios only add new satellites on top of that fleet. Two other simplifications matter most. Each orbit is treated as evenly mixed, so any two objects in the same orbit can collide. And fragments in lower orbit fall back within a couple of years, so a runaway cascade can only develop in higher orbit. Real studies find the same pattern: altitudes near 900–1,000 km are where debris can feed on itself.</p>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Parameter</th><th>Value</th><th>Basis</th></tr></thead>
+        <tbody>
+          <tr><td>Active satellites today</td><td>17,000</td><td>Sourced: Jonathan McDowell counts 16,913 active satellites (30 Sep 2026), nearly all in LEO.</td></tr>
+          <tr><td>Today's fleet in every run</td><td>17,000 in lower orbit, replaced as they wear out: 5-year life, 90% deorbited within about 6 months</td><td>Assumption: today's operators keep their fleets flying. The launch setting adds satellites on top of this.</td></tr>
+          <tr><td>Derelicts in LEO today</td><td>6,800</td><td>Approximate: inactive payloads plus rocket bodies (971) in LEO, from ESA DISCOS.</td></tr>
+          <tr><td>Tracked fragments in LEO today</td><td>5,500</td><td>Sourced: fragmentation debris (4,750) plus mission-related objects (726), ESA DISCOS.</td></tr>
+          <tr><td>Split between orbits</td><td>Lower: 1,500 derelicts, 1,500 fragments. Higher: 5,300, 4,000</td><td>Assumption: older derelicts and fragments sit mostly at 700–1,000 km; today's constellations fly low.</td></tr>
+          <tr><td>Natural decay, lower orbit</td><td>Intact 5 yr, fragments 2 yr</td><td>Approximate: dead satellites near 550 km reenter within about five years.</td></tr>
+          <tr><td>Natural decay, higher orbit</td><td>Intact 200 yr, fragments 100 yr</td><td>Approximate: objects near 900 km stay up for a century or more.</td></tr>
+          <tr><td>Collision rate in higher orbit today</td><td>0.2 per year</td><td>Tuned: with no launches, higher-orbit debris keeps growing, as ESA (2025) and Liou &amp; Johnson (2006) report.</td></tr>
+          <tr><td>Fragments per collision</td><td>1,000 intact–intact, 200 intact–fragment, 20 fragment–fragment</td><td>Tuned: Iridium–Cosmos (2009) still had about 1,500 tracked pieces in orbit seven years later.</td></tr>
+          <tr><td>Exposure of active satellites</td><td>5%</td><td>Assumption: they dodge tracked objects but can't dodge untracked ones.</td></tr>
+          <tr><td>Time to deorbit when compliant</td><td>Half the deadline, or half the natural decay time if shorter</td><td>Assumption: disposals spread evenly across the allowed window.</td></tr>
+          <tr><td>Fee response</td><td>Value per satellite spread evenly from $0 to $1M a year</td><td>Assumption: satellites worth less than the fee are not launched.</td></tr>
+          <tr><td>Orbital-use fee path</td><td>$37,500 in 2026, +14%/yr, $235,000 by 2040, then flat</td><td>Sourced: Rao, Burgess &amp; Kaffine (2020) compute $235,000 per satellite-year in 2040, rising 14% a year.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card sources">
+    <h2>Sources</h2>
+    <p class="note">Every source used to build this page, and what each one supplied.</p>
+    <ul>
+      <li>Jonathan McDowell, <a href="https://planet4589.org/space/stats/active.html">active satellite statistics</a>, as of 30 September 2026. The count of about 17,000 operating satellites and their recent growth of about 3,000 a year.</li>
+      <li><a href="https://sdup.esoc.esa.int/discosweb/statistics/">ESA, Space Environment Statistics (DISCOS)</a>, as of 31 July 2026. Starting counts for derelicts, rocket bodies, and fragments in LEO.</li>
+      <li><a href="https://www.esa.int/Space_Safety/Space_Debris/ESA_Space_Environment_Report_2026">ESA, Space Environment Report 2026</a>. The finding that debris growth is accelerating.</li>
+      <li><a href="https://www.esa.int/Space_Safety/Space_Debris/ESA_Space_Environment_Report_2025">ESA, Space Environment Report 2025</a>. The default 90% disposal rate and the finding that debris keeps growing even with no new launches.</li>
+      <li>Liou, J.-C. &amp; Johnson, N. L., <a href="https://www.science.org/doi/10.1126/science.1121337">"Risks in Space from Orbiting Debris," Science 311 (2006)</a>, and the <a href="https://ntrs.nasa.gov/api/citations/20060024585/downloads/20060024585.pdf">NASA paper behind it</a>. The "launches stop" test, the 5.2% yearly collision rate used to calibrate the model, and the finding that the 900–1,000 km altitude range is the most unstable.</li>
+      <li>MIT ARCLab, <a href="https://news.mit.edu/2024/researchers-release-open-source-space-debris-model-0110">open-source MOCAT space debris model (2024)</a> and its <a href="https://github.com/ARCLab-MIT/MOCAT-SSEM">code on GitHub</a>. The model's structure: launches in, drag and disposal out, collisions turning intact objects into fragments.</li>
+      <li>Rao, A., Burgess, M. G. &amp; Kaffine, D., <a href="https://mpra.ub.uni-muenchen.de/112708/">"Orbital-use fees could more than quadruple the value of the space industry," PNAS 117 (2020)</a>. The fee path: rising 14% a year to $235,000 per satellite-year in 2040.</li>
+      <li>Federal Communications Commission, <a href="https://docs.fcc.gov/public/attachments/FCC-22-74A1.pdf">FCC 22-74, Second Report and Order (2022)</a>. The 5-year deorbit rule, compared with the older 25-year guideline.</li>
+      <li><a href="https://en.wikipedia.org/wiki/2009_satellite_collision">2009 Iridium–Cosmos collision</a> (Wikipedia, citing U.S. tracking data). About 1,500 tracked fragments still in orbit seven years later, used to check fragments per collision.</li>
+    </ul>
+  </section>
+
+  <footer>Copyright © 2026 Dr. Bidushi Bhattacharya. Teaching model for EMGT 5061, New Mexico Tech. Built October 2026. Not a forecast and not policy advice.</footer>
+</div>
+
+<script>
+/* ============ MODEL ============ */
+const C = {
+  low:  {S:0, D:1500, N:1500, tauI:5,   tauN:2,   volume:2},
+  high: {S:0,     D:5300, N:4000, tauI:200, tauN:100, volume:2},
+  Rhigh0: 0.2, wID: 0.3, wNN: 0.05, avoid: 0.05,
+  K_II: 1000, K_ID: 200, K_NN: 20, Vmax: 1e6, feeGrowth: 0.14,
+  /* Today's fleet: kept at about 17,000 in lower orbit, replaced as it wears out, the same in every run */
+  fleet: {S:17000, life:5, comp:0.9, deorbit:0.5},
+};
+(function(){const h=C.high;C.alphaH=C.Rhigh0/(0.5*h.D*h.D + C.wID*h.D*h.N + 0.5*C.wNN*h.N*h.N);})();
+function bandRates(b,a){
+  const I=b.D+b.Dd+b.Dd0, N=b.N, S=b.S+b.S0;
+  const eII=a*0.5*I*I, eIN=a*C.wID*I*N, eNN=a*0.5*C.wNN*N*N, eAI=a*C.avoid*S*I, eAN=a*C.avoid*C.wID*S*N;
+  return {I,eII,eIN,eNN,eAI,eAN,coll:eII+eIN+eNN+eAI+eAN,frags:eII*C.K_II+eIN*C.K_ID+eNN*C.K_NN+eAI*C.K_II+eAN*C.K_ID};
+}
+function run(p,years=100){
+  const F=C.fleet, fRep=F.S/F.life;
+  const B={low:{...C.low,Dd:0,S0:F.S,Dd0:fRep*F.comp*F.deorbit},high:{...C.high,Dd:0,S0:0,Dd0:0}}; let fee=p.fee, cum=0; const out=[]; const dt=0.05;
+  for(let y=0;y<=years;y++){
+    const row={year:2026+y,fee,cum};
+    for(const k of ['low','high']){const b=B[k],r=bandRates(b,C.alphaH*C.high.volume/b.volume);
+      row[k]={S:b.S+b.S0,D:b.D+b.Dd+b.Dd0,N:b.N,coll:r.coll,made:r.frags,rem:b.N/b.tauN};}
+    row.all={S:row.low.S+row.high.S,D:row.low.D+row.high.D,N:row.low.N+row.high.N,coll:row.low.coll+row.high.coll};
+    out.push(row); if(y===years)break;
+    const L=p.launch*Math.max(0,1-fee/C.Vmax);
+    for(let s=0;s<1/dt;s++){
+      let adrLeft=p.adr;
+      for(const k of ['high','low']){const b=B[k],r=bandRates(b,C.alphaH*C.high.volume/b.volume);
+        const loss=2*r.eII+r.eIN+r.eAI, fD=r.I>0?b.D/r.I:0, retire=b.S/p.life, adr=Math.min(adrLeft,b.D); adrLeft-=adr;
+        const Stot=b.S+b.S0, hitS=Stot>0?(r.eAI+r.eAN)*b.S/Stot:0, hitS0=(r.eAI+r.eAN)-hitS;
+        const ret0=b.S0/F.life, rep0=(k==='low'?fRep:0);
+        const dS=(k===p.band?L:0)-retire-hitS;
+        const dS0=rep0-ret0-hitS0;
+        const fDd0=r.I>0?b.Dd0/r.I:0, fDd=r.I>0?b.Dd/r.I:0;
+        const dDd=retire*p.comp-b.Dd/(Math.min(p.deadline,b.tauI)/2)-loss*fDd;
+        const dDd0=ret0*F.comp-b.Dd0/F.deorbit-loss*fDd0;
+        const dD=retire*(1-p.comp)+ret0*(1-F.comp)-b.D/b.tauI-loss*fD-adr;
+        const dN=r.frags-b.N/b.tauN-(r.eIN+2*r.eNN+r.eAN);
+        b.S=Math.max(0,b.S+dS*dt);b.S0=Math.max(0,b.S0+dS0*dt);b.Dd0=Math.max(0,b.Dd0+dDd0*dt);b.Dd=Math.max(0,b.Dd+dDd*dt);b.D=Math.max(0,b.D+dD*dt);b.N=Math.min(5e6,Math.max(0,b.N+dN*dt));
+        cum+=r.coll*dt;
+      }
+    }
+    if(p.feeGrow&&2026+y<2040) fee=Math.min(C.Vmax,fee*(1+C.feeGrowth));
+  }
+  return out;
+}
+
+/* ============ SCENARIOS ============ */
+const BASE={launch:3000,life:5,comp:90,deadline:5,band:"low",adr:0,fee:0,feeGrow:false};
+const PRESETS=[
+  {id:"base",group:"class",name:"Baseline: Unchanged number of active satellites",star:true,note:"*Baseline: Today's value remains constant for the next 100 years. Only replacement satellites are launched to maintain level of activity.",p:{launch:0}},
+  {id:"optA",group:"class",name:"Option A: lower orbit",note:"100 companies each fly 18 satellites in lower orbit (about 400–700 km), replacing them as they wear out. 90% are disposed of on time, and satellites that fail fall back on their own.",p:{launch:360}},
+  {id:"optB",group:"class",name:"Option B: higher orbit, full disposal",note:"100 companies each fly 10 satellites in higher orbit (about 700–1,000 km) with full disposal, replacing them as they wear out. 99% are deorbited within a year.",p:{launch:200,band:"high",comp:99,deadline:1}},
+  {id:"optC",group:"class",name:"Option C: higher orbit, no backups",note:"100 companies each fly 10 satellites in higher orbit (about 700–1,000 km) without backup systems, replacing them as they wear out. About 1 in 10 dies before it can deorbit.",p:{launch:200,band:"high",comp:90}},
+  {id:"today",name:"Today's path",note:"Today's fleet keeps growing by about 3,000 satellites a year in lower orbit, 90% disposed of on time, under the FCC's 5-year rule.",p:{}},
+  {id:"boom",name:"Mega-constellation surge",note:"The fleet grows by 10,000 satellites a year, and only 80% are disposed of on time.",p:{launch:10000,comp:80}},
+  {id:"high25",name:"Higher orbit, 25-year rule",note:"1,000 new satellites a year in higher orbit (about 700–1,000 km) under the old 25-year guideline.",p:{launch:1000,band:"high",deadline:25}},
+  {id:"high5",name:"Higher orbit, 5-year rule",note:"The same higher-orbit fleet under the FCC's 5-year rule.",p:{launch:1000,band:"high"}},
+  {id:"cleanup",name:"Higher orbit, strict and clean",note:"The higher-orbit fleet with 99% on-time disposal, a 1-year deadline, and 20 derelicts removed a year.",p:{launch:1000,band:"high",comp:99,deadline:1,adr:20}},
+  {id:"fee",name:"Surge with an orbital-use fee",note:"The same surge, plus a fee per satellite per year that starts at $37,500 and rises 14% a year to $235,000 in 2040, the path Rao, Burgess & Kaffine (2020) propose.",p:{launch:10000,comp:80,fee:37500,feeGrow:true}},
+];
+
+/* ============ UI (shared helpers) ============ */
+const fmtN=n=>n>=1e6?(n/1e6).toFixed(1)+"M":n>=1e4?Math.round(n/1000)+"k":n>=1000?(n/1000).toFixed(1)+"k":String(Math.round(n));
+const fmtFull=n=>Math.round(n).toLocaleString("en-US");
+const fmtMoney=n=>n>=1e9?"$"+(n/1e9).toFixed(1)+"B":n>=1e6?"$"+(n/1e6).toFixed(1)+"M":"$"+Math.round(n).toLocaleString("en-US");
+
+const ICON={
+  runaway:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 15 14H1z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M8 6v3.6M8 11.6v.1" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>',
+  growing:'<svg viewBox="0 0 16 16" aria-hidden="true"><path d="M2 12 6.5 7.5l3 3L14 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 5h4v4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  stable:'<svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M5 8.2 7.2 10.4 11 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+};
+ICON.shrinking=ICON.stable;
+
+function assess(o){
+  const first=o[0], last=o[o.length-1];
+  const nStart=first.all.N, nEnd=last.all.N, change=(nEnd-nStart)/nStart;
+  const hi=o.map(r=>r.high);
+  let tip=null; for(let i=hi.length-1;i>=0;i--){ if(hi[i].made>hi[i].rem) tip=o[i].year; else break; }
+  const hiGrowth=last.high.N/first.high.N;
+  let s;
+  if(tip!==null && tip<2126 && hiGrowth>2) s="runaway";
+  else if(change>0.25) s="growing";
+  else if(change<-0.25) s="shrinking";
+  else s="stable";
+  return {s,change,tip,nEnd,nStart};
+}
+
+function verdictHTML(o,p,a,pinned){
+  const pct=Math.round(Math.abs(a.change)*100); const mult=a.nEnd/a.nStart; const sizeTxt=mult>=3?`at about ${Math.round(mult)} times today's level`:`${pct}% above today's level`;
+  const label={runaway:"Runaway",growing:"Growing",stable:"Stable",shrinking:"Shrinking"}[a.s];
+  let text;
+  if(a.s==="runaway") text=`${a.tip<=2027?"From the start":"From about "+a.tip}, collisions in higher orbit create fragments faster than the atmosphere removes them, and the gap keeps widening. Tracked debris ends ${sizeTxt}. This is the Kessler cascade: debris multiplying on its own.`;
+  else if(a.s==="growing") text=`Tracked debris grows ${mult>=3?"to about "+Math.round(mult)+" times today's level":pct+"%"} by 2126. Collisions add fragments faster than drag and disposal clear them.`;
+  else if(a.s==="shrinking") text=`Tracked debris falls ${pct}% by 2126. Drag, disposal, and removal outpace new collisions.`;
+  else text=`Tracked debris stays within 25% of today's level through 2126. Drag and disposal keep pace with new collisions.`;
+  if(p.launch===0 && a.change>0) text+=` No new satellites were added beyond replacing today's fleet, and debris still grew. That is the result ESA and Liou & Johnson report.`;
+  if(pinned && pinned.run!==o){const d=Math.round(a.nEnd-pinned.run[pinned.run.length-1].all.N);
+    text+= Math.abs(d)<150 ? ` That is about the same as the pinned run (${pinned.name}).` : ` That is ${fmtFull(Math.abs(d))} ${d>0?"more":"fewer"} tracked objects in 2126 than the pinned run (${pinned.name}).`;}
+  return `<span class="status">${ICON[a.s]}${label}</span><p>${text}</p>`;
+}
+
+function tilesHTML(o,p,a){
+  const last=o[o.length-1];
+  const rate=last.all.coll;
+  const rateTxt=rate>=0.5?`${rate.toFixed(1)} a year`:rate>0.01?`1 every ${Math.round(1/rate)} yr`:"Almost none";
+  const y2040=o.find(r=>r.year===2040);
+  let t=`
+    <div class="tile"><span class="lbl">Tracked debris in 2126</span><span class="big">${fmtN(last.all.N)}</span><span class="sub">${a.nEnd/a.nStart>=3?"×"+Math.round(a.nEnd/a.nStart):(a.change>=0?"+":"−")+Math.round(Math.abs(a.change)*100)+"%"} vs. today</span></div>
+    <div class="tile"><span class="lbl">Catastrophic collisions, 2026–2126</span><span class="big">${fmtFull(last.cum)}</span><span class="sub">all LEO</span></div>
+    <div class="tile"><span class="lbl">Collision rate in 2126</span><span class="big">${rateTxt}</span><span class="sub">today: 1 every ${Math.round(1/o[0].all.coll)} yr</span></div>
+    <div class="tile"><span class="lbl">Active satellites in 2126</span><span class="big">${fmtN(last.all.S)}</span><span class="sub">today: 17k</span></div>`;
+  if(p.fee>0) t+=`<div class="tile"><span class="lbl">Fee revenue in 2040</span><span class="big">${fmtMoney(y2040.fee*y2040.all.S)}</span><span class="sub">$${fmtN(y2040.fee)} × ${fmtN(y2040.all.S)} sats</span></div>`;
+  return t;
+}
+
+/* ============ CHARTS ============ */
+function niceStep(v){if(v<=0)return 1;const e=Math.pow(10,Math.floor(Math.log10(v)));const m=v/e;return (m<=1?1:m<=2?2:m<=2.5?2.5:m<=5?5:10)*e;}
+function lineChart(el,cfg){
+  const W=el.clientWidth||600,H=el.clientHeight||300,narrow=W<520;
+  const m={l:52,r:narrow?84:118,t:12,b:26}, iw=W-m.l-m.r, ih=H-m.t-m.b;
+  const years=cfg.years, n=years.length;
+  const all=cfg.series.flatMap(s=>s.values);
+  const log=cfg.log;
+  let yMin=0,step=niceStep(Math.max(...all)*1.02/4),yMax=step*Math.max(1,Math.ceil(Math.max(...all)*1.02/step));
+  if(log){const pos=all.filter(v=>v>0);yMin=Math.pow(10,Math.floor(Math.log10(Math.max(1,Math.min(...pos)))));yMax=Math.pow(10,Math.ceil(Math.log10(Math.max(...pos))));if(yMax<=yMin)yMax=yMin*10;}
+  const x=i=>m.l+iw*i/(n-1);
+  const y=v=>log? m.t+ih*(1-(Math.log10(Math.max(v,yMin))-Math.log10(yMin))/(Math.log10(yMax)-Math.log10(yMin))) : m.t+ih*(1-v/yMax);
+  let ticks=[]; if(log){for(let v=yMin;v<=yMax*1.0001;v*=10)ticks.push(v);} else {for(let v=0;v<=yMax*1.0001;v+=step)ticks.push(v);}
+  let g=`<svg viewBox="0 0 ${W} ${H}" aria-hidden="true">`;
+  ticks.forEach(t=>{g+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${y(t)}" y2="${y(t)}" stroke="var(--grid)" stroke-width="1"/><text x="${m.l-8}" y="${y(t)+4}" text-anchor="end">${fmtN(t)}</text>`;});
+  for(let i=0;i<n;i+=20){g+=`<text x="${x(i)}" y="${H-6}" text-anchor="middle">${years[i]}</text>`;}
+  g+=`<line x1="${m.l}" x2="${m.l+iw}" y1="${m.t+ih}" y2="${m.t+ih}" stroke="var(--muted)" stroke-width="1"/>`;
+  const ends=[];
+  cfg.series.forEach(s=>{
+    const d=s.values.map((v,i)=>`${i?"L":"M"}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join("");
+    g+=`<path d="${d}" fill="none" stroke="var(${s.color})" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" ${s.dashed?'stroke-dasharray="6 4" opacity="0.85"':''}/>`;
+    ends.push({y:y(s.values[n-1]),label:s.short||s.name});
+  });
+  ends.sort((a,b)=>a.y-b.y); for(let i=1;i<ends.length;i++){if(ends[i].y-ends[i-1].y<15)ends[i].y=ends[i-1].y+15;}
+  ends.forEach(e=>{g+=`<text class="endlbl" x="${x(n-1)+8}" y="${e.y+4}">${e.label}</text>`;});
+  g+=`<g class="hover" visibility="hidden"><line class="hl" y1="${m.t}" y2="${m.t+ih}" stroke="var(--muted)" stroke-width="1" stroke-dasharray="3 3"/>${cfg.series.map((s,i)=>`<circle class="hd" data-i="${i}" r="4.5" fill="var(${s.color})" stroke="var(--surface)" stroke-width="2"/>`).join("")}</g>`;
+  g+=`<rect class="hit" x="${m.l}" y="${m.t}" width="${iw}" height="${ih}" fill="transparent"/></svg><div class="tip" hidden></div>`;
+  el.innerHTML=g;
+  const svg=el.querySelector("svg"),hov=el.querySelector(".hover"),tip=el.querySelector(".tip");
+  let cur=null;
+  function show(i){
+    cur=Math.max(0,Math.min(n-1,i)); hov.setAttribute("visibility","visible");
+    const xi=x(cur); hov.querySelector(".hl").setAttribute("x1",xi);hov.querySelector(".hl").setAttribute("x2",xi);
+    hov.querySelectorAll(".hd").forEach(c=>{const s=cfg.series[+c.dataset.i];c.setAttribute("cx",xi);c.setAttribute("cy",y(s.values[cur]));});
+    tip.innerHTML=`<b>${years[cur]}</b>`+cfg.series.map(s=>`<div><span><i style="background:var(${s.color})"></i>${s.name}</span><span>${fmtFull(s.values[cur])}</span></div>`).join("");
+    tip.hidden=false; const tw=tip.offsetWidth; let left=xi+12; if(left+tw>W) left=xi-tw-12; tip.style.left=left+"px"; tip.style.top=(m.t+4)+"px";
+  }
+  function hide(){hov.setAttribute("visibility","hidden");tip.hidden=true;}
+  svg.addEventListener("pointermove",e=>{const r=svg.getBoundingClientRect();const px=(e.clientX-r.left)*(W/r.width);show(Math.round((px-m.l)/iw*(n-1)));});
+  svg.addEventListener("pointerleave",hide);
+  el.onkeydown=e=>{if(e.key==="ArrowRight"||e.key==="ArrowLeft"){e.preventDefault();show((cur??0)+(e.key==="ArrowRight"?1:-1)*(e.shiftKey?10:1));} else if(e.key==="Escape")hide();};
+  el.onblur=hide;
+}
+function legendHTML(series){return series.map(s=>`<span><i class="${s.dashed?'dash':''}" style="background:var(${s.color})"></i>${s.name}</span>`).join("");}
+
+/* ============ ONE SIMULATOR ============
+   P = id prefix ("c-" class section, "h-" homework section)
+   full = true for the homework section (controls, tiles, second chart, table) */
+function makeSim(P, full){
+  const E=id=>document.getElementById(P+id);
+  let current="base", pinned=null, lastRun=null, params=null;
+
+  function readForm(){
+    return {launch:+E("launch").value,life:+E("life").value,comp:+E("comp").value/100,
+      deadline:+E("controls").querySelector('input[name=deadline]:checked').value,
+      band:E("controls").querySelector('input[name=band]:checked').value,
+      adr:+E("adr").value,fee:+E("fee").value,feeGrow:E("feegrow").checked};
+  }
+  function setForm(p){
+    E("launch").value=p.launch;E("life").value=p.life;E("comp").value=p.comp;E("adr").value=p.adr;E("fee").value=p.fee;E("feegrow").checked=p.feeGrow;
+    E("controls").querySelector(`input[name=deadline][value="${p.deadline}"]`).checked=true;
+    E("controls").querySelector(`input[name=band][value="${p.band}"]`).checked=true;
+  }
+  function outputs(p){
+    E("launch-out").textContent=fmtFull(p.launch)+"/yr";
+    E("life-out").textContent=p.life+" yr";
+    E("comp-out").textContent=Math.round(p.comp*100)+"%";
+    E("adr-out").textContent=p.adr+"/yr";
+    E("fee-out").textContent=p.fee?("$"+fmtFull(p.fee)+"/sat-yr"):"None";
+  }
+  function renderChips(){
+    const chip=s=>`<button type="button" class="chip" data-id="${s.id}" aria-pressed="${s.id===current}">${s.name}${s.star?"*":""}</button>`;
+    if(full){
+      E("chips-class").innerHTML=PRESETS.filter(s=>s.group==="class").map(chip).join("");
+      E("chips-more").innerHTML=PRESETS.filter(s=>s.group!=="class").map(chip).join("");
+    } else {
+      E("chips").innerHTML=PRESETS.filter(s=>s.group==="class").map(chip).join("");
+    }
+    const s=PRESETS.find(x=>x.id===current);
+    E("note").textContent=s?s.note:"Your own settings. Pick a scenario above to reset.";
+  }
+  function draw(){
+    if(!lastRun)return; const o=lastRun;
+    const view=full?document.querySelector(`input[name=${P}view]:checked`).value:"all";
+    const years=o.map(r=>r.year);
+    const s1=[
+      {name:"Tracked debris",short:"Debris",color:"--s-debris",values:o.map(r=>r[view].N)},
+      {name:"Dead and retiring satellites",short:"Dead sats",color:"--s-dead",values:o.map(r=>r[view].D)},
+      {name:"Active satellites",short:"Active",color:"--s-active",values:o.map(r=>r[view].S)},
+    ];
+    if(pinned) s1.push({name:`Pinned debris: ${pinned.name}`,short:"Pinned",color:"--s-debris",dashed:true,values:pinned.run.map(r=>r[view].N)});
+    E("legend1").innerHTML=legendHTML(s1);
+    lineChart(E("chart1"),{years,series:s1,log:full?E("logscale").checked:false});
+    if(full){
+      const s2=[
+        {name:"Fragments created by collisions",short:"Created",color:"--s-made",values:o.map(r=>r.high.made)},
+        {name:"Fragments removed by drag",short:"Removed",color:"--s-removed",values:o.map(r=>r.high.rem)},
+      ];
+      E("legend2").innerHTML=legendHTML(s2);
+      lineChart(E("chart2"),{years,series:s2,log:false});
+    }
+  }
+  function renderTable(o){
+    const rows=o.filter(r=>(r.year-2026)%10===0);
+    E("numtable").innerHTML=`<thead><tr><th>Year</th><th>Active</th><th>Dead &amp; retiring</th><th>Debris</th><th>Collisions/yr</th><th>Higher orbit: created/yr</th><th>removed/yr</th></tr></thead><tbody>`+
+      rows.map(r=>`<tr><td>${r.year}</td><td>${fmtFull(r.all.S)}</td><td>${fmtFull(r.all.D)}</td><td>${fmtFull(r.all.N)}</td><td>${r.all.coll.toFixed(2)}</td><td>${fmtFull(r.high.made)}</td><td>${fmtFull(r.high.rem)}</td></tr>`).join("")+"</tbody>";
+  }
+  function update(){
+    const p=full?readForm():params;
+    if(full) outputs(p);
+    const o=run(p); lastRun=o; const a=assess(o);
+    const v=E("verdict"); v.dataset.s=a.s; v.innerHTML=verdictHTML(o,p,a,pinned);
+    if(full){E("tiles").innerHTML=tilesHTML(o,p,a); renderTable(o);}
+    draw();
+  }
+  function applyPreset(id){
+    current=id; const s=PRESETS.find(x=>x.id===id); const p={...BASE,...s.p};
+    if(full) setForm(p); else params={...p,comp:p.comp/100};
+    renderChips(); update();
+  }
+
+  E("presets").addEventListener("click",e=>{const b=e.target.closest(".chip");if(b)applyPreset(b.dataset.id);});
+  E("pin").addEventListener("click",()=>{const s=PRESETS.find(x=>x.id===current);pinned={name:s?s.name:"your settings",run:lastRun};E("unpin").hidden=false;update();});
+  E("unpin").addEventListener("click",()=>{pinned=null;E("unpin").hidden=true;update();});
+  if(full){
+    E("controls").addEventListener("input",()=>{current=null;renderChips();update();});
+    E("controls").addEventListener("submit",e=>e.preventDefault());
+    document.querySelectorAll(`input[name=${P}view]`).forEach(r=>r.addEventListener("change",draw));
+    E("logscale").addEventListener("change",draw);
+  }
+  applyPreset("base");
+  return {draw};
+}
+
+const sims=[makeSim("c-",false), makeSim("h-",true)];
+const redraw=()=>sims.forEach(s=>s.draw());
+let rz;window.addEventListener("resize",()=>{clearTimeout(rz);rz=setTimeout(redraw,120);});
+if(window.matchMedia){matchMedia("(prefers-color-scheme: dark)").addEventListener?.("change",redraw);}
+</script>
+
+</body>
+</html>

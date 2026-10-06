@@ -8,6 +8,7 @@ Live site: https://astrobidushi.github.io/emgt-5061/
 |---|---|---|
 | Orbit Clearance Map | Shows which approvals each case-study mission needs, and which one sets the launch date | [Open](https://astrobidushi.github.io/emgt-5061/orbit-clearance-map/) |
 | Legal Links Map | The Wilco site's Legal Links menu as one searchable tree, tied to the case-study missions | [Open](https://astrobidushi.github.io/emgt-5061/legal-links-map/) |
+| Orbit Commons | A teaching model of low Earth orbit debris: launch rates, disposal rules, debris removal, and orbital-use fees over 100 years | [Open](https://astrobidushi.github.io/emgt-5061/orbit-commons/) |
 
 ## How the repo is laid out
 
@@ -16,7 +17,9 @@ emgt-5061/
 ├── index.html                 course home page (links to each tool)
 ├── orbit-clearance-map/
 │   └── index.html
-└── legal-links-map/
+├── legal-links-map/
+│   └── index.html
+└── orbit-commons/
     └── index.html
 ```
 
