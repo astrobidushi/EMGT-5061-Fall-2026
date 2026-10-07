@@ -2,7 +2,7 @@
 
 Interactive teaching tools for EMGT 5061, the graduate space industry course at New Mexico Tech.
 
-Live site: https://astrobidushi.github.io/emgt-5061/
+Live site: https://github.com/astrobidushi/EMGT-5061-Fall-2026
 
 | Tool | What it does | Link |
 |---|---|---|
