@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.5 system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Ready for the Moon?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: same family as Orbit Commons and the Readiness Ladder pages. One scrolling page in four parts (ladders, exercises, nuclear, lunar), each a stack of cards; answer boxes sit under each question. */
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --surface-2:#EEF1F5; --ink:#17202E; --muted:#566173; --line:#D5DBE3;
+  --accent:#2C5FA8; --focus:#2C5FA8; --mkt:#B4561F;
+  --good:#1F7A4D; --good-bg:#E4F3EA; --warn:#9A6200; --warn-bg:#FBF0DA; --crit:#C8452D; --crit-bg:#FBE6E1;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    color-scheme:dark;
+    --bg:#0F141C; --surface:#171E29; --surface-2:#1E2734; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746;
+    --accent:#7FA7E6; --focus:#9CBBF0; --mkt:#E8915A;
+    --good:#5FBF86; --good-bg:#16302A; --warn:#E5A84A; --warn-bg:#33291A; --crit:#F0876F; --crit-bg:#3A221F;
+  }
+}
+:root[data-theme="dark"]{
+  color-scheme:dark;
+  --bg:#0F141C; --surface:#171E29; --surface-2:#1E2734; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746;
+  --accent:#7FA7E6; --focus:#9CBBF0; --mkt:#E8915A;
+  --good:#5FBF86; --good-bg:#16302A; --warn:#E5A84A; --warn-bg:#33291A; --crit:#F0876F; --crit-bg:#3A221F;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:15px;line-height:1.5;margin:0}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px;display:grid;gap:22px}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0;line-height:1.15}
+h1{font-size:clamp(30px,4.4vw,44px);font-weight:800;letter-spacing:-0.01em}
+.subtitle{font-family:var(--display);font-size:clamp(18px,2.2vw,22px);font-weight:700;color:var(--muted);margin-top:-4px}
+h2{font-size:21px;font-weight:700}
+h3{font-size:16px;font-weight:700}
+p{margin:0}
+ul,ol{margin:0}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.lede{color:var(--muted);max-width:72ch}
+header.top{display:grid;gap:8px}
+a{color:var(--accent);text-underline-offset:2px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;min-width:0}
+.stack{display:grid;gap:12px}
+.note{font-size:13px;color:var(--muted)}
+.step{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.btn{all:unset;cursor:pointer;font-weight:600;font-size:14px;padding:9px 16px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);text-align:center}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+.btn:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible+label,.toc a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+select{font:inherit;font-size:14px;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:6px 8px;max-width:100%}
+
+/* part bands */
+.part{display:grid;gap:14px;scroll-margin-top:16px}
+.part-head{display:grid;gap:4px;padding-top:10px;border-top:2px solid var(--ink)}
+.part-head h2{font-size:clamp(22px,2.6vw,28px);font-weight:800}
+.hw-sep{display:flex;align-items:center;gap:20px;margin-block:28px 6px}
+.hw-sep::before,.hw-sep::after{content:"";flex:1;border-top:3px solid var(--ink)}
+.hw-sep span{font-family:var(--display);font-weight:800;font-size:clamp(28px,4vw,40px);letter-spacing:.12em;color:var(--ink);text-align:center}
+.hw-due{margin:-6px 0 6px;text-align:center;font-family:var(--display);font-weight:700;font-size:clamp(20px,2.6vw,26px);color:var(--crit)}
+
+/* contents */
+.toc{display:flex;flex-wrap:wrap;gap:8px}
+.toc a{text-decoration:none;color:var(--ink);font-size:14px;font-weight:500;padding:6px 12px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface)}
+.toc a:hover{border-color:var(--accent)}
+.toc a span{font-family:var(--mono);color:var(--muted);margin-right:6px}
+.savebar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;justify-content:space-between;background:var(--surface-2);border-radius:10px;padding:10px 14px;font-size:14px}
+.savebar p{min-width:0;flex:1 1 280px}
+
+/* company */
+.company{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px 18px;align-items:start}
+.company .mark{width:56px;height:56px;border-radius:50%;background:radial-gradient(circle at 34% 34%,var(--surface-2) 0 42%,transparent 43%),var(--ink);border:2px solid var(--line)}
+.company .stack{gap:6px}
+.company .mark.pw{background:radial-gradient(circle at 50% 70%,var(--accent) 0 30%,transparent 31%),var(--surface-2)}
+@media (max-width:520px){.company{grid-template-columns:1fr}}
+
+/* definitions */
+.defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:20px}
+.defs-h{padding-left:10px;border-left:4px solid var(--accent);margin-bottom:8px}
+.defs-h.m{border-left-color:var(--mkt)}
+.deflist{list-style:none;margin:0 0 6px;padding:0;display:grid}
+.deflist li{display:grid;grid-template-columns:2.2em 1fr;gap:10px;padding:7px 0;border-bottom:1px solid var(--line);font-size:14px}
+.deflist li:last-child{border-bottom:none}
+.deflist .n{font-family:var(--mono);font-weight:500;font-variant-numeric:tabular-nums}
+.deflist b{font-weight:600}
+.deflist span.d{color:var(--muted)}
+.term{background:var(--surface-2);border-radius:10px;padding:12px 14px;font-size:14px;display:grid;gap:8px}
+.term b{font-weight:600}
+.term p{max-width:110ch}
+
+/* ladder exercise: two columns side by side */
+.lad-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr));gap:18px;align-items:start}
+.lad-col{display:grid;gap:8px;min-width:0}
+.co-sec{font-family:var(--display);font-size:clamp(19px,2.2vw,23px);font-weight:800;margin-top:10px;padding-left:12px;border-left:5px solid var(--accent);scroll-margin-top:16px}
+.co-h{font-family:var(--display);font-size:18px;font-weight:800;margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line)}
+.lad-col h3{padding-left:10px;border-left:4px solid var(--accent)}
+.lad-col.m h3{border-left-color:var(--mkt)}
+.ms-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+.ms-row label{min-width:0;font-size:14px}
+.ms-row .fb{grid-column:1/-1;font-size:13.5px;border-radius:8px;padding:6px 10px}
+.fb.ok{background:var(--good-bg);color:var(--good)}
+.fb.near{background:var(--warn-bg);color:var(--warn)}
+.fb.off{background:var(--crit-bg);color:var(--crit)}
+.fb b{font-weight:600}
+.score{font-weight:600}
+
+/* questions and answers */
+.qs{display:grid;gap:14px;counter-reset:q}
+.q{display:grid;gap:6px}
+.q label{font-weight:600;font-size:14.5px;max-width:90ch}
+.q label .qn{font-family:var(--mono);font-weight:500;color:var(--accent);margin-right:6px}
+textarea{width:100%;min-height:5.2em;font:inherit;font-size:14.5px;color:var(--ink);background:var(--surface);border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;resize:vertical}
+.pitch{border-left:4px solid var(--mkt);background:var(--surface-2);border-radius:0 10px 10px 0;padding:12px 16px;font-size:16px;max-width:80ch}
+.facts{margin:0;padding-left:20px;display:grid;gap:5px;font-size:14.5px;max-width:90ch}
+.choice{display:flex;flex-wrap:wrap;gap:8px}
+.choice input{position:absolute;opacity:0;pointer-events:none}
+.choice label{cursor:pointer;font-size:14px;font-weight:500;padding:7px 14px;border:1.5px solid var(--line);border-radius:999px;background:var(--surface)}
+.choice input:checked+label{background:var(--accent);border-color:var(--accent);color:var(--surface)}
+
+/* tables */
+.tbl-wrap{overflow-x:auto}
+table.t{width:100%;border-collapse:collapse;font-size:14px}
+table.t th,table.t td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+table.t th{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:500}
+table.t td.num{font-variant-numeric:tabular-nums;white-space:nowrap}
+
+/* briefings */
+.spot{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr));gap:20px}
+.spot>div{min-width:0}
+.spot h3{margin-bottom:6px}
+.spot ul{padding-left:20px;display:grid;gap:5px;font-size:14px}
+.spot b{font-weight:600}
+.link{background:var(--surface-2);border-radius:10px;padding:12px 14px;font-size:14px;max-width:none}
+.link b{font-weight:600}
+ul.src{padding-left:20px;display:grid;gap:6px;font-size:14px}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion: reduce){*{scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">EMGT 5061 · Emerging space technologies · October 14, 2026</div>
+    <h1>Ready for the Moon?</h1>
+    <p class="subtitle">Space Nuclear Power and Lunar Infrastructure</p>
+    <p class="lede">Tonight we look at two case studies of fictional companies: Polar Well and Nightfall Power. You are the engineer advising an investment firm. Tonight you’ll judge new space technologies on two questions: does it work, and will anyone buy it? The IN CLASS section is for class. The HOMEWORK section below it starts at Part 2. Write your answers in the student deck.</p>
+    <nav class="toc" aria-label="Parts of this page">
+      <a href="#ladders">The two ladders</a>
+      <a href="#exercises">Exercises</a>
+      <a href="#polarwell">Polar Well</a>
+      <a href="#nightfall">Nightfall Power</a>
+      <a href="#sources">Sources</a>
+    </nav>
+    <div class="savebar">
+      <p><b>Submit your answers in the student deck:</b> <a href="https://docs.google.com/presentation/d/1Wezc5A7leMMXM2eny2DuA0C9woiVoSGiURikgqxJ24k/edit?usp=sharing">Oct 14 – Nuclear Power &amp; Lunar Infrastructure student deck (Google Slides)</a>. You can also type notes in the boxes on this page; they are kept in this browser only.</p>
+    </div>
+  </header>
+
+  <div class="hw-sep" role="separator" aria-label="In class">
+    <span>IN CLASS</span>
+  </div>
+
+  <!-- ===================== PART 1 ===================== -->
+  <section class="part" id="ladders" aria-labelledby="p1">
+    <div class="part-head"><span class="step">Part 1</span><h2 id="p1">The two ladders: is it ready, and will anyone buy it?</h2></div>
+
+    <div class="card company">
+      <div class="mark pw" aria-hidden="true"></div>
+      <div class="stack">
+        <h3>Meet Polar Well</h3>
+        <p>Polar Well is a startup that wants to mine water ice at the Moon’s south pole and sell it as rocket propellant. It says its solar thermal reactor can extract 160 tons of water ice a year, and it is asking investors for $80M to build the flight model. It must also choose what to sell: water on the lunar surface, or water delivered to low Earth orbit. You will meet Polar Well again in Part 2, and Nightfall Power after it.</p>
+        <p class="note">Polar Well is fictional. Its claims and figures are simplified for teaching.</p>
+      </div>
+    </div>
+
+    <div class="card company">
+      <div class="mark" aria-hidden="true"></div>
+      <div class="stack">
+        <h3>Meet Nightfall Power</h3>
+        <p>Nightfall Power is a startup building a small fission reactor to power lunar bases and mining sites through the 14-day lunar night, when solar panels produce nothing. Its would-be customers are NASA, lunar mining startups and lander companies. The founder tells your firm the company is “almost ready.”</p>
+        <p class="note">Nightfall Power is fictional. Its milestones are simplified for teaching.</p>
+      </div>
+    </div>
+
+    <div class="card stack">
+      <h3>The two ladders</h3>
+      <p class="lede">Technology readiness asks whether the product works. Market readiness asks whether anyone will buy it. Use these definitions throughout the exercise.</p>
+      <div class="defs">
+        <div><h3 class="defs-h">Technology Readiness Levels (TRL 1–9)</h3><ol class="deflist" id="defT"></ol><p class="note">Source: NASA.</p></div>
+        <div><h3 class="defs-h m">Market Readiness Levels (MRL 0–9)</h3><ol class="deflist" id="defM"></ol><p class="note">Source: Mealing, Starbridge Venture Capital.</p></div>
+      </div>
+      <div class="term">
+        <h3>Market terms used above</h3>
+        <p><b>Value proposition:</b> a short statement of who the customer is, what problem or need the product solves for them, and why it does so better than the alternatives they have today, by enough that they would pay for it.</p>
+        <p><b>Business Model Canvas:</b> a one-page chart that lays out how a company will make money, in nine boxes. The customer side covers customer segments, the value proposition, channels, customer relationships and revenue streams. The other side covers key activities, key resources, key partners and the cost structure. Each box starts as a guess, and the team tests the guesses with real customers. <a href="https://www.strategyzer.com/the-business-model-canvas-1">See the canvas (Strategyzer)</a>.</p>
+        <p><b>Minimum viable product (MVP):</b> the simplest version of a product that lets the team learn whether customers really want it, with the least time and money.</p>
+        <p><b>Low-fidelity market test (MRL 4–5):</b> showing customers a simple stand-in for the product, such as a spec sheet, a draft contract or a price list. It is cheap and fast, but it measures what customers say, not what they do. For Polar Well: prospective customers review a spec sheet, a draft purchase contract and a price list per kilogram, and the team counts letters of intent. For Nightfall: prospective customers review the reactor spec sheet, a draft power-purchase contract and a price per kilowatt-hour, and the team counts letters of intent.</p>
+        <p><b>High-fidelity market test (MRL 6–7):</b> putting customers in contact with something that works much like the real product, usually a full prototype, often with money changing hands. It costs far more, but it shows how customers actually behave. For Polar Well: a customer pays for water made by the full-scale ground prototype and runs it through its own propellant system. For Nightfall: a customer pays to run its own equipment on power from the full-scale ground prototype. Either test can’t start until the technology reaches TRL 6.</p>
+      </div>
+    </div>
+
+    <div class="card stack" id="ex1">
+      <span class="step">Exercise 1</span>
+      <h3>Put each company’s milestones on both ladders</h3>
+      <p class="lede">Each milestone matches one level. Choose a level for every milestone on both ladders, for Polar Well first and then Nightfall Power. Then check your answers against the definitions. One partner can take each ladder, then compare.</p>
+      <h4 class="co-h">Polar Well</h4>
+      <div class="lad-grid">
+        <div class="lad-col"><h3>Technology (TRL 1–9)</h3><div id="ms-pw-t"></div></div>
+        <div class="lad-col m"><h3>Market (MRL 0–9)</h3><div id="ms-pw-m"></div></div>
+      </div>
+      <div class="btns">
+        <button type="button" class="btn primary" data-check="pw">Check my Polar Well answers</button>
+        <button type="button" class="btn" data-reset="pw">Start over</button>
+        <span class="score" id="score-pw" aria-live="polite"></span>
+      </div>
+      <h4 class="co-h">Nightfall Power</h4>
+      <div class="lad-grid">
+        <div class="lad-col"><h3>Technology (TRL 1–9)</h3><div id="ms-nf-t"></div></div>
+        <div class="lad-col m"><h3>Market (MRL 0–9)</h3><div id="ms-nf-m"></div></div>
+      </div>
+      <div class="btns">
+        <button type="button" class="btn primary" data-check="nf">Check my Nightfall answers</button>
+        <button type="button" class="btn" data-reset="nf">Start over</button>
+        <span class="score" id="score-nf" aria-live="polite"></span>
+      </div>
+    </div>
+
+    <div class="card stack">
+      <h3>Discuss with your partner</h3>
+      <div class="qs">
+        <div class="q"><label for="a1-3"><span class="qn">1.1</span>A high-fidelity market test needs a full prototype (TRL 6). What does that mean for when Polar Well and Nightfall can each test with paying customers? What can each one do on the market ladder before then? Is each company’s high-fidelity test equally close to the product the customer will finally buy?</label><textarea id="a1-3" data-q="1.1 When can Polar Well and Nightfall each test with paying customers, what can each do before then, and is each high-fidelity test equally close to the final product?" style="min-height:8em"></textarea></div>
+        <div class="q"><label for="a1-5"><span class="qn">1.2</span>Compare the two companies. Which Nightfall milestones were harder to place than Polar Well’s, and why?</label><textarea id="a1-5" data-q="1.2 Which Nightfall milestones were harder to place than Polar Well’s, and why?"></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== PART 2 ===================== -->
+  <div class="hw-sep" role="separator" aria-label="Homework">
+    <span>HOMEWORK</span>
+  </div>
+  <p class="hw-due">Due before October 21, 3 pm</p>
+
+  <section class="part" id="exercises" aria-labelledby="p2">
+    <div class="part-head"><span class="step">Part 2</span><h2 id="p2">Exercises: Polar Well and Nightfall Power</h2></div>
+
+    <h3 class="co-sec" id="polarwell">Polar Well: lunar infrastructure and resource extraction</h3>
+    <div class="card stack">
+      <div class="spot">
+        <div><h3>From ice to propellant, in five steps</h3>
+          <ul>
+            <li><b>Prospect:</b> drills and spectrometers find where the ice is, and how much.</li>
+            <li><b>Excavate:</b> rovers dig icy soil in craters that never see sunlight.</li>
+            <li><b>Extract:</b> heat the soil and capture the water vapor.</li>
+            <li><b>Process:</b> purify the water, split it into hydrogen and oxygen, liquefy and store them.</li>
+            <li><b>Deliver:</b> load the propellant into a customer’s lander.</li>
+          </ul></div>
+        <div><h3>Where things stand (Oct 2026)</h3>
+          <ul>
+            <li>No government or company has ever harvested lunar ice.</li>
+            <li>NASA’s VIPER rover, built to map the ice, is due to land in late 2027.</li>
+            <li>In April 2026 Blue Origin made oxygen from simulated lunar soil, a route that needs no ice.</li>
+            <li>Interlune has signed buyers for lunar helium-3; no one has signed a contract to buy lunar propellant.</li>
+          </ul></div>
+      </div>
+      <div class="link"><b>Where Polar Well fits:</b> Polar Well’s extractor covers the Extract step. Before any of its water earns money, the steps around it have to work too, and a customer has to sign up for the Deliver step.</div>
+      <p class="note">Start here: <a href="https://www.nasa.gov/moonbase-phases/">NASA, Moon Base phases</a> · <a href="https://techcrunch.com/2024/08/20/starpath-accelerates-moon-water-mining-plans-with-12m-seed-funding">TechCrunch, a startup’s plan to mine lunar ice</a> · <a href="https://space.com/33297-satellite-refueling-business-proposal-ula.html">Space.com, ULA’s price points for propellant in space</a></p>
+    </div>
+
+    <div class="card stack">
+      <span class="step">Exercise 2</span>
+      <h3>Polar Well’s $80M pitch</h3>
+      <p>First, some background on the market for lunar resources:</p>
+      <ul class="facts">
+        <li>In 2016, United Launch Alliance (ULA) said it would pay $500/kg for propellant on the lunar surface, $1,000/kg at the Earth–Moon L1 point and $3,000/kg in low Earth orbit.</li>
+        <li>Starpath Robotics is designing a plant to make liquid oxygen from lunar ice.</li>
+        <li>Interlune has signed agreements, worth close to $500M in total, to sell lunar helium-3 to Bluefors, Maybell Quantum and the U.S. Department of Energy.</li>
+      </ul>
+      <p>Then Polar Well pitches your firm:</p>
+      <p class="pitch">“We’ve developed a revolutionary solar thermal reactor that can extract 160 tons of water ice per year on the Moon, but we need $80M in venture funding to build the flight model.”</p>
+      <p>Polar Well can sell its water in one of two ways:</p>
+      <div class="tbl-wrap">
+        <table class="t">
+          <thead><tr><th></th><th>Option A: Surface only</th><th>Option B: LEO delivery</th></tr></thead>
+          <tbody>
+            <tr><td>Output</td><td>160 metric tons a year, sold on the lunar surface</td><td>50 metric tons a year, delivered to low Earth orbit</td></tr>
+            <tr><td>Price</td><td class="num">$500/kg</td><td class="num">$3,000/kg</td></tr>
+            <tr><td>Potential revenue</td><td class="num">$80M a year</td><td class="num">$150M a year</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note">Both options mine the same ice. In this simplified case, only 50 tons reach low Earth orbit because some of the water is used up as propellant to ship it there.</p>
+      <div class="qs">
+        <div class="q"><label for="a3-1"><span class="qn">2.1</span>Check the numbers. If every kilogram of that water were sold as propellant at $500/kg, what is the most it could earn in a year? Has anyone committed to pay that price?</label><textarea id="a3-1" data-q="2.1 Check the numbers"></textarea></div>
+      </div>
+      <div class="q">
+        <span style="font-weight:600;font-size:14.5px"><span class="qn" style="font-family:var(--mono);color:var(--accent);margin-right:6px">2.2</span>If you were advising Polar Well, which operation would you fund with the initial $80M?</span>
+        <div class="choice" role="radiogroup" aria-label="Your choice">
+          <input type="radio" name="opt" id="opt-a" value="Option A: Surface only"><label for="opt-a">Option A: Surface only</label>
+          <input type="radio" name="opt" id="opt-b" value="Option B: LEO delivery"><label for="opt-b">Option B: LEO delivery</label>
+        </div>
+      </div>
+      <div class="qs">
+        <div class="q"><label for="a4-2"><span class="qn">2.3</span>What engineering arguments defend your choice?</label><textarea id="a4-2" data-q="2.3 Engineering arguments"></textarea></div>
+        <div class="q"><label for="a4-3"><span class="qn">2.4</span>What financial arguments defend your choice? What commitment from a buyer would make your choice convincing to investors?</label><textarea id="a4-3" data-q="2.4 Financial arguments, and the buyer commitment that would convince investors"></textarea></div>
+      </div>
+    </div>
+
+    <h3 class="co-sec" id="nightfall">Nightfall Power: space nuclear power</h3>
+    <div class="card stack">
+      <div class="spot">
+        <div><h3>Four technologies, one word</h3>
+          <ul>
+            <li><b>Radioisotope power:</b> heat from decaying plutonium-238 (or americium-241, strontium-90) makes a few hundred watts. Flown for decades, including on Curiosity and Perseverance.</li>
+            <li><b>Fission surface power:</b> a small reactor on the Moon or Mars, 20–100+ kW. This is Nightfall’s business.</li>
+            <li><b>Nuclear electric propulsion:</b> a reactor powers electric thrusters.</li>
+            <li><b>Nuclear thermal propulsion:</b> a reactor heats hydrogen into a rocket exhaust.</li>
+          </ul></div>
+        <div><h3>Where things stand (Oct 2026)</h3>
+          <ul>
+            <li>The U.S. has flown one reactor in space: SNAP-10A, in 1965.</li>
+            <li>NASA plans SR-1 Freedom, a 20 kW reactor spacecraft, for Mars in late 2028.</li>
+            <li>U.S. policy targets a lunar surface reactor ready to launch by 2030 (NASA’s Lunar Reactor-1) and a military in-space reactor by 2031.</li>
+            <li>DARPA and NASA canceled the DRACO nuclear thermal rocket in 2025 after cheaper launch weakened its case.</li>
+            <li>The buyers today are government agencies, for example the Space Force’s $161M award to Antares in September 2026.</li>
+          </ul></div>
+      </div>
+      <div class="link"><b>Where Nightfall fits:</b> NASA’s Lunar Reactor-1 asks for at least 20 kWe delivered up to 1 km from the reactor, with landing targeted for 2030. U.S. policy also requires firm fixed-price contracts with milestone payments, so a company like Nightfall would carry its own cost overruns.</div>
+      <p class="note">Start here: <a href="https://aerospaceamerica.aiaa.org/spotlight-on-space-nuclear/">Aerospace America, “Spotlight on space nuclear”</a> · <a href="https://www.powermag.com/white-house-launches-space-nuclear-initiative-sets-timeline-for-lunar-reactors/">POWER, the 2026 White House space nuclear initiative</a> · <a href="https://www.lockheedmartin.com/en-us/news/features/2026/fission-surface-power-endless-power-in-the-lunar-night.html">Lockheed Martin, why reactors for the lunar night</a></p>
+    </div>
+
+    <div class="card stack">
+      <span class="step">Exercise 3</span>
+      <h3>Two offers on the table</h3>
+      <p>Nightfall Power has two offers. NASA proposes a firm fixed-price contract, with payments at milestones, for a reactor delivering at least 20 kWe on the Moon by 2030. Separately, Polar Well offers to sign a letter of intent to buy Nightfall’s power for its ice-mining site once that site is operating.</p>
+      <p class="note">Both offers are fictional. The 20 kWe, 2030 target and the fixed-price, milestone-payment terms come from NASA’s Lunar Reactor-1 effort and current U.S. policy.</p>
+      <div class="qs">
+        <div class="q"><label for="a5-1"><span class="qn">3.1</span>Which offer is stronger market evidence, and why? Where does each move Nightfall on the MRL ladder?</label><textarea id="a5-1" data-q="3.1 Which offer is stronger market evidence, and where does each move Nightfall on the MRL ladder?"></textarea></div>
+        <div class="q"><label for="a5-2"><span class="qn">3.2</span>Under a fixed-price contract, who pays if the reactor costs more than planned? What does that mean for a company at Nightfall’s stage?</label><textarea id="a5-2" data-q="3.2 Who pays for cost overruns under a fixed-price contract, and what does that mean for Nightfall?"></textarea></div>
+        <div class="q"><label for="a5-3"><span class="qn">3.3</span>Polar Well hasn’t raised its $80M yet and has no committed buyers for its water. What does that tell you about Nightfall’s commercial market?</label><textarea id="a5-3" data-q="3.3 What does Polar Well’s situation tell you about Nightfall’s commercial market?"></textarea></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="card stack" id="sources" aria-labelledby="src">
+    <h2 id="src">Sources</h2>
+    <ul class="src">
+      <li><a href="https://www.nasa.gov/directorates/somd/space-communications-navigation-program/technology-readiness-levels/">NASA, Technology Readiness Levels</a>. The definitions of TRL 1–9.</li>
+      <li>Mealing, Michael, <a href="https://www.slideshare.net/slideshow/market-readiness-levels/242923970">“Market Readiness Levels: Product Development Metrics for Investment and Deployment Decision Making”</a>, Starbridge Venture Capital. The MRL 0–9 level names and exit criteria.</li>
+      <li>Osterwalder, Alexander, and Yves Pigneur, <i>Business Model Generation</i>, Wiley, 2010. The Business Model Canvas.</li>
+      <li>Ries, Eric, <i>The Lean Startup</i>, Crown Business, 2011. The minimum viable product.</li>
+      <li>Aerospace America (AIAA), <a href="https://aerospaceamerica.aiaa.org/spotlight-on-space-nuclear/">“Spotlight on space nuclear”</a>, fall 2026.</li>
+      <li>POWER Magazine, <a href="https://www.powermag.com/white-house-launches-space-nuclear-initiative-sets-timeline-for-lunar-reactors/">“White House Launches Space Nuclear Initiative, Sets Timeline for Lunar Reactors”</a>, April 16, 2026.</li>
+      <li>New Space Economy, <a href="https://newspaceeconomy.ca/2026/09/01/what-does-nasas-sparc-lunar-reactor-procurement-reveal-about-lunar-reactor-1/">“What Does NASA’s SPARC Lunar Reactor Procurement Reveal About Lunar Reactor-1?”</a>, September 1, 2026.</li>
+      <li>Interesting Engineering, <a href="https://interestingengineering.com/energy/nuclear-reactor-space-161m-award">“US military space reactor nears orbit after 60 years in $161M deal”</a>, September 11, 2026.</li>
+      <li>Breaking Defense, <a href="https://breakingdefense.com/2025/06/darpas-draco-nuclear-propulsion-project-roars-no-more/">“DARPA’s DRACO nuclear propulsion project ROARs no more”</a>, June 2025.</li>
+      <li>NASA, <a href="https://www.nasa.gov/moonbase-phases/">“Moon Base Phases”</a>, updated October 8, 2026.</li>
+      <li>Space.com, <a href="https://space.com/33297-satellite-refueling-business-proposal-ula.html">“Inside ULA’s Plan to Have 1,000 People Working in Space by 2045”</a>, June 29, 2016.</li>
+      <li>TechCrunch, <a href="https://techcrunch.com/2024/08/20/starpath-accelerates-moon-water-mining-plans-with-12m-seed-funding">“Starpath accelerates moon water mining plans with $12M in funding”</a>, August 20, 2024.</li>
+      <li>The Quantum Insider, <a href="https://thequantuminsider.com/2025/09/17/bluefors-enters-deal-to-secure-lunar-helium-3-supply-from-interlune/">“Bluefors Enters Deal to Secure Lunar Helium-3 Supply From Interlune”</a>, September 17, 2025.</li>
+      <li>Interlune, <a href="https://www.interlune.space/press-release/interlune-produces-pure-helium-3-from-domestic-helium-using-novel-cryogenic-technology">“Interlune Produces Pure Helium-3 from Domestic Helium”</a>, July 20, 2026.</li>
+    </ul>
+  </section>
+
+  <footer>Copyright © 2026 Dr. Bidushi Bhattacharya. Teaching tool for EMGT 5061, New Mexico Tech. Not investment advice.</footer>
+</div>
+
+<script>
+/* ============ SCALES ============ */
+const TRL=[null,
+  {n:"Basic research",d:"Scientific research begins, and its results are translated into future research and development."},
+  {n:"Concept formulated",d:"Basic principles have been studied and practical applications can be considered. Highly speculative, with little or no experimental proof."},
+  {n:"Proof of concept",d:"Active research and design begin. Analytical and laboratory studies test viability, often with a proof-of-concept model."},
+  {n:"Components tested together",d:"The proof-of-concept advances and multiple component pieces are tested with one another."},
+  {n:"Breadboard in realistic tests",d:"The breadboard technology faces more rigorous testing, ideally in near-realistic simulated environments."},
+  {n:"Full prototype",d:"Testing is complete, and the technology has a fully functional prototype or representational model."},
+  {n:"Demonstrated in space",d:"The working model or prototype is demonstrated in a space environment."},
+  {n:"Flight qualified",d:"The technology has been tested and flight qualified, and is ready to go into an existing system."},
+  {n:"Flight proven",d:"The technology has been flight proven during a successful mission."},
+];
+const MRL=[
+  {n:"Perceived need",d:"Exit criteria: documented conversations, existing market research, and rough outlines of the problem."},
+  {n:"Value proposition drafted",d:"Exit criteria: at least one draft value proposition statement."},
+  {n:"Customers characterized",d:"Exit criteria: the customer side of the Business Model Canvas completed, and potential customers identified to validate the value proposition and the canvas."},
+  {n:"Customer discovery",d:"Exit criteria: the customer side of the canvas validated by customer feedback, plus documented interviews on the value of the problem, past solutions, and the financial value of solving it."},
+  {n:"Low-fi MVP designed",d:"Exit criteria: a low-fidelity minimum viable product, metrics that measure how well the canvas matches actual use, and a large enough set of diverse customers."},
+  {n:"Low-fi MVP tested",d:"Exit criteria: usage metrics and all feedback from customers and stakeholders."},
+  {n:"Model revalidated",d:"Exit criteria: a fully validated canvas and all resources needed to build and test a high-fidelity MVP."},
+  {n:"High-fi MVP tested",d:"Exit criteria: data, customer feedback and metrics from the high-fidelity MVP campaign."},
+  {n:"Model validated with MVP",d:"Exit criteria: a fully validated and documented Business Model Canvas."},
+  {n:"Go-to-market decision",d:"Exit criteria: a yes or no decision to launch."},
+];
+function renderDefs(id,scale,lo){
+  const el=document.getElementById(id);
+  for(let k=scale.length-1;k>=lo;k--){
+    const li=document.createElement("li");
+    li.innerHTML=`<span class="n">${k}</span><div><b>${scale[k].n}.</b> <span class="d">${scale[k].d}</span></div>`;
+    el.appendChild(li);
+  }
+}
+renderDefs("defT",TRL,1); renderDefs("defM",MRL,0);
+
+/* ============ STORAGE (this browser only) ============ */
+const KEY="ready-for-what-v1";
+let store={};
+try{store=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){store={}}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}}
+
+/* ============ EXERCISE 1: MILESTONES (Nightfall Power and Polar Well, both fictional) ============ */
+const CO={pw:"Polar Well",nf:"Nightfall Power"};
+const LAD={t:{lo:1,hi:9,label:"TRL",scale:TRL},m:{lo:0,hi:9,label:"MRL",scale:MRL}};
+const MS={
+  "nf-t":[
+    ["The flight reactor passes qualification tests and the launch safety review, and is installed on a customer’s lunar lander.",8],
+    ["A single heat pipe and a single power converter each work as predicted in separate lab tests.",3],
+    ["Engineers write a concept study for a 40 kW lunar reactor and why it could beat solar power through the lunar night. No hardware yet.",2],
+    ["A demonstration reactor lands on the Moon and keeps delivering power through its first lunar night.",7],
+    ["An electrically heated core stand-in is connected to heat pipes and a power converter on a lab bench.",4],
+    ["A Nightfall reactor has powered a lunar base on a real mission for more than a year.",9],
+    ["Scientists measure how candidate fuel and shielding materials behave under radiation.",1],
+    ["A full-scale prototype, loaded with real uranium fuel, completes its ground test campaign at a national lab.",6],
+    ["The electrically heated system runs in a vacuum chamber at lunar temperatures.",5]],
+  "nf-m":[
+    ["Interviews with NASA, lunar mining startups and lander companies confirm the need, how much power they want, and how they would buy it.",3],
+    ["The board decides to build the first commercial lunar power station.",9],
+    ["The founders hear NASA engineers and lander companies say that surviving the lunar night is a major problem, and keep notes.",0],
+    ["Ten prospective customers review the spec sheet and draft contract; the team records their feedback and counts letters of intent.",5],
+    ["The team writes its first statement: reliable power through the lunar night for bases and mining sites, sold by the kilowatt-hour.",1],
+    ["A customer tests its own equipment on the full-scale ground prototype under a paid test agreement, and the team gathers the data.",7],
+    ["The team fills in the customer side of its business model canvas (NASA, mining firms, the military) and lists 25 organizations to interview.",2],
+    ["The full business model, including price per kilowatt-hour and a government anchor contract, is validated and documented.",8],
+    ["The team builds a spec sheet, a draft power-purchase contract and a pricing model, and decides how much interest will count as success.",4],
+    ["The business model is revalidated, and the team has everything it needs to run a high-fidelity customer test.",6]],
+  "pw-t":[
+    ["The heater, vapor line and cold trap are joined on a lab bench and pull water out of icy regolith simulant together.",4],
+    ["A demonstration extractor lands near the south pole and pulls water out of real lunar ice.",7],
+    ["Scientists measure how water ice escapes from lunar soil simulant as vapor when it is heated in a vacuum.",1],
+    ["The flight extractor passes qualification tests and is installed on a customer’s lunar lander.",8],
+    ["In separate lab tests, concentrated light frees water from a small sample of icy simulant, and a cold trap catches the vapor as predicted.",3],
+    ["A full-scale prototype extractor completes its test campaign in a large vacuum chamber, working through tons of icy simulant.",6],
+    ["Engineers write a concept study for a solar thermal extractor that heats icy soil and captures the water vapor. No hardware yet.",2],
+    ["A Polar Well extractor has supplied water on the Moon on a real mission for more than a year.",9],
+    ["The bench system runs in a vacuum chamber chilled to south-pole crater temperatures.",5]],
+  "pw-m":[
+    ["Twelve prospective customers review the spec sheet and draft purchase contract; the team records their feedback and counts letters of intent.",5],
+    ["The team writes its first statement: water mined on the Moon, sold as propellant for less per kilogram than launching it from Earth.",1],
+    ["The board decides to fly the first commercial ice-mining operation.",9],
+    ["Interviews with lander companies, NASA and fuel-depot operators confirm how much water they need, where they need it, and what they would pay per kilogram.",3],
+    ["The team builds a spec sheet, a draft purchase contract and a price list per kilogram, on the surface and in orbit, and decides how much interest will count as success.",4],
+    ["The founders hear lander companies and NASA engineers say that propellant made on the Moon could cut mission costs, and keep notes.",0],
+    ["A customer pays for water made by the full-scale ground prototype and runs it through its own propellant system, and the team gathers the data.",7],
+    ["The team fills in the customer side of its business model canvas (lander companies, NASA, fuel-depot operators) and lists 20 organizations to interview.",2],
+    ["The business model is revalidated, and the team has everything it needs to run a high-fidelity customer test.",6],
+    ["The full business model, including where to sell the water and an anchor customer contract, is validated and documented.",8]],
+};
+const KEYS=Object.keys(MS);
+function blankMS(){const o={};KEYS.forEach(k=>o[k]={});return o}
+if(!store.ms||store.ms.t){const old=store.ms||{};store.ms=blankMS();if(old.t){store.ms["nf-t"]=old.t;store.ms["nf-m"]=old.m||{}}}
+KEYS.forEach(k=>{store.ms[k]=store.ms[k]||{}});
+function renderMS(only){
+  KEYS.filter(k=>!only||k.startsWith(only)).forEach(k=>{
+    const L=LAD[k.slice(-1)], opts=[]; for(let v=L.lo;v<=L.hi;v++) opts.push(v);
+    document.getElementById("ms-"+k).innerHTML=MS[k].map((m,i)=>`
+      <div class="ms-row">
+        <label for="ms-${k}-${i}">${m[0]}</label>
+        <select id="ms-${k}-${i}" data-k="${k}" data-i="${i}">
+          <option value="">Level</option>
+          ${opts.map(v=>`<option value="${v}"${String(store.ms[k][i])===String(v)?" selected":""}>${L.label} ${v}</option>`).join("")}
+        </select>
+        <p class="fb" id="fb-${k}-${i}" hidden></p>
+      </div>`).join("");
+  });
+  ["nf","pw"].filter(c=>!only||c===only).forEach(c=>document.getElementById("score-"+c).textContent="");
+}
+document.getElementById("ex1").addEventListener("change",e=>{
+  const s=e.target.closest("select"); if(!s) return;
+  store.ms[s.dataset.k][s.dataset.i]=s.value; save();
+});
+if(typeof store.score!=="object"||!store.score) store.score={};
+function checkCo(c){
+  const sub=[];
+  ["t","m"].forEach(l=>{
+    const k=c+"-"+l, L=LAD[l]; let right=0, blank=0;
+    MS[k].forEach((m,i)=>{
+      const raw=document.getElementById(`ms-${k}-${i}`).value, fb=document.getElementById(`fb-${k}-${i}`), t=m[1];
+      fb.hidden=false;
+      const def=`<b>${L.label} ${t}, ${L.scale[t].n}.</b> ${L.scale[t].d}`;
+      if(raw===""){blank++;fb.className="fb off";fb.innerHTML="Not answered yet. "+def;return}
+      const v=+raw;
+      if(v===t){right++;fb.className="fb ok";fb.innerHTML="Correct. "+def}
+      else if(Math.abs(v-t)===1){fb.className="fb near";fb.innerHTML=`One level off (you chose ${L.label} ${v}). `+def}
+      else{fb.className="fb off";fb.innerHTML=`You chose ${L.label} ${v}. `+def}
+    });
+    sub.push(`${L.label}: ${right} of ${MS[k].length} correct${blank?` (${blank} not answered)`:""}`);
+  });
+  const txt=sub.join(" · ");
+  document.getElementById("score-"+c).textContent=txt;
+  store.score[c]=txt; save();
+}
+document.querySelectorAll("[data-check]").forEach(b=>b.addEventListener("click",()=>checkCo(b.dataset.check)));
+document.querySelectorAll("[data-reset]").forEach(b=>b.addEventListener("click",()=>{
+  const c=b.dataset.reset; KEYS.filter(k=>k.startsWith(c)).forEach(k=>store.ms[k]={}); delete store.score[c]; save(); renderMS(c);
+}));
+renderMS();
+
+/* ============ ANSWER BOXES ============ */
+const boxes=[...document.querySelectorAll("textarea[data-q]")];
+store.a=store.a||{};
+boxes.forEach(b=>{
+  if(store.a[b.id]) b.value=store.a[b.id];
+  b.addEventListener("input",()=>{store.a[b.id]=b.value;save()});
+});
+const radios=[...document.querySelectorAll('input[name="opt"]')];
+radios.forEach(r=>{
+  if(store.opt===r.value) r.checked=true;
+  r.addEventListener("change",()=>{store.opt=r.value;save()});
+});
+
+</script>
+
+</body>
+</html>
