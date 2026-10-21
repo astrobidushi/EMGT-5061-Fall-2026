@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Who Builds the Moon?</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column with a sticky section bar; hexagonal "sintered paver" motif marks section openers only. */
+:root{
+  --bg:#f2f3f1; --surface:#ffffff; --sunk:#e7e9e5; --fg:#1d2124; --muted:#5b6266; --line:#cdd1cc;
+  --accent:#b8650f; --accent-soft:#f6e6d2; --trl:#2f5d8a; --trl-soft:#dfe8f2; --mrl:#7a4f9a; --mrl-soft:#ece3f3;
+  --ok:#2e7d4f; --ok-soft:#dcefe3; --bad:#b03a2e; --bad-soft:#f6dfdc;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15181a; --surface:#1d2124; --sunk:#252a2d; --fg:#e8eae6; --muted:#a2a9ac; --line:#363c40;
+  --accent:#e59a45; --accent-soft:#3a2a17; --trl:#8fb6e0; --trl-soft:#1f2c3a; --mrl:#c9a3e6; --mrl-soft:#2d2338;
+  --ok:#7fcf9c; --ok-soft:#1d3226; --bad:#f0938a; --bad-soft:#3a2120; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15181a; --surface:#1d2124; --sunk:#252a2d; --fg:#e8eae6; --muted:#a2a9ac; --line:#363c40;
+  --accent:#e59a45; --accent-soft:#3a2a17; --trl:#8fb6e0; --trl-soft:#1f2c3a; --mrl:#c9a3e6; --mrl-soft:#2d2338;
+  --ok:#7fcf9c; --ok-soft:#1d3226; --bad:#f0938a; --bad-soft:#3a2120; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--trl)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{font-family:var(--display);font-stretch:118%;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,7vw,56px);font-weight:900;letter-spacing:-.01em}
+h2{font-size:clamp(24px,4vw,32px);font-weight:800}
+h3{font-size:20px;font-weight:800}
+h4{font-size:16px;font-weight:700}
+p{margin:0}
+.lede{color:var(--muted);max-width:62ch}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* header */
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hex{position:absolute;inset:0 0 0 45%;background:var(--line);opacity:.7;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 1 55 16.5v31L28 63 1 47.5v-31z M28 63v34' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") repeat;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 1 55 16.5v31L28 63 1 47.5v-31z M28 63v34' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") repeat}
+header.top .wrap{position:relative;display:grid;gap:14px;padding-block:40px 32px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted)}
+
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.bar .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--fg);font-size:14px;font-weight:500;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+nav.bar a:hover{border-color:var(--accent)}
+
+main .wrap{display:grid;gap:56px;padding-block:40px 64px}
+section{display:grid;gap:20px;scroll-margin-top:64px}
+.sec-head{display:grid;gap:8px}
+
+.tag{justify-self:start;display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:4px}
+.tag.past{background:var(--sunk);color:var(--muted)}
+.tag.class{background:var(--accent-soft);color:var(--accent)}
+.tag.hw{background:var(--fg);color:var(--bg)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:14px;min-width:0}
+.step{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.note{font-size:14px;color:var(--muted)}
+ul,ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
+
+/* ladders */
+.co-h{padding-top:6px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.co-h small{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted)}
+.lad-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:680px){.lad-grid{grid-template-columns:1fr}}
+.lad-col{display:grid;gap:8px;align-content:start;min-width:0}
+.lad-col>h4{font-size:14px;letter-spacing:.04em;text-transform:uppercase;padding:6px 10px;border-radius:4px}
+.lad-col.t>h4{background:var(--trl-soft);color:var(--trl)}
+.lad-col.m>h4{background:var(--mrl-soft);color:var(--mrl)}
+.ms{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);font-size:14px}
+.ms select{font:inherit;font-family:var(--mono);font-size:13px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--fg);min-width:74px}
+.ms.right{border-color:var(--ok);background:var(--ok-soft)}
+.ms.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.lvl{font-family:var(--mono);font-size:13px;font-weight:500;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.lad-col.t .lvl{background:var(--trl-soft);color:var(--trl)}
+.lad-col.m .lvl{background:var(--mrl-soft);color:var(--mrl)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:var(--r);border:1px solid var(--fg);background:var(--fg);color:var(--bg);cursor:pointer}
+button.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+button:hover{opacity:.9}
+.score{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.ans-grid{display:grid;gap:10px}
+.stack-sm{display:grid;gap:6px;min-width:0}
+.rate-row{grid-template-columns:auto auto 1fr;align-items:end}
+.rate-row .sub,.rate-row .evid,.rate-row .why{grid-column:1/-1}
+.evid{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+.evid b{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--fg)}
+.rate-row textarea{font:inherit;font-family:var(--body);font-size:14px;letter-spacing:0;text-transform:none;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px;width:100%;resize:vertical}
+.ans-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ans-pair>*{min-width:0}
+@media (max-width:680px){.ans-pair{grid-template-columns:1fr}}
+
+details.ref{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+details.ref summary{cursor:pointer;padding:12px 16px;font-weight:600}
+details.ref .inner{padding:0 16px 16px;display:grid;gap:14px}
+.deftab{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+td.n{font-family:var(--mono);width:3.5em}
+
+.qs{display:grid;gap:10px;counter-reset:q}
+.q{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:15px}
+.qn{font-family:var(--mono);font-size:13px;color:var(--accent);padding-top:2px;font-variant-numeric:tabular-nums}
+
+/* case */
+.co-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:680px){.co-cards{grid-template-columns:1fr}}
+.co-cards .card h3{display:grid;gap:2px}
+.co-cards .card h3 span{font-family:var(--body);font-size:14px;font-weight:400;color:var(--muted);font-stretch:100%}
+.facts{display:grid;gap:6px;font-size:14px}
+.facts div{display:grid;grid-template-columns:7.5em 1fr;gap:8px}
+.facts dt,.facts b{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
+.seq{list-style:none;padding:0;display:grid;gap:0}
+.seq li{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.seq li:first-child{border-top:0}
+.seq .yr{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.seq .hexn{width:36px;height:40px;display:grid;place-items:center;font-family:var(--display);font-weight:800;color:var(--accent);background:var(--accent-soft);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+
+/* rating table */
+.rate{display:grid;gap:10px}
+.rate-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+@media (max-width:600px){.rate-row{grid-template-columns:1fr 1fr}.rate-row .sub{grid-column:1/-1}}
+.rate-row .sub{font-weight:600;font-size:15px;min-width:0}
+.rate-row label{display:grid;gap:2px;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.rate-row select{font:inherit;font-size:14px;padding:5px 6px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.rate-row details{grid-column:1/-1;font-size:14px}
+.rate-row details summary{cursor:pointer;color:var(--trl);font-weight:500}
+.rate-row details p{margin-top:6px;color:var(--muted)}
+
+/* curveball */
+.deal{display:grid;gap:14px}
+.cb-card{border:2px dashed var(--accent);border-radius:var(--r);padding:18px;display:grid;gap:8px;background:var(--accent-soft)}
+.cb-card .t{font-family:var(--display);font-stretch:112%;font-weight:800;font-size:19px}
+.cb-left{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.calc .box{border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:8px;background:var(--bg)}
+.calc label{font-size:14px;font-weight:500;display:grid;gap:4px}
+.calc input{font:inherit;font-family:var(--mono);padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--fg);width:100%}
+.out{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.out .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;text-align:right}
+.out .moon{color:var(--accent)}
+
+.models{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:680px){.models{grid-template-columns:1fr}}
+.model{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--bg);display:grid;gap:6px;align-content:start;min-width:0}
+.deftab td.mono{font-family:var(--body);font-variant-numeric:tabular-nums}
+.hw-sep{display:flex;align-items:center;gap:20px;margin-bottom:-28px}
+.hw-sep::before,.hw-sep::after{content:"";flex:1;border-top:3px solid var(--fg)}
+.hw-sep span{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:clamp(28px,4vw,40px);letter-spacing:.12em;color:var(--fg);text-align:center}
+.hw-due{margin:0 0 -28px;text-align:center;font-family:var(--display);font-stretch:112%;font-weight:700;font-size:clamp(20px,2.6vw,26px);color:var(--bad)}
+.sub{display:grid;gap:14px}
+.sub-h{font-size:22px}
+.due{border-left:4px solid var(--fg);padding:10px 14px;background:var(--surface);font-size:15px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer .wrap{padding-block:24px 40px;display:grid;gap:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+</style>
+
+<header class="top">
+  <div class="hex" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="eyebrow">EMGT 5061 · Introduction to Space Industry · Fall 2026</span>
+    <h1>Who Builds the Moon?</h1>
+    <p class="lede">Lunar autonomy and robotics, commercial habitats on the Moon, and habitats in orbit. You are the engineer advising an investment firm. Three fictional companies have pitched you.</p>
+    <div class="meta"><span>October 21, 2026</span><span>Dr. Bidushi Bhattacharya</span><span>Record your answers in this week's student deck</span></div>
+  </div>
+</header>
+
+<nav class="bar" aria-label="Sections">
+  <div class="wrap">
+    <a href="#companies">Companies</a>
+    <a href="#perigee">Perigee House</a>
+    <a href="#ex1">In class</a>
+    <a href="#hw">Homework</a>
+    <a href="#case">On the Moon</a>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<!-- COMPANIES -->
+<section id="companies">
+  <div class="sec-head">
+    <h2>This week's companies</h2>
+    <p class="lede">Three fictional companies are under consideration this week.</p>
+  </div>
+
+  <div class="card">
+    <h3>Perigee House</h3>
+    <div class="facts">
+      <div><b>Product</b><span>A four-bed expandable module in low Earth orbit. Guests stay 5 to 7 days, then fly home.</span></div>
+      <div><b>Transport</b><span>Perigee owns no crew vehicle. It buys whole flights from one crew transport provider. Each flight carries four people.</span></div>
+      <div><b>Hardware</b><span>A full-size module has passed pressure tests on the ground, and a 30-day crew test in a ground mockup is complete. Nothing has flown. The automated systems for a stay with no crew aboard have been tested only in computer simulation.</span></div>
+      <div><b>Funding</b><span>Raising money now to build and launch the module.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Hexpave Lunar</h3>
+    <div class="facts">
+      <div><b>Founded</b><span>2024, U.S. Raised a $40M Series A from a space VC fund and a construction-materials company.</span></div>
+      <div><b>Product</b><span>Six autonomous rovers, about 150 kg each. They sinter regolith into hexagonal pavers with microwaves and lay pads, berms and roads.</span></div>
+      <div><b>Operations</b><span>Supervised autonomy from Earth, with a round-trip delay of about 2.5 seconds.</span></div>
+      <div><b>Customers</b><span>One-Sixth Park (anchor), a NASA Moon Base pad bid, lander companies.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>One-Sixth Park</h3>
+    <div class="facts">
+      <div><b>Founded</b><span>U.S. Media and theme-park veterans, backed by VC, a gaming studio and brand sponsors.</span></div>
+      <div><b>Site</b><span>A flat near-side mare plain in view of Earth, about 40 km from the nearest Apollo landing site.</span></div>
+      <div><b>Owns</b><span>No robots. Hires Hexpave and buys lander rides.</span></div>
+      <div><b>Revenue now</b><span>Subscribers on Earth drive a real rover, plus livestreams, gaming licenses and naming rights. Crewed visitors come later.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How the three companies connect</h3>
+    <div class="models">
+      <div class="model"><h4>Same module, two worlds</h4><p>One-Sixth Park's worker quarters use the same expandable module that Perigee House flies in orbit. Perigee's first flight is the module's first test in space.</p></div>
+      <div class="model"><h4>Orbit first, Moon later</h4><p>Perigee House's guests are One-Sixth Park's most likely future visitors. People who pay for a week in orbit are the best prospects for a trip to the Moon, so Perigee's bookings are the first real evidence of demand for crewed lunar visits.</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="In class"><span>IN CLASS</span></div>
+
+<!-- PERIGEE HOUSE -->
+<section id="perigee">
+  <div class="sec-head">
+    <span class="tag class">In orbit</span>
+    <h2>Perigee House: a hotel in orbit</h2>
+    <p class="lede">Perigee House wants to run the first hotel in low Earth orbit. Before your firm invests, Perigee has to decide how a stay will run: with only guests aboard, or with its own crew.</p>
+  </div>
+
+  <div class="card">
+    <h3>Two ways to run a stay</h3>
+    <div class="models">
+      <div class="model"><h4>Model A: Autonomous</h4><p>No Perigee crew aboard. The crew vehicle flies itself, and the module runs on automated systems watched by mission control on the ground. All four seats go to paying guests.</p></div>
+      <div class="model"><h4>Model B: Crewed</h4><p>One or two Perigee crew members fly up with each group and stay the whole visit: a commander, and if there are two, a host who is also a flight engineer. That leaves three seats for guests, or two.</p></div>
+    </div>
+    <p class="note">Both have precedent. Crew Dragon is designed to fly itself, and Inspiration4 (2021) carried four private crew with no professional astronaut aboard. NASA requires private missions to the ISS to have an experienced former astronaut as commander, which is why every Axiom flight gives up one seat.</p>
+  </div>
+
+  <div class="card">
+    <h3>Perigee's costs</h3>
+    <div class="deftab"><table>
+      <thead><tr><th>Item</th><th>Model A: Autonomous</th><th>Model B: Crewed</th></tr></thead>
+      <tbody>
+        <tr><td>Module, built and launched</td><td class="mono">$700M, including $100M for the automated systems</td><td class="mono">$600M</td></tr>
+        <tr><td>Crew flights the provider will sell Perigee</td><td>2 in year 1, 4 in year 2</td><td>2 in year 1, 4 in year 2</td></tr>
+        <tr><td>One crew flight (four seats)</td><td class="mono">$70M</td><td class="mono">$70M</td></tr>
+        <tr><td>Supplies, cargo and operations per visit</td><td class="mono">$10M</td><td class="mono">$10M</td></tr>
+        <tr><td>Perigee crew</td><td>None</td><td class="mono">$5M per crew member per visit</td></tr>
+        <tr><td>Guest training</td><td class="mono">8 weeks, $2M per guest, paid by Perigee</td><td>A short course, included in operations</td></tr>
+        <tr><td>Fixed costs: mission control, staff, insurance</td><td class="mono">$50M a year, including $10M more for insurance</td><td class="mono">$40M a year</td></tr>
+        <tr><td>Turnaround between visits</td><td>10 days</td><td>10 days</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>Who wants a seat</h3>
+    <div class="deftab"><table>
+      <thead><tr><th>Customer</th><th>Price per seat</th><th>What they've signed</th></tr></thead>
+      <tbody>
+        <tr><td>Governments, for national astronauts</td><td class="mono">$60M</td><td>2 countries have binding contracts, 1 seat each. 4 more have signed letters of intent, 1 seat each.</td></tr>
+        <tr><td>A pharmaceutical company, for its researchers</td><td class="mono">$45M</td><td>A binding contract for 2 seats over two years</td></tr>
+        <tr><td>Private travelers</td><td class="mono">$35M; $45M for a hosted stay with crew aboard</td><td>6 have paid refundable $1M deposits. 11 more have expressed interest.</td></tr>
+        <tr><td>A streaming company</td><td class="mono">$8M per visit, no seat</td><td>Filming rights, signed for the first visit only</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Perigee House and all of its figures are fictional, for teaching.</p>
+  </div>
+</section>
+
+<!-- IN CLASS 1 -->
+<section id="ex1">
+  <div class="sec-head">
+    <h2>Exercise 1: Who's in the four seats?</h2>
+    <p class="lede">Your instructor will give each pair one model: autonomous, crewed with one crew member, or crewed with two. Work through the questions for your model, then compare results with the class.</p>
+  </div>
+  <div class="card">
+    <div class="qs">
+      <div class="q"><span class="qn">1.1</span><p><strong>Capacity.</strong> Under your model, how many guest seats can Perigee sell in year 1 and in year 2? With 7-day stays, how many days a year is the module occupied? What limits it: the module or the flights?</p></div>
+      <div class="q"><span class="qn">1.2</span><p><strong>Fill the seats.</strong> Using the Who wants a seat table, plan who flies in years 1 and 2. Who goes first, and why? Is there enough demand to fill your seats?</p></div>
+      <div class="q"><span class="qn">1.3</span><p><strong>Does it pay?</strong> Compare each year's revenue with its costs. At your year-2 result, roughly how many years would it take to pay back the module?</p></div>
+      <div class="q"><span class="qn">1.4</span><p><strong>Recommend.</strong> Which model would you recommend to your firm, and what risk does it leave Perigee carrying?</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="Homework"><span>HOMEWORK</span></div>
+<p class="hw-due">Due before October 28, 3 pm</p>
+
+<!-- HOMEWORK -->
+<section id="hw">
+  <div class="sec-head">
+    <p class="due">Answer in this week's student deck and upload it to <a href="https://nmt.instructure.com/courses/42326/assignments/200883">Canvas</a>.</p>
+  </div>
+
+<!-- CASE -->
+<div class="sub" id="case">
+  <div class="sec-head">
+    <span class="tag class">On the Moon</span>
+    <h2>On the Moon: Hexpave Lunar and One-Sixth Park</h2>
+    <p class="lede">Hexpave Lunar builds infrastructure with robots. One-Sixth Park hires it to build the first amusement park on the Moon. Both depend on what Perigee House proves in orbit.</p>
+  </div>
+
+  <div class="card">
+    <h3>The contract and the build</h3>
+    <p>A $120M fixed-price, milestone-based contract, modeled on NASA's CLPS approach: 20% at signing, then payments only when each structure passes an acceptance test on the Moon. Hexpave may sell pads to other customers. One-Sixth Park buys the lander rides, and buys its habitat module from Perigee House. Each company insures its own hardware.</p>
+    <ol class="seq">
+      <li><span class="hexn">1</span><div><h4>Landing pad</h4><span class="yr">2028</span><p>Rovers grade the site and lay a 30 m pad with a berm, so every later lander touches down on a hard surface.</p></div></li>
+      <li><span class="hexn">2</span><div><h4>Worker quarters</h4><span class="yr">2029–2030</span><p>A second lander delivers an expandable module built on Earth to Perigee House's design. Hexpave's robots build a vaulted shell of sintered pavers over it, leaving a gap so no weight rests on the module. The shell protects against radiation, micrometeoroids and the temperature swings of the lunar day and night. At first the workers are mostly robots: the quarters include a bay to charge, repair and survive the two-week lunar night.</p></div></li>
+      <li><span class="hexn">3</span><div><h4>The park</h4><span class="yr">2031 onward</span><p>Unpressurized attractions first, such as a low-gravity jump zone and a rover race track. Pressurized rides and crewed visitors only when transport allows.</p></div></li>
+    </ol>
+    <p class="note">Both companies and every figure here are fictional, for teaching.</p>
+  </div>
+
+  <div class="card">
+    <span class="step">Homework 1</span>
+    <h3>The investment committee</h3>
+    <div class="qs">
+      <div class="q"><span class="qn">H1.1</span><p>Your firm has room for one lunar deal this year. Fund Hexpave, One-Sixth Park, both, or neither?</p></div>
+      <div class="q"><span class="qn">H1.2</span><p>Name the one milestone that would have to happen before you funded the company you passed on.</p></div>
+      <div class="q"><span class="qn">H1.3</span><p>If One-Sixth Park failed tomorrow, would Hexpave still be worth funding? What does your answer say about the value of having separate companies?</p></div>
+      <div class="q"><span class="qn">H1.4</span><p>Perigee House's first flight slips by a year. What does that do to One-Sixth Park's plans?</p></div>
+    </div>
+  </div>
+</div>
+
+
+  <div class="card">
+    <span class="step">Homework 2</span>
+    <h3>Design one attraction for one-sixth gravity</h3>
+    <p>Lunar gravity is 1.62 m/s², about one-sixth of Earth's 9.81 m/s². Use the calculator to see what that does to rides.</p>
+    <div class="calc">
+      <div class="box">
+        <label for="v">Coaster speed at the bottom of the first drop (m/s)<input id="v" type="number" min="1" max="60" step="1" value="20" inputmode="decimal"></label>
+        <div class="out"><span>Drop height on Earth</span><span class="v" id="hE"></span><span class="moon">Drop height on the Moon</span><span class="v moon" id="hM"></span></div>
+      </div>
+      <div class="box">
+        <label for="j">A visitor's bounce height on a trampoline on Earth (m)<input id="j" type="number" min="0.1" max="5" step="0.1" value="1.5" inputmode="decimal"></label>
+        <div class="out"><span>Same bounce on the Moon</span><span class="v moon" id="jM"></span><span>Time in the air, Moon</span><span class="v" id="tM"></span></div>
+        <p class="note">Assumes the visitor leaves the trampoline at the same speed on the Moon as on Earth.</p>
+      </div>
+    </div>
+    <div class="qs">
+      <div class="q"><span class="qn">H2.1</span><div class="stack-sm"><p>Choose either attraction above, the roller coaster or the trampoline. Give it a TRL, then say what test would move it up one level.</p>
+        <p class="note">To help you, here is what would move each attraction from TRL 1 to TRL 2. You can't use these examples as your answer.</p>
+        <ul class="note">
+          <li><strong>Roller coaster:</strong> engineers go from the known physics of a cart rolling under one-sixth gravity (TRL 1) to a written concept for a specific coaster, giving its track length, drop height, dust-tolerant wheels and how riders are held in their seats (TRL 2).</li>
+          <li><strong>Trampoline:</strong> engineers go from measurements of how springs and mat fabric behave in cold and vacuum (TRL 1) to a written concept for a trampoline inside a pressurized dome, giving the bounce height, the ceiling clearance it needs and the mat material (TRL 2).</li>
+        </ul></div></div>
+    </div>
+  </div>
+
+<!-- TRL AND MRL -->
+<div class="sub" id="trl-mrl">
+  <h3 class="sub-h">TRL and MRL</h3>
+  <p class="lede">For worked examples of both ladders, see <a href="https://astrobidushi.github.io/EMGT-5061-Fall-2026/space%20nuc%20%26%20lunar%20infra/">Ready for the Moon?</a> Use it and the definitions below to complete Homework 3.</p>
+
+  <details class="ref">
+    <summary>Ladder definitions (TRL 1–9 and MRL 0–9)</summary>
+    <div class="inner">
+      <div class="deftab"><table>
+        <thead><tr><th>TRL</th><th>Technology Readiness (NASA)</th></tr></thead>
+        <tbody id="def-t"></tbody>
+      </table></div>
+      <div class="deftab"><table>
+        <thead><tr><th>MRL</th><th>Market Readiness (Mealing, Starbridge Venture Capital)</th></tr></thead>
+        <tbody id="def-m"></tbody>
+      </table></div>
+    </div>
+  </details>
+
+</div>
+
+  <div class="card">
+    <span class="step">Homework 3</span>
+    <h3>Rate the robots</h3>
+    <p>Use the TRL and MRL definitions and the worked examples in the TRL and MRL section above. For each Hexpave Lunar and One-Sixth Park subsystem below, read the evidence, then pick a TRL and decide which company carries the risk. There is no single right answer: defend your choice in the box under each one.</p>
+    <div class="rate" id="rate"></div>
+    <div class="qs">
+      <div class="q"><span class="qn">H3.1</span><p>Which subsystem is the lowest TRL in the whole plan, and which phase does it block?</p></div>
+      <div class="q"><span class="qn">H3.2</span><p>Where does the evidence come from a different setting (Mars, the ISS, a lab on Earth)? How much should that count?</p></div>
+    </div>
+  </div>
+
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Hexpave Lunar, One-Sixth Park, Perigee House, Polar Well and Nightfall Power are fictional. Their figures are simplified for teaching. Ladder definitions follow NASA's Technology Readiness Levels and Mealing's Market Readiness Levels (Starbridge Venture Capital).</p>
+    <p>EMGT 5061 · New Mexico Tech · Fall 2026</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+const TRL_DEF=["","Basic principles observed","Technology concept formulated","Proof of concept in the lab, parts tested separately","Components work together in the lab","Components work together in a relevant environment","Full-scale prototype demonstrated in a relevant environment","Prototype demonstrated in space","Flight system qualified","Flight proven on a real mission"];
+const MRL_DEF=[
+ "<b>Perceived need.</b> Exit criteria: documented conversations, existing market research, and rough outlines of the problem.",
+ "<b>Value proposition drafted.</b> Exit criteria: at least one draft value proposition statement.",
+ "<b>Customers characterized.</b> Exit criteria: the customer side of the Business Model Canvas completed, and potential customers identified to validate the value proposition and the canvas.",
+ "<b>Customer discovery.</b> Exit criteria: the customer side of the canvas validated by customer feedback, plus documented interviews on the value of the problem, past solutions, and the financial value of solving it.",
+ "<b>Low-fi MVP designed.</b> Exit criteria: a low-fidelity minimum viable product, metrics that measure how well the canvas matches actual use, and a large enough set of diverse customers.",
+ "<b>Low-fi MVP tested.</b> Exit criteria: usage metrics and all feedback from customers and stakeholders.",
+ "<b>Model revalidated.</b> Exit criteria: a fully validated canvas and all resources needed to build and test a high-fidelity MVP.",
+ "<b>High-fi MVP tested.</b> Exit criteria: data, customer feedback and metrics from the high-fidelity MVP campaign.",
+ "<b>Model validated with MVP.</b> Exit criteria: a fully validated and documented Business Model Canvas.",
+ "<b>Go-to-market decision.</b> Exit criteria: a yes or no decision to launch."];
+
+const DATA={
+ pw:{t:[
+  "Scientists measure how water ice escapes from lunar soil simulant as vapor when it is heated in a vacuum.",
+  "Engineers write a concept study for a solar thermal extractor that heats icy soil and captures the water vapor. No hardware yet.",
+  "In separate lab tests, concentrated light frees water from a small sample of icy simulant, and a cold trap catches the vapor as predicted.",
+  "The heater, vapor line and cold trap are joined on a lab bench and pull water out of icy regolith simulant together.",
+  "The bench system runs in a vacuum chamber chilled to south-pole crater temperatures.",
+  "A full-scale prototype extractor completes its test campaign in a large vacuum chamber, working through tons of icy simulant.",
+  "A demonstration extractor lands near the south pole and pulls water out of real lunar ice.",
+  "The flight extractor passes qualification tests and is installed on a customer's lunar lander.",
+  "A Polar Well extractor has supplied water on the Moon on a real mission for more than a year."],
+ m:[
+  "The founders hear lander companies and NASA engineers say that propellant made on the Moon could cut mission costs, and keep notes.",
+  "The team writes its first statement: water mined on the Moon, sold as propellant for less per kilogram than launching it from Earth.",
+  "The team fills in the customer side of its business model canvas (lander companies, NASA, fuel-depot operators) and lists 20 organizations to interview.",
+  "Interviews with lander companies, NASA and fuel-depot operators confirm how much water they need, where they need it, and what they would pay per kilogram.",
+  "The team builds a spec sheet, a draft purchase contract and a price list per kilogram, on the surface and in orbit, and decides how much interest will count as success.",
+  "Twelve prospective customers review the spec sheet and draft purchase contract; the team records their feedback and counts letters of intent.",
+  "The business model is revalidated, and the team has everything it needs to run a high-fidelity customer test.",
+  "A customer pays for water made by the full-scale ground prototype and runs it through its own propellant system, and the team gathers the data.",
+  "The full business model, including where to sell the water and an anchor customer contract, is validated and documented.",
+  "The board decides to fly the first commercial ice-mining operation."]},
+ nf:{t:[
+  "Scientists measure how candidate fuel and shielding materials behave under radiation.",
+  "Engineers write a concept study for a 40 kW lunar reactor and why it could beat solar power through the lunar night. No hardware yet.",
+  "A single heat pipe and a single power converter each work as predicted in separate lab tests.",
+  "An electrically heated core stand-in is connected to heat pipes and a power converter on a lab bench.",
+  "The electrically heated system runs in a vacuum chamber at lunar temperatures.",
+  "A full-scale prototype, loaded with real uranium fuel, completes its ground test campaign at a national lab.",
+  "A demonstration reactor lands on the Moon and keeps delivering power through its first lunar night.",
+  "The flight reactor passes qualification tests and the launch safety review, and is installed on a customer's lunar lander.",
+  "A Nightfall reactor has powered a lunar base on a real mission for more than a year."],
+ m:[
+  "The founders hear NASA engineers and lander companies say that surviving the lunar night is a major problem, and keep notes.",
+  "The team writes its first statement: reliable power through the lunar night for bases and mining sites, sold by the kilowatt-hour.",
+  "The team fills in the customer side of its business model canvas (NASA, mining firms, the military) and lists 25 organizations to interview.",
+  "Interviews with NASA, lunar mining startups and lander companies confirm the need, how much power they want, and how they would buy it.",
+  "The team builds a spec sheet, a draft power-purchase contract and a pricing model, and decides how much interest will count as success.",
+  "Ten prospective customers review the spec sheet and draft contract; the team records their feedback and counts letters of intent.",
+  "The business model is revalidated, and the team has everything it needs to run a high-fidelity customer test.",
+  "A customer tests its own equipment on the full-scale ground prototype under a paid test agreement, and the team gathers the data.",
+  "The full business model, including price per kilowatt-hour and a government anchor contract, is validated and documented.",
+  "The board decides to build the first commercial lunar power station."]}
+};
+
+function el(tag,attrs,html){const e=document.createElement(tag);if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]);if(html!=null)e.innerHTML=html;return e}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+
+// definitions
+const dt=document.getElementById("def-t"),dm=document.getElementById("def-m");
+for(let i=1;i<=9;i++)dt.appendChild(el("tr",null,`<td class="n">${i}</td><td>${TRL_DEF[i]}</td>`));
+for(let i=0;i<=9;i++)dm.appendChild(el("tr",null,`<td class="n">${i}</td><td>${MRL_DEF[i]}</td>`));
+
+// seeded shuffle so every student sees the same order
+function shuffled(n,seed){const a=[...Array(n).keys()];let s=seed;for(let i=n-1;i>0;i--){s=(s*9301+49297)%233280;const j=Math.floor(s/233280*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+// Fixed milestone order for the worked examples
+const ORDER={"pw-t":[4,7,1,8,3,6,2,9,5],"pw-m":[5,1,9,3,4,0,7,2,6,8],"nf-t":[8,3,2,7,4,9,1,6,5],"nf-m":[3,9,0,5,1,7,2,8,4,6]};
+const lists={};
+function build(co,kind,seed){
+  const items=DATA[co][kind], start=kind==="t"?1:0, host=document.getElementById(`${co}-${kind}`);
+  lists[`${co}-${kind}`]=[];
+  ORDER[`${co}-${kind}`].forEach(L=>{
+    const row=el("div",{class:"ms"});
+    row.appendChild(el("span",{class:"lvl"},`${kind==="t"?"TRL":"MRL"} ${L}`));
+    row.appendChild(el("span",null,esc(items[L-start])));
+    host.appendChild(row);
+  });
+}
+
+
+function check(co){
+  let out=[];
+  ["t","m"].forEach(k=>{
+    let right=0,blank=0;const L=lists[`${co}-${k}`];
+    L.forEach(o=>{o.row.classList.remove("right","wrong");if(!o.sel.value){blank++;return}
+      if(+o.sel.value===o.ans){right++;o.row.classList.add("right")}else o.row.classList.add("wrong")});
+    out.push(`${k==="t"?"TRL":"MRL"}: ${right} of ${L.length} correct${blank?` (${blank} not answered)`:""}`);
+  });
+  document.getElementById(`score-${co}`).textContent=out.join(" · ");
+}
+function reset(co){["t","m"].forEach(k=>lists[`${co}-${k}`].forEach(o=>{o.sel.value="";o.row.classList.remove("right","wrong")}));document.getElementById(`score-${co}`).textContent=""}
+document.querySelectorAll("[data-check]").forEach(b=>b.addEventListener("click",()=>check(b.dataset.check)));
+document.querySelectorAll("[data-reset]").forEach(b=>b.addEventListener("click",()=>reset(b.dataset.reset)));
+
+
+// Exercise 1 rating
+
+const SUBS=[
+ ["Autonomous rover navigation and fleet coordination","NASA's CADRE will test three rovers cooperating on their own when it flies on Intuitive Machines' IM-3, now targeted for early 2027. China's Yutu-2 rover has driven on the far side since 2019, but mostly under close direction from Earth. Mars rovers drive themselves, in a different setting."],
+ ["Microwave sintering of regolith into load-bearing pavers","Sintering has been shown on regolith simulant in labs on Earth. No one has sintered regolith on the Moon."],
+ ["Dust tolerance of rover mechanisms over months","Apollo crews found lunar dust abrasive and clinging. Firefly's Blue Ghost Mission 1 carried an electrodynamic dust shield demonstration in 2025. No commercial rover has worked months on the surface."],
+ ["Surviving the two-week lunar night","IM-1 shut down at its first lunar night, and Blue Ghost M1 ended at sunset after 14 days. JAXA's SLIM survived several nights. China's rovers use radioisotope heat and have survived for years."],
+ ["Expandable habitat module and its paver shell","An expandable test module (BEAM) has been attached to the ISS since 2016. Perigee House's module has been tested only on the ground. No one has built a shielding shell from regolith anywhere."],
+ ["Live rover driving from Earth with a 2.5-second delay","Soviet crews drove the Lunokhod rovers from Earth in the 1970s. Driving by paying members of the public has not been tried."],
+ ["Commercial lander rides to the surface","Of five commercial landing attempts since 2024, one landed upright and worked as planned (Blue Ghost M1), two landed but tipped over (IM-1, IM-2), and two were lost (Peregrine, Hakuto-R M2)."],
+ ["Transport for paying human visitors","Artemis IV, targeted for 2028, is planned as the first crewed landing since 1972. No commercial transport for tourists to the lunar surface exists."]
+];
+const rate=document.getElementById("rate");
+SUBS.forEach((s,i)=>{
+  const r=el("div",{class:"rate-row"});
+  r.appendChild(el("div",{class:"sub"},esc(s[0])));
+  const ev=el("div",{class:"evid"});ev.appendChild(el("b",null,"Evidence to weigh"));ev.appendChild(el("p",null,esc(s[1])));r.appendChild(ev);
+  const l1=el("label",{for:`trl-${i}`},"TRL");const s1=el("select",{id:`trl-${i}`});s1.appendChild(el("option",{value:""},"Pick"));for(let L=1;L<=9;L++)s1.appendChild(el("option",{value:L},`TRL ${L}`));l1.appendChild(s1);
+  const l2=el("label",{for:`risk-${i}`},"Risk sits with");const s2=el("select",{id:`risk-${i}`});["Pick","Hexpave","One-Sixth Park","Lander provider","Shared"].forEach((t,k)=>s2.appendChild(el("option",{value:k?t:""},t)));l2.appendChild(s2);
+  r.appendChild(l1);r.appendChild(l2);
+  const why=el("label",{for:`why-${i}`,class:"why"},"Defend your choice");why.appendChild(el("textarea",{id:`why-${i}`,rows:"3"}));r.appendChild(why);
+  rate.appendChild(r);
+});
+
+// Homework calculator
+const gE=9.81,gM=1.62,fmt=(x,u)=>isFinite(x)?`${x.toFixed(x<10?1:0)} ${u}`:"–";
+function calc(){
+  const v=parseFloat(document.getElementById("v").value),j=parseFloat(document.getElementById("j").value);
+  document.getElementById("hE").textContent=fmt(v*v/(2*gE),"m");
+  document.getElementById("hM").textContent=fmt(v*v/(2*gM),"m");
+  const jm=j*gE/gM;document.getElementById("jM").textContent=fmt(jm,"m");
+  document.getElementById("tM").textContent=fmt(2*Math.sqrt(2*jm/gM),"s");
+}
+["v","j"].forEach(id=>document.getElementById(id).addEventListener("input",calc));calc();
+})();
+</script>
+
+</body>
+</html>
