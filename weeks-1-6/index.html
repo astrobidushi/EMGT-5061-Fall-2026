@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Weeks 1–6</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one column; week index up top, then each week with its decks shown one slide at a time. Tokens match the course home page. */
+:root{
+  --bg:#F5F6F8; --surface:#FFFFFF; --ink:#17202E; --muted:#566173; --line:#D5DBE3; --stage:#E9ECF1;
+  --accent:#2C5FA8; --focus:#2C5FA8; --hw:#B23A2B;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){color-scheme:dark;
+  --bg:#0F141C; --surface:#171E29; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746; --stage:#0B0F15;
+  --accent:#7FA7E6; --focus:#9CBBF0; --hw:#F08A7A;}}
+:root[data-theme="dark"]{color-scheme:dark;
+  --bg:#0F141C; --surface:#171E29; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746; --stage:#0B0F15;
+  --accent:#7FA7E6; --focus:#9CBBF0; --hw:#F08A7A;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 56px;display:grid;gap:36px}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible,.stage:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.back{font-size:14px;font-weight:500;text-decoration:none}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:14px 0 6px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(32px,5.5vw,46px);font-weight:800;letter-spacing:-.01em}
+.lede{color:var(--muted);margin:10px 0 0;max-width:62ch}
+.index{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-top:22px}
+.index a{display:grid;gap:2px;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface);text-decoration:none;color:var(--ink)}
+.index a:hover{border-color:var(--accent)}
+.nav-wk{font-family:var(--mono);font-size:11.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.nav-date{font-weight:600;font-size:15px}
+.week{display:grid;gap:18px;scroll-margin-top:16px}
+.week-head{border-top:2px solid var(--ink);padding-top:12px}
+.week-label{font-family:var(--mono);font-size:12.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0 0 4px}
+.week h2{font-size:26px;font-weight:800}
+.no-ex{margin:0;padding:14px 16px;border:1px dashed var(--line);border-radius:10px;color:var(--muted)}
+.deck{display:grid;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px}
+.deck-head{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:flex-start;justify-content:space-between}
+.deck-text{min-width:0;flex:1 1 320px;display:grid;gap:4px}
+.kind{margin:0;font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.kind-homework{color:var(--hw)}
+.deck h3{font-size:20px;font-weight:700}
+.blurb{margin:0;color:var(--muted);max-width:65ch}
+.pdf{flex:none;font-size:14px;font-weight:600;text-decoration:none;padding:6px 12px;border:1px solid var(--line);border-radius:999px;white-space:nowrap}
+.pdf:hover{border-color:var(--accent)}
+.stage{background:var(--stage);border-radius:8px;display:flex;justify-content:center;align-items:center;padding:10px;min-height:120px}
+.slide{display:block;max-width:100%;max-height:78vh;width:auto;height:auto;border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.18)}
+.controls{display:flex;align-items:center;justify-content:center;gap:14px}
+.controls button{font:600 14px var(--body);color:var(--ink);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:7px 14px;cursor:pointer}
+.controls button:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.controls button:disabled{opacity:.4;cursor:default}
+.count{font-family:var(--mono);font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;min-width:56px;text-align:center}
+.count b{color:var(--ink);font-weight:500}
+.thumbs{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px}
+.thumb{flex:none;padding:0;border:2px solid transparent;border-radius:5px;background:none;cursor:pointer;opacity:.7}
+.thumb img{display:block;height:54px;width:auto;border-radius:3px}
+.thumb[aria-current="true"]{border-color:var(--accent);opacity:1}
+.thumb:hover{opacity:1}
+footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<a class="back" href="../">← EMGT 5061 Course Tools</a>
+<p class="eyebrow">EMGT 5061 · Introduction to Space Industry · Fall 2026</p>
+<h1>Weeks 1–6</h1>
+<p class="lede">Breakout slides from August 19 to September 23, 2026, when in-class exercises and homework covered the basics of the space industry. Click through each deck here, or open the PDF to keep a copy.</p>
+<nav class="index" aria-label="Weeks"><a href="#aug19"><span class="nav-wk">Week 1</span><span class="nav-date">August 19</span></a><a href="#aug26"><span class="nav-wk">Week 2</span><span class="nav-date">August 26</span></a><a href="#sep02"><span class="nav-wk">Week 3</span><span class="nav-date">September 2</span></a><a href="#sep09"><span class="nav-wk">Week 4</span><span class="nav-date">September 9</span></a><a href="#sep16"><span class="nav-wk">Week 5</span><span class="nav-date">September 16</span></a><a href="#sep23"><span class="nav-wk">Week 6</span><span class="nav-date">September 23</span></a></nav>
+</header>
+<section class="week" id="aug19" aria-labelledby="aug19-h">
+<header class="week-head"><p class="week-label">Week 1 · August 19, 2026</p><h2 id="aug19-h">Getting started</h2></header>
+<article class="deck" data-slides="[[&quot;img/aug19-introductions-1.jpg&quot;, 1600, 1237], [&quot;img/aug19-introductions-2.jpg&quot;, 1600, 1237], [&quot;img/aug19-introductions-3.jpg&quot;, 1600, 1237], [&quot;img/aug19-introductions-4.jpg&quot;, 1600, 1237]]" data-title="Introductions">
+<div class="deck-head"><div class="deck-text"><p class="kind kind-in">In class</p><h3>Introductions</h3><p class="blurb">Breakout Session 1. Pairs interview each other and introduce their partner.</p></div>
+<a class="pdf" href="pdf/aug19-introductions.pdf" target="_blank" rel="noopener">PDF · 4 slides</a></div>
+<div class="stage" tabindex="0" aria-label="Introductions slides"><img class="slide" src="img/aug19-introductions-1.jpg" width="1600" height="1237" alt="Introductions, slide 1 of 4"></div>
+<div class="controls"><button type="button" class="prev" aria-label="Previous slide">‹ Previous</button><span class="count" aria-live="polite"><b>1</b> / 4</span><button type="button" class="next" aria-label="Next slide">Next ›</button></div>
+<div class="thumbs"><button type="button" class="thumb" data-i="0" aria-label="Slide 1" aria-current="true"><img src="img/aug19-introductions-1.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="1" aria-label="Slide 2"><img src="img/aug19-introductions-2.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="2" aria-label="Slide 3"><img src="img/aug19-introductions-3.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="3" aria-label="Slide 4"><img src="img/aug19-introductions-4.jpg" alt="" loading="lazy" width="1600" height="1237"></button></div>
+</article>
+<article class="deck" data-slides="[[&quot;img/aug19-reflections-1.jpg&quot;, 1600, 1237], [&quot;img/aug19-reflections-2.jpg&quot;, 1600, 1237], [&quot;img/aug19-reflections-3.jpg&quot;, 1600, 1237], [&quot;img/aug19-reflections-4.jpg&quot;, 1600, 1237], [&quot;img/aug19-reflections-5.jpg&quot;, 1600, 1237]]" data-title="Reflections on Space Industry">
+<div class="deck-head"><div class="deck-text"><p class="kind kind-in">In class</p><h3>Reflections on Space Industry</h3><p class="blurb">Breakout Session 2. Where the industry grows by 2030, and when space mining becomes real.</p></div>
+<a class="pdf" href="pdf/aug19-reflections.pdf" target="_blank" rel="noopener">PDF · 5 slides</a></div>
+<div class="stage" tabindex="0" aria-label="Reflections on Space Industry slides"><img class="slide" src="img/aug19-reflections-1.jpg" width="1600" height="1237" alt="Reflections on Space Industry, slide 1 of 5"></div>
+<div class="controls"><button type="button" class="prev" aria-label="Previous slide">‹ Previous</button><span class="count" aria-live="polite"><b>1</b> / 5</span><button type="button" class="next" aria-label="Next slide">Next ›</button></div>
+<div class="thumbs"><button type="button" class="thumb" data-i="0" aria-label="Slide 1" aria-current="true"><img src="img/aug19-reflections-1.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="1" aria-label="Slide 2"><img src="img/aug19-reflections-2.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="2" aria-label="Slide 3"><img src="img/aug19-reflections-3.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="3" aria-label="Slide 4"><img src="img/aug19-reflections-4.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="4" aria-label="Slide 5"><img src="img/aug19-reflections-5.jpg" alt="" loading="lazy" width="1600" height="1237"></button></div>
+</article>
+</section>
+<section class="week" id="aug26" aria-labelledby="aug26-h">
+<header class="week-head"><p class="week-label">Week 2 · August 26, 2026</p><h2 id="aug26-h">Government missions</h2></header>
+<article class="deck" data-slides="[[&quot;img/aug26-government-mission-outcomes-1.jpg&quot;, 1600, 900], [&quot;img/aug26-government-mission-outcomes-2.jpg&quot;, 1600, 900], [&quot;img/aug26-government-mission-outcomes-3.jpg&quot;, 1600, 900], [&quot;img/aug26-government-mission-outcomes-4.jpg&quot;, 1600, 900], [&quot;img/aug26-government-mission-outcomes-5.jpg&quot;, 1600, 900], [&quot;img/aug26-government-mission-outcomes-6.jpg&quot;, 1600, 900], [&quot;img/aug26-government-mission-outcomes-7.jpg&quot;, 1600, 900], [&quot;img/aug26-government-mission-outcomes-8.jpg&quot;, 1600, 900]]" data-title="Government Mission Outcomes">
+<div class="deck-head"><div class="deck-text"><p class="kind kind-in">In class</p><h3>Government Mission Outcomes</h3><p class="blurb">Team Apollo studies the landing sites. Team Shuttle studies the missions and what they opened up in low Earth orbit.</p></div>
+<a class="pdf" href="pdf/aug26-government-mission-outcomes.pdf" target="_blank" rel="noopener">PDF · 8 slides</a></div>
+<div class="stage" tabindex="0" aria-label="Government Mission Outcomes slides"><img class="slide" src="img/aug26-government-mission-outcomes-1.jpg" width="1600" height="900" alt="Government Mission Outcomes, slide 1 of 8"></div>
+<div class="controls"><button type="button" class="prev" aria-label="Previous slide">‹ Previous</button><span class="count" aria-live="polite"><b>1</b> / 8</span><button type="button" class="next" aria-label="Next slide">Next ›</button></div>
+<div class="thumbs"><button type="button" class="thumb" data-i="0" aria-label="Slide 1" aria-current="true"><img src="img/aug26-government-mission-outcomes-1.jpg" alt="" loading="lazy" width="1600" height="900"></button><button type="button" class="thumb" data-i="1" aria-label="Slide 2"><img src="img/aug26-government-mission-outcomes-2.jpg" alt="" loading="lazy" width="1600" height="900"></button><button type="button" class="thumb" data-i="2" aria-label="Slide 3"><img src="img/aug26-government-mission-outcomes-3.jpg" alt="" loading="lazy" width="1600" height="900"></button><button type="button" class="thumb" data-i="3" aria-label="Slide 4"><img src="img/aug26-government-mission-outcomes-4.jpg" alt="" loading="lazy" width="1600" height="900"></button><button type="button" class="thumb" data-i="4" aria-label="Slide 5"><img src="img/aug26-government-mission-outcomes-5.jpg" alt="" loading="lazy" width="1600" height="900"></button><button type="button" class="thumb" data-i="5" aria-label="Slide 6"><img src="img/aug26-government-mission-outcomes-6.jpg" alt="" loading="lazy" width="1600" height="900"></button><button type="button" class="thumb" data-i="6" aria-label="Slide 7"><img src="img/aug26-government-mission-outcomes-7.jpg" alt="" loading="lazy" width="1600" height="900"></button><button type="button" class="thumb" data-i="7" aria-label="Slide 8"><img src="img/aug26-government-mission-outcomes-8.jpg" alt="" loading="lazy" width="1600" height="900"></button></div>
+</article>
+</section>
+<section class="week" id="sep02" aria-labelledby="sep02-h">
+<header class="week-head"><p class="week-label">Week 3 · September 2, 2026</p><h2 id="sep02-h">Student presentations and a guest speaker</h2></header>
+<p class="no-ex">No in-class exercises this week. Class time went to student presentations and a guest speaker.</p>
+</section>
+<section class="week" id="sep09" aria-labelledby="sep09-h">
+<header class="week-head"><p class="week-label">Week 4 · September 9, 2026</p><h2 id="sep09-h">Value chains</h2></header>
+<article class="deck" data-slides="[[&quot;img/sep09-value-chain-1.jpg&quot;, 1600, 1237], [&quot;img/sep09-value-chain-2.jpg&quot;, 1600, 1237], [&quot;img/sep09-value-chain-3.jpg&quot;, 1600, 1237], [&quot;img/sep09-value-chain-4.jpg&quot;, 1600, 1237]]" data-title="Value Chain Development">
+<div class="deck-head"><div class="deck-text"><p class="kind kind-in">In class</p><h3>Value Chain Development</h3><p class="blurb">Walk backward from Starlink on your phone to everything that had to happen first.</p></div>
+<a class="pdf" href="pdf/sep09-value-chain.pdf" target="_blank" rel="noopener">PDF · 4 slides</a></div>
+<div class="stage" tabindex="0" aria-label="Value Chain Development slides"><img class="slide" src="img/sep09-value-chain-1.jpg" width="1600" height="1237" alt="Value Chain Development, slide 1 of 4"></div>
+<div class="controls"><button type="button" class="prev" aria-label="Previous slide">‹ Previous</button><span class="count" aria-live="polite"><b>1</b> / 4</span><button type="button" class="next" aria-label="Next slide">Next ›</button></div>
+<div class="thumbs"><button type="button" class="thumb" data-i="0" aria-label="Slide 1" aria-current="true"><img src="img/sep09-value-chain-1.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="1" aria-label="Slide 2"><img src="img/sep09-value-chain-2.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="2" aria-label="Slide 3"><img src="img/sep09-value-chain-3.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="3" aria-label="Slide 4"><img src="img/sep09-value-chain-4.jpg" alt="" loading="lazy" width="1600" height="1237"></button></div>
+</article>
+<article class="deck" data-slides="[[&quot;img/sep09-hw-mapping-a-venture-1.jpg&quot;, 1600, 900]]" data-title="Mapping a Venture">
+<div class="deck-head"><div class="deck-text"><p class="kind kind-homework">Homework</p><h3>Mapping a Venture</h3><p class="blurb">Revenue, margin and risk for one venture. Due September 16.</p></div>
+<a class="pdf" href="pdf/sep09-hw-mapping-a-venture.pdf" target="_blank" rel="noopener">PDF · 1 slide</a></div>
+<div class="stage" tabindex="0" aria-label="Mapping a Venture slides"><img class="slide" src="img/sep09-hw-mapping-a-venture-1.jpg" width="1600" height="900" alt="Mapping a Venture, slide 1 of 1"></div>
+
+</article>
+</section>
+<section class="week" id="sep16" aria-labelledby="sep16-h">
+<header class="week-head"><p class="week-label">Week 5 · September 16, 2026</p><h2 id="sep16-h">Business models</h2></header>
+<article class="deck" data-slides="[[&quot;img/sep16-business-model-ai-1.jpg&quot;, 1600, 1237], [&quot;img/sep16-business-model-ai-2.jpg&quot;, 1600, 1237], [&quot;img/sep16-business-model-ai-3.jpg&quot;, 1600, 1237], [&quot;img/sep16-business-model-ai-4.jpg&quot;, 1600, 1237], [&quot;img/sep16-business-model-ai-5.jpg&quot;, 1600, 1237], [&quot;img/sep16-business-model-ai-6.jpg&quot;, 1600, 1237]]" data-title="Business Analytics Research Using AI">
+<div class="deck-head"><div class="deck-text"><p class="kind kind-in">In class</p><h3>Business Analytics Research Using AI</h3><p class="blurb">Use AI to pull and tabulate figures from a space investment report.</p></div>
+<a class="pdf" href="pdf/sep16-business-model-ai.pdf" target="_blank" rel="noopener">PDF · 6 slides</a></div>
+<div class="stage" tabindex="0" aria-label="Business Analytics Research Using AI slides"><img class="slide" src="img/sep16-business-model-ai-1.jpg" width="1600" height="1237" alt="Business Analytics Research Using AI, slide 1 of 6"></div>
+<div class="controls"><button type="button" class="prev" aria-label="Previous slide">‹ Previous</button><span class="count" aria-live="polite"><b>1</b> / 6</span><button type="button" class="next" aria-label="Next slide">Next ›</button></div>
+<div class="thumbs"><button type="button" class="thumb" data-i="0" aria-label="Slide 1" aria-current="true"><img src="img/sep16-business-model-ai-1.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="1" aria-label="Slide 2"><img src="img/sep16-business-model-ai-2.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="2" aria-label="Slide 3"><img src="img/sep16-business-model-ai-3.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="3" aria-label="Slide 4"><img src="img/sep16-business-model-ai-4.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="4" aria-label="Slide 5"><img src="img/sep16-business-model-ai-5.jpg" alt="" loading="lazy" width="1600" height="1237"></button><button type="button" class="thumb" data-i="5" aria-label="Slide 6"><img src="img/sep16-business-model-ai-6.jpg" alt="" loading="lazy" width="1600" height="1237"></button></div>
+</article>
+</section>
+<section class="week" id="sep23" aria-labelledby="sep23-h">
+<header class="week-head"><p class="week-label">Week 6 · September 23, 2026</p><h2 id="sep23-h">Space diplomacy</h2></header>
+<article class="deck" data-slides="[[&quot;img/sep23-space-diplomacy-1.jpg&quot;, 1600, 900], [&quot;img/sep23-space-diplomacy-2.jpg&quot;, 1600, 2071], [&quot;img/sep23-space-diplomacy-3.jpg&quot;, 1600, 2071]]" data-title="Group Exercise in Space Diplomacy">
+<div class="deck-head"><div class="deck-text"><p class="kind kind-in">In class</p><h3>Group Exercise in Space Diplomacy</h3><p class="blurb">The Shackleton Crater water-ice dispute. You are the moderator: suggest a compromise for each of the three friction points.</p></div>
+<a class="pdf" href="pdf/sep23-space-diplomacy.pdf" target="_blank" rel="noopener">PDF · 3 slides</a></div>
+<div class="stage" tabindex="0" aria-label="Group Exercise in Space Diplomacy slides"><img class="slide" src="img/sep23-space-diplomacy-1.jpg" width="1600" height="900" alt="Group Exercise in Space Diplomacy, slide 1 of 3"></div>
+<div class="controls"><button type="button" class="prev" aria-label="Previous slide">‹ Previous</button><span class="count" aria-live="polite"><b>1</b> / 3</span><button type="button" class="next" aria-label="Next slide">Next ›</button></div>
+<div class="thumbs"><button type="button" class="thumb" data-i="0" aria-label="Slide 1" aria-current="true"><img src="img/sep23-space-diplomacy-1.jpg" alt="" loading="lazy" width="1600" height="900"></button><button type="button" class="thumb" data-i="1" aria-label="Slide 2"><img src="img/sep23-space-diplomacy-2.jpg" alt="" loading="lazy" width="1600" height="2071"></button><button type="button" class="thumb" data-i="2" aria-label="Slide 3"><img src="img/sep23-space-diplomacy-3.jpg" alt="" loading="lazy" width="1600" height="2071"></button></div>
+</article>
+</section>
+<footer>New Mexico Tech · EMGT 5061 · Fall 2026</footer>
+</div>
+<script>
+document.querySelectorAll('.deck').forEach(function(deck){
+  var slides=JSON.parse(deck.dataset.slides), i=0, title=deck.dataset.title;
+  var img=deck.querySelector('.slide'), prev=deck.querySelector('.prev'), next=deck.querySelector('.next'),
+      count=deck.querySelector('.count b'), thumbs=deck.querySelectorAll('.thumb'), stage=deck.querySelector('.stage');
+  if(slides.length<2) return;
+  function show(n){
+    i=Math.max(0,Math.min(slides.length-1,n)); var s=slides[i];
+    img.src=s[0]; img.width=s[1]; img.height=s[2]; img.alt=title+', slide '+(i+1)+' of '+slides.length;
+    count.textContent=i+1; prev.disabled=i===0; next.disabled=i===slides.length-1;
+    thumbs.forEach(function(t,k){ if(k===i){t.setAttribute('aria-current','true');} else {t.removeAttribute('aria-current');} });
+    var t=thumbs[i]; if(t&&t.parentNode){var p=t.parentNode; p.scrollLeft=t.offsetLeft-p.clientWidth/2+t.clientWidth/2;}
+  }
+  prev.addEventListener('click',function(){show(i-1);});
+  next.addEventListener('click',function(){show(i+1);});
+  thumbs.forEach(function(t){t.addEventListener('click',function(){show(+t.dataset.i);});});
+  stage.addEventListener('keydown',function(e){ if(e.key==='ArrowRight'){show(i+1);e.preventDefault();} if(e.key==='ArrowLeft'){show(i-1);e.preventDefault();} });
+  var x0=null; stage.addEventListener('touchstart',function(e){x0=e.touches[0].clientX;},{passive:true});
+  stage.addEventListener('touchend',function(e){ if(x0===null)return; var dx=e.changedTouches[0].clientX-x0; if(Math.abs(dx)>40) show(i+(dx<0?1:-1)); x0=null; });
+  img.addEventListener('click',function(){ show(i===slides.length-1?0:i+1); });
+  show(0);
+});
+</script>
+</body>
+</html>

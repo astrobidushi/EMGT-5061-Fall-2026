@@ -8,6 +8,7 @@ Repository: https://github.com/astrobidushi/EMGT-5061-Fall-2026
 
 | Page | What it does | Link |
 |---|---|---|
+| Weeks 1–6 | Breakout slides and homework from Aug 19 to Sept 23, shown one slide at a time with PDF downloads | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/weeks-1-6/) |
 | Orbit Clearance Map | Shows which approvals each case-study mission needs, and which one sets the launch date (Sept 30) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-clearance-map/) |
 | Orbit Commons | A teaching model of low Earth orbit debris: launch rates, disposal rules, debris removal, and orbital-use fees over 100 years (Oct 7) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-commons/) |
 | Ready for the Moon? | Space nuclear power and lunar infrastructure: two fictional companies on the TRL and MRL ladders (Oct 14) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/space%20nuc%20%26%20lunar%20infra/) |
@@ -19,6 +20,10 @@ Repository: https://github.com/astrobidushi/EMGT-5061-Fall-2026
 ```
 EMGT-5061-Fall-2026/
 ├── index.html                    course home page (links to each class page except the Legal Links Map)
+├── weeks-1-6/
+│   ├── index.html                slides page for Aug 19 – Sept 23
+│   ├── img/                      one image per slide
+│   └── pdf/                      one PDF per deck
 ├── orbit-clearance-map/
 │   └── index.html
 ├── orbit-commons/

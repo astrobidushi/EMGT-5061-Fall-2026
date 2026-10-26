@@ -11,7 +11,7 @@
 /* Layout: one narrow column; header, then a card per tool. Same tokens as the tools themselves. */
 :root{
   --bg:#F5F6F8; --surface:#FFFFFF; --ink:#17202E; --muted:#566173; --line:#D5DBE3;
-  --accent:#2C5FA8; --focus:#2C5FA8; --c-orbit:#1F7A6D; --c-commons:#2A78D6; --c-nuc:#B8642A; --c-moon:#6B5BB0;
+  --accent:#2C5FA8; --focus:#2C5FA8; --c-orbit:#1F7A6D; --c-commons:#2A78D6; --c-nuc:#B8642A; --c-moon:#6B5BB0; --c-weeks:#6E7A8C;
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -19,7 +19,7 @@
 @media (prefers-color-scheme: dark){
   :root{color-scheme:dark;
     --bg:#0F141C; --surface:#171E29; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746;
-    --accent:#7FA7E6; --focus:#9CBBF0; --c-orbit:#5CC0AE; --c-commons:#7FA7E6; --c-nuc:#E09A62; --c-moon:#A99BE6;}
+    --accent:#7FA7E6; --focus:#9CBBF0; --c-orbit:#5CC0AE; --c-commons:#7FA7E6; --c-nuc:#E09A62; --c-moon:#A99BE6; --c-weeks:#9AA6B8;}
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
@@ -36,6 +36,7 @@ h2{font-size:22px;font-weight:700}
 .tool:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
 .tool .in{padding:18px 20px;display:grid;gap:8px}
 .tool p{margin:0;color:var(--muted)}
+.tool .kindline{margin-top:-4px;font-family:var(--mono);font-size:12px;letter-spacing:.04em;color:var(--muted)}
 .tool .date{margin-top:-6px;font-size:14px;font-weight:500;color:var(--muted)}
 .meta{display:flex;flex-wrap:wrap;gap:6px}
 .chip{font-family:var(--mono);font-size:11.5px;letter-spacing:.03em;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted)}
@@ -49,10 +50,19 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
   <header>
     <div class="eyebrow">New Mexico Tech · Engineering Management</div>
     <h1>EMGT 5061 Course Tools</h1>
-    <p class="lede">Interactive references for the space industry course. Each tool opens in your browser and works on a phone or laptop.</p>
+    <p class="lede">The first six weeks of in-class exercises and homework covered the basics of the space industry. Starting September 30, the course moved to a case-study approach, with one interactive page per class.</p>
   </header>
 
   <main class="tools">
+    <a class="tool" href="weeks-1-6/" style="--tc:var(--c-weeks)">
+      <div class="in">
+        <h2>Weeks 1–6</h2>
+        <p class="date">August 19 – September 23, 2026</p>
+        <p class="kindline">Breakout slides · PDF downloads</p>
+        <p>Introductions, government missions, value chains, business models, and space diplomacy.</p>
+        <span class="go">Open the slides →</span>
+      </div>
+    </a>
     <a class="tool" href="orbit-clearance-map/" style="--tc:var(--c-orbit)">
       <div class="in">
         <h2>Orbit Clearance Map</h2>
