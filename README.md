@@ -8,8 +8,8 @@ Repository: https://github.com/astrobidushi/EMGT-5061-Fall-2026
 
 | Page | What it does | Link |
 |---|---|---|
-| Orbit Clearance Map | Shows which approvals each case-study mission needs, and which one sets the launch date | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-clearance-map/) |
-| Orbit Commons | A teaching model of low Earth orbit debris: launch rates, disposal rules, debris removal, and orbital-use fees over 100 years | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-commons/) |
+| Orbit Clearance Map | Shows which approvals each case-study mission needs, and which one sets the launch date (Sept 30) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-clearance-map/) |
+| Orbit Commons | A teaching model of low Earth orbit debris: launch rates, disposal rules, debris removal, and orbital-use fees over 100 years (Oct 7) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-commons/) |
 | Ready for the Moon? | Space nuclear power and lunar infrastructure: two fictional companies on the TRL and MRL ladders (Oct 14) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/space%20nuc%20%26%20lunar%20infra/) |
 | Who Builds the Moon? | Lunar autonomy and robotics, and commercial habitats on the Moon and in orbit: three fictional companies (Oct 21) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/who-builds-the-moon/) |
 | Legal Links Map | The Wilco site's Legal Links menu as one searchable tree, tied to the case-study missions. Not linked from the course home page. | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/legal-links-map/) |
