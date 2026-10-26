@@ -11,7 +11,7 @@
 /* Layout: one narrow column; header, then a card per tool. Same tokens as the tools themselves. */
 :root{
   --bg:#F5F6F8; --surface:#FFFFFF; --ink:#17202E; --muted:#566173; --line:#D5DBE3;
-  --accent:#2C5FA8; --focus:#2C5FA8; --c-orbit:#1F7A6D; --c-legal:#7A4FB5; --c-commons:#2A78D6;
+  --accent:#2C5FA8; --focus:#2C5FA8; --c-orbit:#1F7A6D; --c-commons:#2A78D6; --c-nuc:#B8642A; --c-moon:#6B5BB0;
   --display:"Archivo","Helvetica Neue",Arial,sans-serif;
   --body:"IBM Plex Sans","Helvetica Neue",Arial,sans-serif;
   --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
@@ -19,7 +19,7 @@
 @media (prefers-color-scheme: dark){
   :root{color-scheme:dark;
     --bg:#0F141C; --surface:#171E29; --ink:#E7ECF3; --muted:#9AA6B8; --line:#2C3746;
-    --accent:#7FA7E6; --focus:#9CBBF0; --c-orbit:#5CC0AE; --c-legal:#B196E0; --c-commons:#7FA7E6;}
+    --accent:#7FA7E6; --focus:#9CBBF0; --c-orbit:#5CC0AE; --c-commons:#7FA7E6; --c-nuc:#E09A62; --c-moon:#A99BE6;}
 }
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
@@ -60,20 +60,28 @@ footer{font-size:13px;color:var(--muted);border-top:1px solid var(--line);paddin
         <span class="go">Open the map →</span>
       </div>
     </a>
-    <a class="tool" href="legal-links-map/" style="--tc:var(--c-legal)">
-      <div class="in">
-        <h2>Legal Links Map</h2>
-        <p>The full Legal Links menu from a space law firm's site, laid out as one searchable tree, with links tied to each case-study mission.</p>
-        <div class="meta"><span class="chip">Regulations and treaties</span><span class="chip">85 links</span><span class="chip">Search</span></div>
-        <span class="go">Open the map →</span>
-      </div>
-    </a>
     <a class="tool" href="orbit-commons/" style="--tc:var(--c-commons)">
       <div class="in">
         <h2>Orbit Commons</h2>
         <p>Set launch rates, disposal rules, debris removal, and orbital-use fees, then run low Earth orbit forward 100 years to see whether debris settles or runs away.</p>
         <div class="meta"><span class="chip">Current policy challenges</span><span class="chip">Class decision: options A, B, C</span><span class="chip">Teaching model</span></div>
         <span class="go">Open the simulator →</span>
+      </div>
+    </a>
+    <a class="tool" href="space%20nuc%20%26%20lunar%20infra/" style="--tc:var(--c-nuc)">
+      <div class="in">
+        <h2>Ready for the Moon?</h2>
+        <p>Space nuclear power and lunar infrastructure. Place two fictional companies, Polar Well and Nightfall Power, on the technology and market readiness ladders.</p>
+        <div class="meta"><span class="chip">Emerging space technologies</span><span class="chip">TRL and MRL</span><span class="chip">2 fictional companies</span></div>
+        <span class="go">Open the page →</span>
+      </div>
+    </a>
+    <a class="tool" href="who-builds-the-moon/" style="--tc:var(--c-moon)">
+      <div class="in">
+        <h2>Who Builds the Moon?</h2>
+        <p>Lunar autonomy and robotics, and commercial habitats on the Moon and in orbit. Advise an investment firm on three fictional companies.</p>
+        <div class="meta"><span class="chip">Lunar robotics and habitats</span><span class="chip">3 fictional companies</span></div>
+        <span class="go">Open the page →</span>
       </div>
     </a>
   </main>

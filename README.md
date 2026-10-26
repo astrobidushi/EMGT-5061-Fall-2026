@@ -2,28 +2,36 @@
 
 Interactive teaching tools for EMGT 5061, the graduate space industry course at New Mexico Tech.
 
-Live site: https://github.com/astrobidushi/EMGT-5061-Fall-2026
+Live site: https://astrobidushi.github.io/EMGT-5061-Fall-2026/
 
-| Tool | What it does | Link |
+Repository: https://github.com/astrobidushi/EMGT-5061-Fall-2026
+
+| Page | What it does | Link |
 |---|---|---|
-| Orbit Clearance Map | Shows which approvals each case-study mission needs, and which one sets the launch date | [Open](https://astrobidushi.github.io/emgt-5061/orbit-clearance-map/) |
-| Legal Links Map | The Wilco site's Legal Links menu as one searchable tree, tied to the case-study missions | [Open](https://astrobidushi.github.io/emgt-5061/legal-links-map/) |
-| Orbit Commons | A teaching model of low Earth orbit debris: launch rates, disposal rules, debris removal, and orbital-use fees over 100 years | [Open](https://astrobidushi.github.io/emgt-5061/orbit-commons/) |
+| Orbit Clearance Map | Shows which approvals each case-study mission needs, and which one sets the launch date | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-clearance-map/) |
+| Orbit Commons | A teaching model of low Earth orbit debris: launch rates, disposal rules, debris removal, and orbital-use fees over 100 years | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-commons/) |
+| Ready for the Moon? | Space nuclear power and lunar infrastructure: two fictional companies on the TRL and MRL ladders (Oct 14) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/space%20nuc%20%26%20lunar%20infra/) |
+| Who Builds the Moon? | Lunar autonomy and robotics, and commercial habitats on the Moon and in orbit: three fictional companies (Oct 21) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/who-builds-the-moon/) |
+| Legal Links Map | The Wilco site's Legal Links menu as one searchable tree, tied to the case-study missions. Not linked from the course home page. | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/legal-links-map/) |
 
 ## How the repo is laid out
 
 ```
-emgt-5061/
-├── index.html                 course home page (links to each tool)
+EMGT-5061-Fall-2026/
+├── index.html                    course home page (links to each class page except the Legal Links Map)
 ├── orbit-clearance-map/
 │   └── index.html
-├── legal-links-map/
+├── orbit-commons/
 │   └── index.html
-└── orbit-commons/
-    └── index.html
+├── space nuc & lunar infra/
+│   └── index.html                Ready for the Moon?
+├── who-builds-the-moon/
+│   └── index.html
+└── legal-links-map/
+    └── index.html                not on the home page
 ```
 
-Each tool is a single self-contained `index.html` with no build step. To add a new tool, make a new folder with its own `index.html`, then add a card for it in the home page.
+Each page is a single self-contained `index.html` with no build step. To add a new page, make a new folder with its own `index.html`, then add a card for it on the home page, in class-date order.
 
 The Orbit Clearance Map also lives at its original address, https://astrobidushi.github.io/orbit-clearance-map/. The copy here is the same page with a link back to this home page.
 
