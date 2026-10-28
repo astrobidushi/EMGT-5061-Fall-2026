@@ -13,6 +13,7 @@ Repository: https://github.com/astrobidushi/EMGT-5061-Fall-2026
 | Orbit Commons | A teaching model of low Earth orbit debris: launch rates, disposal rules, debris removal, and orbital-use fees over 100 years (Oct 7) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-commons/) |
 | Ready for the Moon? | Space nuclear power and lunar infrastructure: two fictional companies on the TRL and MRL ladders (Oct 14) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/space%20nuc%20%26%20lunar%20infra/) |
 | Who Builds the Moon? | Lunar autonomy and robotics, and commercial habitats on the Moon and in orbit: three fictional companies (Oct 21) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/who-builds-the-moon/) |
+| Crystals and Collisions | Space medicine meets space debris: three fictional companies, a collision-warning decision log and an investor homework (Oct 28) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/crystals-and-collisions/) |
 | Legal Links Map | The Wilco site's Legal Links menu as one searchable tree, tied to the case-study missions. Not linked from the course home page. | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/legal-links-map/) |
 
 ## How the repo is laid out
@@ -31,6 +32,8 @@ EMGT-5061-Fall-2026/
 ├── space nuc & lunar infra/
 │   └── index.html                Ready for the Moon?
 ├── who-builds-the-moon/
+│   └── index.html
+├── crystals-and-collisions/
 │   └── index.html
 └── legal-links-map/
     └── index.html                not on the home page

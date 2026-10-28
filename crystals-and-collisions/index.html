@@ -1,0 +1,507 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Crystals and Collisions</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column with a sticky section bar; concentric orbit rings mark the header. */
+:root{
+  --bg:#f2f3f1; --surface:#ffffff; --sunk:#e7e9e5; --fg:#1d2124; --muted:#5b6266; --line:#cdd1cc;
+  --accent:#b8650f; --accent-soft:#f6e6d2; --trl:#2f5d8a; --trl-soft:#dfe8f2; --mrl:#7a4f9a; --mrl-soft:#ece3f3;
+  --ok:#2e7d4f; --ok-soft:#dcefe3; --bad:#b03a2e; --bad-soft:#f6dfdc;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15181a; --surface:#1d2124; --sunk:#252a2d; --fg:#e8eae6; --muted:#a2a9ac; --line:#363c40;
+  --accent:#e59a45; --accent-soft:#3a2a17; --trl:#8fb6e0; --trl-soft:#1f2c3a; --mrl:#c9a3e6; --mrl-soft:#2d2338;
+  --ok:#7fcf9c; --ok-soft:#1d3226; --bad:#f0938a; --bad-soft:#3a2120; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15181a; --surface:#1d2124; --sunk:#252a2d; --fg:#e8eae6; --muted:#a2a9ac; --line:#363c40;
+  --accent:#e59a45; --accent-soft:#3a2a17; --trl:#8fb6e0; --trl-soft:#1f2c3a; --mrl:#c9a3e6; --mrl-soft:#2d2338;
+  --ok:#7fcf9c; --ok-soft:#1d3226; --bad:#f0938a; --bad-soft:#3a2120; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--trl)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{font-family:var(--display);font-stretch:118%;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,7vw,56px);font-weight:900;letter-spacing:-.01em}
+h2{font-size:clamp(24px,4vw,32px);font-weight:800}
+h3{font-size:20px;font-weight:800}
+h4{font-size:16px;font-weight:700}
+p{margin:0}
+.lede{color:var(--muted);max-width:62ch}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* header */
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hex{position:absolute;inset:0 0 0 45%;background:var(--line);opacity:.7;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 1 55 16.5v31L28 63 1 47.5v-31z M28 63v34' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") repeat;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 1 55 16.5v31L28 63 1 47.5v-31z M28 63v34' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") repeat}
+header.top .wrap{position:relative;display:grid;gap:14px;padding-block:40px 32px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted)}
+
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.bar .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--fg);font-size:14px;font-weight:500;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+nav.bar a:hover{border-color:var(--accent)}
+
+main .wrap{display:grid;gap:56px;padding-block:40px 64px}
+section{display:grid;gap:20px;scroll-margin-top:64px}
+.sec-head{display:grid;gap:8px}
+
+.tag{justify-self:start;display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:4px}
+.tag.past{background:var(--sunk);color:var(--muted)}
+.tag.class{background:var(--accent-soft);color:var(--accent)}
+.tag.hw{background:var(--fg);color:var(--bg)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:14px;min-width:0}
+.step{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.note{font-size:14px;color:var(--muted)}
+ul,ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
+
+/* ladders */
+.co-h{padding-top:6px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.co-h small{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted)}
+.lad-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:680px){.lad-grid{grid-template-columns:1fr}}
+.lad-col{display:grid;gap:8px;align-content:start;min-width:0}
+.lad-col>h4{font-size:14px;letter-spacing:.04em;text-transform:uppercase;padding:6px 10px;border-radius:4px}
+.lad-col.t>h4{background:var(--trl-soft);color:var(--trl)}
+.lad-col.m>h4{background:var(--mrl-soft);color:var(--mrl)}
+.ms{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);font-size:14px}
+.ms select{font:inherit;font-family:var(--mono);font-size:13px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--fg);min-width:74px}
+.ms.right{border-color:var(--ok);background:var(--ok-soft)}
+.ms.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.lvl{font-family:var(--mono);font-size:13px;font-weight:500;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.lad-col.t .lvl{background:var(--trl-soft);color:var(--trl)}
+.lad-col.m .lvl{background:var(--mrl-soft);color:var(--mrl)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:var(--r);border:1px solid var(--fg);background:var(--fg);color:var(--bg);cursor:pointer}
+button.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+button:hover{opacity:.9}
+.score{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.ans-grid{display:grid;gap:10px}
+.stack-sm{display:grid;gap:6px;min-width:0}
+.rate-row{grid-template-columns:auto auto 1fr;align-items:end}
+.rate-row .sub,.rate-row .evid,.rate-row .why{grid-column:1/-1}
+.evid{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+.evid b{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--fg)}
+.rate-row textarea{font:inherit;font-family:var(--body);font-size:14px;letter-spacing:0;text-transform:none;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px;width:100%;resize:vertical}
+.ans-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ans-pair>*{min-width:0}
+@media (max-width:680px){.ans-pair{grid-template-columns:1fr}}
+
+details.ref{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+details.ref summary{cursor:pointer;padding:12px 16px;font-weight:600}
+details.ref .inner{padding:0 16px 16px;display:grid;gap:14px}
+.deftab{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+td.n{font-family:var(--mono);width:3.5em}
+
+.qs{display:grid;gap:10px;counter-reset:q}
+.q{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:15px}
+.qn{font-family:var(--mono);font-size:13px;color:var(--accent);padding-top:2px;font-variant-numeric:tabular-nums}
+
+/* case */
+.co-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:680px){.co-cards{grid-template-columns:1fr}}
+.co-cards .card h3{display:grid;gap:2px}
+.co-cards .card h3 span{font-family:var(--body);font-size:14px;font-weight:400;color:var(--muted);font-stretch:100%}
+.facts{display:grid;gap:6px;font-size:14px}
+.facts div{display:grid;grid-template-columns:7.5em 1fr;gap:8px}
+.facts dt,.facts b{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
+.seq{list-style:none;padding:0;display:grid;gap:0}
+.seq li{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.seq li:first-child{border-top:0}
+.seq .yr{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.seq .hexn{width:36px;height:40px;display:grid;place-items:center;font-family:var(--display);font-weight:800;color:var(--accent);background:var(--accent-soft);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+
+/* rating table */
+.rate{display:grid;gap:10px}
+.rate-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+@media (max-width:600px){.rate-row{grid-template-columns:1fr 1fr}.rate-row .sub{grid-column:1/-1}}
+.rate-row .sub{font-weight:600;font-size:15px;min-width:0}
+.rate-row label{display:grid;gap:2px;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.rate-row select{font:inherit;font-size:14px;padding:5px 6px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.rate-row details{grid-column:1/-1;font-size:14px}
+.rate-row details summary{cursor:pointer;color:var(--trl);font-weight:500}
+.rate-row details p{margin-top:6px;color:var(--muted)}
+
+/* curveball */
+.deal{display:grid;gap:14px}
+.cb-card{border:2px dashed var(--accent);border-radius:var(--r);padding:18px;display:grid;gap:8px;background:var(--accent-soft)}
+.cb-card .t{font-family:var(--display);font-stretch:112%;font-weight:800;font-size:19px}
+.cb-left{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.calc .box{border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:8px;background:var(--bg)}
+.calc label{font-size:14px;font-weight:500;display:grid;gap:4px}
+.calc input{font:inherit;font-family:var(--mono);padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--fg);width:100%}
+.out{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.out .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;text-align:right}
+.out .moon{color:var(--accent)}
+
+.models{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:680px){.models{grid-template-columns:1fr}}
+.model{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--bg);display:grid;gap:6px;align-content:start;min-width:0}
+.deftab td.mono{font-family:var(--body);font-variant-numeric:tabular-nums}
+.hw-sep{display:flex;align-items:center;gap:20px;margin-bottom:-28px}
+.hw-sep::before,.hw-sep::after{content:"";flex:1;border-top:3px solid var(--fg)}
+.hw-sep span{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:clamp(28px,4vw,40px);letter-spacing:.12em;color:var(--fg);text-align:center}
+.hw-due{margin:0 0 -28px;text-align:center;font-family:var(--display);font-stretch:112%;font-weight:700;font-size:clamp(20px,2.6vw,26px);color:var(--bad)}
+.sub{display:grid;gap:14px}
+.sub-h{font-size:22px}
+.due{border-left:4px solid var(--fg);padding:10px 14px;background:var(--surface);font-size:15px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer .wrap{padding-block:24px 40px;display:grid;gap:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+.orbits{position:absolute;inset:-40% -10% -40% 50%;opacity:.55;background:repeating-radial-gradient(circle at 70% 50%,transparent 0 26px,var(--line) 26px 27px)}
+.co-cards .card{align-content:start}
+.seq h4{margin-bottom:4px}
+.co-sub{display:block;font-family:var(--body);font-size:14px;font-weight:400;color:var(--muted);font-stretch:100%;margin-top:2px}
+.co-tag{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:2px 6px;border-radius:4px;margin-right:6px;vertical-align:2px}
+.explain{border-left:4px solid var(--trl);background:var(--trl-soft);padding:14px 16px;border-radius:0 var(--r) var(--r) 0;display:grid;gap:8px}
+.formula{font-family:var(--mono);font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.cb-card .deftab{background:var(--surface);border-radius:4px}
+table.opts td:nth-child(2),table.opts td:nth-child(3){white-space:nowrap}
+.rate-row{grid-template-columns:1fr auto}
+.rate-row .sub{display:block}
+</style>
+
+<header class="top">
+  <div class="orbits" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="eyebrow">EMGT 5061 · Introduction to Space Industry · Fall 2026</span>
+    <h1>Crystals and Collisions</h1>
+    <p class="lede">Space medicine meets space debris. A company that makes cancer-drug crystals in orbit has to share that orbit with debris, and every dodge costs it a batch. In class you run its operations. For homework you are the engineer advising an investment firm.</p>
+    <div class="meta"><span>October 28, 2026</span><span>Dr. Bidushi Bhattacharya</span><span>Record your answers in this week's student deck</span></div>
+  </div>
+</header>
+
+<nav class="bar" aria-label="Sections">
+  <div class="wrap">
+    <a href="#companies">Companies</a>
+    <a href="#log">In class</a>
+    <a href="#hw">Homework</a>
+    <a href="#hw1">Fix the orbit?</a>
+    <a href="#hw3">TRL and MRL</a>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<!-- COMPANIES -->
+<section id="companies">
+  <div class="sec-head">
+    <h2>This week's companies</h2>
+    <p class="lede">Three fictional companies. Stillwater Bio makes drug crystals on a platform in low Earth orbit. Halden Therapeutics, a drug maker, buys those crystals. Keelwatch Tracking watches debris from radars on the ground and sells collision warnings to satellite operators. Stillwater isn't a customer yet, but Keelwatch's sharper warnings could help it decide when to dodge.</p>
+  </div>
+
+  <div class="co-cards">
+    <div class="card">
+      <h3>Stillwater Bio<span>Drug crystals made in microgravity</span></h3>
+      <div class="facts">
+        <div><b>Platform</b><span>An uncrewed platform at 525 km, near the Starlink shells. Operating for two years. Worth $150M, with an 8-year design life.</span></div>
+        <div><b>Product</b><span>Antibody crystals for Halden Therapeutics, under a 5-year contract. The crystals let a cancer drug be given as a short injection instead of an IV drip.</span></div>
+        <div><b>The catch</b><span>Each batch needs 3 days of undisturbed microgravity. Any engine burn to dodge debris ruins the batch that's growing.</span></div>
+        <div><b>Tracking now</b><span>Free public tracking data only. Stillwater does not subscribe to Keelwatch.</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Halden Therapeutics<span>Stillwater's customer</span></h3>
+      <div class="facts">
+        <div><b>Who</b><span>A drug company. It turns Stillwater's antibody crystals into a cancer drug given as a short injection instead of an IV drip.</span></div>
+        <div><b>Contract</b><span>5 years. Halden pays $1.0M for each good batch.</span></div>
+        <div><b>Why it matters</b><span>As the customer, Halden sets the prices. You won't evaluate Halden itself.</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Keelwatch Tracking<span class="co-sub">Debris-tracking data, sold by subscription</span></h3>
+    <div class="facts">
+      <div><b>Network</b><span>4 ground radar sites. Each cost $30M to build and costs $8M a year to run.</span></div>
+      <div><b>Product</b><span>Collision warnings for satellite operators. Its radars track debris more precisely than public data, so its odds settle sooner and are clearer either way.</span></div>
+      <div><b>Customers</b><span>25 commercial satellite operators paying about $4M a year each, plus one government contract worth $25M a year.</span></div>
+      <div><b>Next</b><span>Wants to sell to orbital factories like Stillwater, a new kind of customer. Stillwater isn't a customer yet. A subscription would cost it $4M a year.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How a debris warning plays out</h3>
+    <ol class="seq">
+      <li><span class="hexn">1</span><div><h4>A warning arrives</h4><p>Three days before a close pass, tracking shows a piece of debris heading near the platform. Its exact position isn't known yet: it could be anywhere along a stretch of its path that can be kilometres long. The collision odds are the chance that the platform will be inside that stretch when the debris passes.</p></div></li>
+      <li><span class="hexn">2</span><div><h4>Each day, the picture gets clearer</h4><p>Every time a radar sees the debris again, its predicted position gets sharper and the stretch shrinks. Usually it shrinks to a spot away from the platform, and the warning clears. Sometimes it shrinks around the platform's path, the odds go up, and Stillwater has to burn. That's why waiting a day can be worth it, and why only 18 of about 60 warnings a year end in a burn.</p></div></li>
+      <li><span class="hexn">3</span><div><h4>Better tracking clears it sooner</h4><p>Stillwater uses free public data and does not subscribe to Keelwatch. Keelwatch's radars see the debris more often and more precisely, so the picture sharpens faster and the odds come out clearer: either very low or clearly high. In class you decide on three warnings with free data first, then again with Keelwatch's data.</p></div></li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h3>Stillwater's numbers</h3>
+    <div class="deftab"><table>
+      <tbody>
+        <tr><td>Batch cycle</td><td>3 days growing + 1 day reset, so <b>90 batch slots</b> a year</td></tr>
+        <tr><td>Halden pays per good batch</td><td class="mono">$1.0M</td></tr>
+        <tr><td>Consumables per batch</td><td class="mono">$0.3M, so a good batch earns Stillwater $0.7M</td></tr>
+        <tr><td>Keelwatch cost per batch (if subscription is in place)</td><td class="mono">$4M a year ÷ 90 batches ≈ $0.044M</td></tr>
+        <tr><td>Cost of a ruined batch</td><td class="mono">$1.0M: $0.3M of wasted consumables + the $0.7M it would have earned</td></tr>
+        <tr><td>Debris warnings</td><td>About 60 a year. The first alert comes 3 days before the closest approach. Most warnings fade as tracking improves, so only 18 a year end in a burn.</td></tr>
+        <tr><td>Dodge line</td><td>Burn if the collision odds are above 1 in 10,000, the same threshold NASA uses for the ISS.</td></tr>
+        <tr><td>Burns a year with public data</td><td class="mono">18</td></tr>
+        <tr><td>Insurance</td><td>The policy is void if Stillwater sets its dodge line looser than 1 in 10,000.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Stillwater's work is modeled on real research: Merck grew crystals of the cancer drug Keytruda on the ISS, and NASA credits that work with informing the injectable form the FDA approved in 2025. Debris is the same problem you modeled in <a href="https://astrobidushi.github.io/EMGT-5061-Fall-2026/orbit-commons/">Orbit Commons</a> on October 7; this week you see what it costs one company. All three companies and all figures are fictional, for teaching.</p>
+  </div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="In class"><span>IN CLASS</span></div>
+
+<!-- IN CLASS -->
+<section id="log">
+  <div class="sec-head">
+    <span class="tag class">Pairs · about 30 min</span>
+    <h2>The conjunction log</h2>
+    <p class="lede">You are Stillwater's operations manager. Three debris warnings came in over a recent 12-day stretch. For each one, decide whether to start the next batch now or hold it for a day, and log your decision and reason.</p>
+  </div>
+
+  <div class="card">
+    <h3>How to decide</h3>
+    <p>Each warning arrives 3 days before the closest approach, just as the next batch is due to start. You can start the batch now, or hold it a day while the debris's position becomes clearer. The tables below tell you how often a warning ends in a burn, using free public data or Keelwatch's data.</p>
+    <div class="explain">
+      <h4>Risk cost</h4>
+      <p><b>Risk cost = probability of the loss × size of the loss.</b> You compare that number with the cost of the alternative, usually the cost of preventing or avoiding the loss. If prevention costs less than the risk cost, you prevent. If it costs more, you accept the risk. NASA's risk matrices rest on the same idea, rating each risk by likelihood and consequence.</p>
+      <p>With no warning, there's nothing to weigh. The calculation only starts when a specific risk shows up.</p>
+    </div>
+    <h4>Free public data</h4>
+    <div class="deftab"><table>
+      <thead><tr><th>Odds at the first alert<br>(free public data)</th><th>Chance it ends in a burn*</th><th>Risk cost of starting the batch now**</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1 in 100,000</td><td class="mono">2%</td><td class="mono">$0.02M</td></tr>
+        <tr><td class="mono">1 in 20,000</td><td class="mono">10%</td><td class="mono">$0.10M</td></tr>
+        <tr><td class="mono">1 in 5,000</td><td class="mono">30%</td><td class="mono">$0.30M</td></tr>
+        <tr><td class="mono">1 in 1,000</td><td class="mono">70%</td><td class="mono">$0.70M</td></tr>
+      </tbody>
+    </table></div>
+    <h4>With a Keelwatch subscription</h4>
+    <div class="deftab"><table>
+      <thead><tr><th>Odds at the first alert<br>(Keelwatch)</th><th>Chance it ends in a burn*</th><th>Risk cost of starting the batch now**</th></tr></thead>
+      <tbody>
+        <tr><td class="mono">1 in 100,000</td><td class="mono">2%</td><td class="mono">$0.02M</td></tr>
+        <tr><td class="mono">1 in 20,000</td><td class="mono">10%</td><td class="mono">$0.10M</td></tr>
+        <tr><td class="mono">1 in 5,000</td><td class="mono">30%</td><td class="mono">$0.30M</td></tr>
+        <tr><td class="mono">1 in 2,000</td><td class="mono">50%</td><td class="mono">$0.50M</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">* Chances are for illustrative purposes only.<br>** The chance of a burn × $1.0M. See step 2 of the rule below for why.</p>
+    <div class="models">
+      <div class="model"><h4>Start the batch now</h4><p>If the warning ends in a burn, the batch is ruined. That costs <b>$1.0M</b>.</p></div>
+      <div class="model"><h4>Hold one day</h4><p>Wait a day for clearer tracking, then start. In this exercise, one day is enough for the warning to settle: by then you know whether Stillwater must burn, and any burn happens before the batch begins. So a held batch is never ruined. You lose one day of a 4-day cycle: $0.7M ÷ 4 = <b>$0.175M</b>.</p></div>
+    </div>
+    <p><strong>The dodge line never changes.</strong> Stillwater always burns when the collision odds are above 1 in 10,000, because its insurance is void with any looser line. Your decision is about something else: whether a batch is growing when a burn might happen.</p>
+    <div class="explain">
+      <h4>The rule: compare the risk cost of starting the batch now with the cost of holding it a day</h4>
+      <ol>
+        <li><strong>Cost of holding one day.</strong> A batch cycle is 4 days, and a good batch earns $0.7M, so each day of the cycle is worth $0.7M ÷ 4 = <b>$0.175M</b>. Holding loses one day, so it always costs $0.175M. In return, the batch is safe.</li>
+        <li><strong>Risk cost of starting the batch now.</strong> If the warning ends in a burn, the batch is ruined, which costs $1.0M. If the warning clears, the batch finishes normally and costs nothing extra. To compare this with holding, weigh the $1.0M by how likely it is: <b>risk cost = chance of a burn × $1.0M</b>. A 30% chance of losing $1.0M, for example, has a risk cost of $0.30M.</li>
+        <li><strong>Compare the two.</strong> <b>Hold if the risk cost of starting the batch now is more than the cost of holding it for one day; otherwise start.</b> The tables above give the risk cost for each kind of warning.</li>
+      </ol>
+      <p class="note">Example: with a 25% chance of a burn, the risk cost of starting the batch now is 25% × $1.0M = $0.25M, more than the $0.175M cost of holding, so hold. With a 5% chance, the risk cost is $0.05M, less than $0.175M, so start.</p>
+    </div>
+  </div>
+
+  <div class="deal">
+    <div class="cb-card"><span class="step">Card 1</span><p class="t">A quiet morning</p><p>One warning: <b>1 in 20,000</b> at first alert. Nothing else is scheduled.</p></div>
+    <div class="cb-card"><span class="step">Card 2</span><p class="t">A closer call</p><p>One warning: <b>1 in 5,000</b> at first alert. Nothing else is scheduled.</p></div>
+    <div class="cb-card"><span class="step">Card 3</span><p class="t">A close one</p><p>One warning: <b>1 in 1,000</b> at first alert. Nothing else is scheduled.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>The three warnings: free data vs. Keelwatch</h3>
+    <p>Odds at the first alert for each warning, as free public data reported them and as Keelwatch would have reported them. Keelwatch tracks the debris more precisely, so its odds can differ, sometimes lower and sometimes higher.</p>
+    <div class="deftab"><table>
+      <thead><tr><th>Card</th><th>Odds at the first alert<br>(free public data)</th><th>Odds at the first alert<br>(Keelwatch)</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="mono">1 in 20,000</td><td class="mono">1 in 100,000</td></tr>
+        <tr><td>2</td><td class="mono">1 in 5,000</td><td class="mono">1 in 2,000</td></tr>
+        <tr><td>3</td><td class="mono">1 in 1,000</td><td class="mono">1 in 5,000</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <div class="card">
+    <h3>Your log</h3>
+    <p>Copy both tables into the student deck and fill in one row per card.</p>
+    <h4>Table 1: free public data</h4>
+    <div class="deftab"><table>
+      <thead><tr><th>Card</th><th>Odds at the first alert</th><th>Chance of a burn</th><th>Risk cost of starting the batch now</th><th>Start or hold?</th><th>Reason, for the log</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="mono">1 in 20,000</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>2</td><td class="mono">1 in 5,000</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>3</td><td class="mono">1 in 1,000</td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table></div>
+    <h4>Table 2: with a Keelwatch subscription</h4>
+    <p>Now suppose Stillwater subscribed to Keelwatch ($4M a year, about $0.044M per batch). Here are the same three warnings as Keelwatch would have reported them. Use the How to decide table to fill in the rest.</p>
+    <div class="deftab"><table>
+      <thead><tr><th>Card</th><th>Odds at the first alert<br>(Keelwatch)</th><th>Chance of a burn</th><th>Risk cost of starting the batch now</th><th>Start or hold?</th><th>Reason, for the log</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td class="mono">1 in 100,000</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>2</td><td class="mono">1 in 2,000</td><td></td><td></td><td></td><td></td></tr>
+        <tr><td>3</td><td class="mono">1 in 5,000</td><td></td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="Homework"><span>HOMEWORK</span></div>
+<p class="hw-due">Due before November 4, 3 pm</p>
+
+<!-- HOMEWORK -->
+<section id="hw">
+  <div class="sec-head">
+    <p class="due">You are now the engineer advising the investment firm. Answer in this week's student deck and upload it to <a href="https://nmt.instructure.com/courses/42326/assignments">Canvas</a>.</p>
+  </div>
+
+  <div class="card" id="hw1">
+    <span class="step">Homework 1</span>
+    <h3>Fix the orbit or fix the process?</h3>
+    <p>Stillwater has asked your firm to fund one fix for its debris problem. Compare the options using profit per year.</p>
+    <div class="explain">
+      <h4>What "profit per year" means</h4>
+      <p>It's what Stillwater makes from its batches in a normal year: what Halden pays for good batches, minus consumables, minus any yearly fee the option adds. It leaves out the platform's own cost, staff and overhead, which are the same under every option.</p>
+      <p class="formula">Profit per year = (good batches × $0.7M) − (ruined batches × $0.3M) − any yearly fee</p>
+      <p>Each burn ruins one batch, so ruined batches = burns a year, and the rest of the 90 slots are good batches. One-time costs, such as moving the platform, are listed in their own column, not taken out of profit per year.</p>
+      <p class="note">Example, today's baseline: 72 good × $0.7M − 18 ruined × $0.3M = $45.0M.</p>
+    </div>
+    <div class="deftab"><table class="opts">
+      <thead><tr><th>Option</th><th>Burns a year</th><th>Profit per year</th><th>One-time costs</th><th>Catch</th></tr></thead>
+      <tbody>
+        <tr><td>Baseline: no change</td><td class="mono">18</td><td class="mono">$45.0M</td><td>None</td><td></td></tr>
+        <tr><td><b>A.</b> Subscribe to Keelwatch</td><td class="mono">9</td><td class="mono">$50.0M</td><td>None</td><td>$4M a year, already taken out of profit</td></tr>
+        <tr><td><b>B.</b> Move down to 450 km</td><td class="mono">6</td><td class="mono">$57.0M</td><td class="mono">$7.5M to move, including 20 days of downtime; $15M refueling visit in year 5</td><td>More drag means 8 reboosts a year, which ops must fit into reset days</td></tr>
+        <tr><td><b>A + B</b> together</td><td class="mono">3</td><td class="mono">$56.0M</td><td class="mono">Same as B</td><td></td></tr>
+        <tr><td><b>C.</b> Shorter 36-hour batches</td><td class="mono">18</td><td class="mono">$36.9M</td><td>Halden must re-qualify its product</td><td>180 slots a year; Halden pays $0.45M per short batch, consumables $0.2M, so a good short batch earns $0.25M</td></tr>
+        <tr><td><b>D.</b> The CFO's idea: loosen the dodge line to 1 in 1,000</td><td class="mono">5</td><td class="mono">$58.0M</td><td>None</td><td>Voids the insurance on the $150M platform and adds about a 0.4% yearly chance of losing it in a collision</td></tr>
+      </tbody>
+    </table></div>
+    <div class="qs">
+      <div class="q"><span class="qn">H1.1</span><p>Check one row yourself using the formula. Then explain why A + B earns less than B alone.</p></div>
+      <div class="q"><span class="qn">H1.2</span><p>Option B earns $12M a year more than the baseline. How long does it take to pay back the $7.5M move? Does the year-5 refueling visit change your view?</p></div>
+      <div class="q"><span class="qn">H1.3</span><p>About how many burns a year would it take for shorter batches (C) to beat the 3-day batches?</p></div>
+      <div class="q"><span class="qn">H1.4</span><p>Option D has the best number in the table. What do you tell the investment committee about it, and why?</p></div>
+      <div class="q"><span class="qn">H1.5</span><p>Which option do you recommend your firm fund, and what risk does it leave Stillwater carrying?</p></div>
+    </div>
+  </div>
+
+  <div class="sub" id="hw3">
+    <h3 class="sub-h">TRL and MRL</h3>
+    <p class="lede">For worked examples of both ladders, see <a href="https://astrobidushi.github.io/EMGT-5061-Fall-2026/space%20nuc%20%26%20lunar%20infra/">Ready for the Moon?</a> Use it and the definitions below for Homework 2.</p>
+    <details class="ref">
+      <summary>Ladder definitions (TRL 1–9 and MRL 0–9)</summary>
+      <div class="inner">
+        <div class="deftab"><table>
+          <thead><tr><th>TRL</th><th>Technology Readiness (NASA)</th></tr></thead>
+          <tbody id="def-t"></tbody>
+        </table></div>
+        <div class="deftab"><table>
+          <thead><tr><th>MRL</th><th>Market Readiness (Mealing, Starbridge Venture Capital)</th></tr></thead>
+          <tbody id="def-m"></tbody>
+        </table></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <span class="step">Homework 2</span>
+    <h3>Rate both companies</h3>
+    <p>For each item, read the evidence, pick a level and defend it in the box. Then open the suggested rating and compare. A level either side of the suggestion is fine if your reasons are good.</p>
+    <div class="rate" id="rate"></div>
+    <div class="qs">
+      <div class="q"><span class="qn">H2.1</span><p>Which of Stillwater's ratings should worry your firm most if it funds Option B in Homework 1?</p></div>
+      <div class="q"><span class="qn">H2.2</span><p>Keelwatch's radars are its most proven part and its sharper odds are its newest. Why does that matter for what your Keelwatch log really showed?</p></div>
+    </div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Stillwater Bio, Keelwatch Tracking and Halden Therapeutics are fictional. Their figures are simplified for teaching. Ladder definitions follow NASA's Technology Readiness Levels and Mealing's Market Readiness Levels (Starbridge Venture Capital).</p>
+    <p>EMGT 5061 · New Mexico Tech · Fall 2026</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+const TRL_DEF=["","Basic principles observed","Technology concept formulated","Proof of concept in the lab, parts tested separately","Components work together in the lab","Components work together in a relevant environment","Full-scale prototype demonstrated in a relevant environment","Prototype demonstrated in space","Flight system qualified","Flight proven on a real mission"];
+const MRL_DEF=[
+ "<b>Perceived need.</b> Exit criteria: documented conversations, existing market research, and rough outlines of the problem.",
+ "<b>Value proposition drafted.</b> Exit criteria: at least one draft value proposition statement.",
+ "<b>Customers characterized.</b> Exit criteria: the customer side of the Business Model Canvas completed, and potential customers identified to validate the value proposition and the canvas.",
+ "<b>Customer discovery.</b> Exit criteria: the customer side of the canvas validated by customer feedback, plus documented interviews on the value of the problem, past solutions, and the financial value of solving it.",
+ "<b>Low-fi MVP designed.</b> Exit criteria: a low-fidelity minimum viable product, metrics that measure how well the canvas matches actual use, and a large enough set of diverse customers.",
+ "<b>Low-fi MVP tested.</b> Exit criteria: usage metrics and all feedback from customers and stakeholders.",
+ "<b>Model revalidated.</b> Exit criteria: a fully validated canvas and all resources needed to build and test a high-fidelity MVP.",
+ "<b>High-fi MVP tested.</b> Exit criteria: data, customer feedback and metrics from the high-fidelity MVP campaign.",
+ "<b>Model validated with MVP.</b> Exit criteria: a fully validated and documented Business Model Canvas.",
+ "<b>Go-to-market decision.</b> Exit criteria: a yes or no decision to launch."];
+
+function el(tag,attrs,html){const e=document.createElement(tag);if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]);if(html!=null)e.innerHTML=html;return e}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+
+const dt=document.getElementById("def-t"),dm=document.getElementById("def-m");
+for(let i=1;i<=9;i++)dt.appendChild(el("tr",null,`<td class="n">${i}</td><td>${TRL_DEF[i]}</td>`));
+for(let i=0;i<=9;i++)dm.appendChild(el("tr",null,`<td class="n">${i}</td><td>${MRL_DEF[i]}</td>`));
+
+// [company, kind, item, evidence, suggested level, why]
+const ITEMS=[
+ ["Stillwater","TRL","Growing antibody crystals on the platform",
+  "The platform has grown crystals for Halden for two years, about 72 good batches a year. In the real world, Merck grew crystals of the cancer drug Keytruda on the ISS.",
+  9,"Flight proven: the platform does this on a real mission, batch after batch."],
+ ["Stillwater","TRL","Refueling the platform in year 5",
+  "Stillwater's refueling port passed tests in a thermal vacuum chamber on a ground mockup. No commercial company has yet refueled a client spacecraft in low Earth orbit.",
+  5,"The port works in a relevant environment, but only as a mockup. No refueling has flown."],
+ ["Keelwatch","TRL","Ground radar network",
+  "Four radar sites run every day and serve 25 paying customers. In the real world, LeoLabs runs a similar commercial radar network.",
+  9,"Flight proven: the system does its job on real operations every day."],
+ ["Keelwatch","TRL","Sharper collision odds",
+  "The new prediction software has run on live radar data for six months alongside Keelwatch's standard service, and its predictions have been checked against what actually happened. No orbital-factory customer has used it yet.",
+  7,"A prototype working in the real operating environment, but not yet relied on by customers."],
+];
+const rate=document.getElementById("rate");
+ITEMS.forEach((s,i)=>{
+  const r=el("div",{class:"rate-row"});
+  r.appendChild(el("div",{class:"sub"},`<span class="co-tag">${s[0]} · ${s[1]}</span> ${esc(s[2])}`));
+  const ev=el("div",{class:"evid"});ev.appendChild(el("b",null,"Evidence to weigh"));ev.appendChild(el("p",null,esc(s[3])));r.appendChild(ev);
+  const l1=el("label",{for:`lv-${i}`},s[1]);const s1=el("select",{id:`lv-${i}`});s1.appendChild(el("option",{value:""},"Pick"));
+  for(let L=(s[1]==="TRL"?1:0);L<=9;L++)s1.appendChild(el("option",{value:L},`${s[1]} ${L}`));l1.appendChild(s1);r.appendChild(l1);
+  const why=el("label",{for:`why-${i}`,class:"why"},"Defend your choice");why.appendChild(el("textarea",{id:`why-${i}`,rows:"3"}));r.appendChild(why);
+  const d=el("details");d.appendChild(el("summary",null,"Show the suggested rating"));d.appendChild(el("p",null,`<b>${s[1]} ${s[4]}.</b> ${esc(s[5])}`));r.appendChild(d);
+  rate.appendChild(r);
+});
+})();
+</script>
+
+</body>
+</html>
