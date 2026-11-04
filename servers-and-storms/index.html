@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>Servers and Storms</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column with a sticky section bar; concentric orbit rings mark the header. */
+:root{
+  --bg:#f2f3f1; --surface:#ffffff; --sunk:#e7e9e5; --fg:#1d2124; --muted:#5b6266; --line:#cdd1cc;
+  --accent:#b8650f; --accent-soft:#f6e6d2; --trl:#2f5d8a; --trl-soft:#dfe8f2; --mrl:#7a4f9a; --mrl-soft:#ece3f3;
+  --ok:#2e7d4f; --ok-soft:#dcefe3; --bad:#b03a2e; --bad-soft:#f6dfdc;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#15181a; --surface:#1d2124; --sunk:#252a2d; --fg:#e8eae6; --muted:#a2a9ac; --line:#363c40;
+  --accent:#e59a45; --accent-soft:#3a2a17; --trl:#8fb6e0; --trl-soft:#1f2c3a; --mrl:#c9a3e6; --mrl-soft:#2d2338;
+  --ok:#7fcf9c; --ok-soft:#1d3226; --bad:#f0938a; --bad-soft:#3a2120; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#15181a; --surface:#1d2124; --sunk:#252a2d; --fg:#e8eae6; --muted:#a2a9ac; --line:#363c40;
+  --accent:#e59a45; --accent-soft:#3a2a17; --trl:#8fb6e0; --trl-soft:#1f2c3a; --mrl:#c9a3e6; --mrl-soft:#2d2338;
+  --ok:#7fcf9c; --ok-soft:#1d3226; --bad:#f0938a; --bad-soft:#3a2120; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--surface)}
+.wrap{max-width:860px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+a{color:var(--trl)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{font-family:var(--display);font-stretch:118%;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,7vw,56px);font-weight:900;letter-spacing:-.01em}
+h2{font-size:clamp(24px,4vw,32px);font-weight:800}
+h3{font-size:20px;font-weight:800}
+h4{font-size:16px;font-weight:700}
+p{margin:0}
+.lede{color:var(--muted);max-width:62ch}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+/* header */
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.hex{position:absolute;inset:0 0 0 45%;background:var(--line);opacity:.7;
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 1 55 16.5v31L28 63 1 47.5v-31z M28 63v34' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") repeat;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='97' viewBox='0 0 56 97'%3E%3Cpath d='M28 1 55 16.5v31L28 63 1 47.5v-31z M28 63v34' fill='none' stroke='black' stroke-width='1.2'/%3E%3C/svg%3E") repeat}
+header.top .wrap{position:relative;display:grid;gap:14px;padding-block:40px 32px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted)}
+
+nav.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.bar .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--fg);font-size:14px;font-weight:500;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+nav.bar a:hover{border-color:var(--accent)}
+
+main .wrap{display:grid;gap:56px;padding-block:40px 64px}
+section{display:grid;gap:20px;scroll-margin-top:64px}
+.sec-head{display:grid;gap:8px}
+
+.tag{justify-self:start;display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:4px}
+.tag.past{background:var(--sunk);color:var(--muted)}
+.tag.class{background:var(--accent-soft);color:var(--accent)}
+.tag.hw{background:var(--fg);color:var(--bg)}
+
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:14px;min-width:0}
+.step{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.note{font-size:14px;color:var(--muted)}
+ul,ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
+
+/* ladders */
+.co-h{padding-top:6px;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.co-h small{font-family:var(--body);font-weight:400;font-size:14px;color:var(--muted)}
+.lad-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:680px){.lad-grid{grid-template-columns:1fr}}
+.lad-col{display:grid;gap:8px;align-content:start;min-width:0}
+.lad-col>h4{font-size:14px;letter-spacing:.04em;text-transform:uppercase;padding:6px 10px;border-radius:4px}
+.lad-col.t>h4{background:var(--trl-soft);color:var(--trl)}
+.lad-col.m>h4{background:var(--mrl-soft);color:var(--mrl)}
+.ms{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:10px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg);font-size:14px}
+.ms select{font:inherit;font-family:var(--mono);font-size:13px;padding:4px 6px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--fg);min-width:74px}
+.ms.right{border-color:var(--ok);background:var(--ok-soft)}
+.ms.wrong{border-color:var(--bad);background:var(--bad-soft)}
+.lvl{font-family:var(--mono);font-size:13px;font-weight:500;padding:3px 8px;border-radius:4px;white-space:nowrap}
+.lad-col.t .lvl{background:var(--trl-soft);color:var(--trl)}
+.lad-col.m .lvl{background:var(--mrl-soft);color:var(--mrl)}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+button{font:inherit;font-size:14px;font-weight:600;padding:8px 14px;border-radius:var(--r);border:1px solid var(--fg);background:var(--fg);color:var(--bg);cursor:pointer}
+button.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+button:hover{opacity:.9}
+.score{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.ans-grid{display:grid;gap:10px}
+.stack-sm{display:grid;gap:6px;min-width:0}
+.rate-row{grid-template-columns:auto auto 1fr;align-items:end}
+.rate-row .sub,.rate-row .evid,.rate-row .why{grid-column:1/-1}
+.evid{display:grid;gap:4px;font-size:14px;color:var(--muted)}
+.evid b{font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--fg)}
+.rate-row textarea{font:inherit;font-family:var(--body);font-size:14px;letter-spacing:0;text-transform:none;color:var(--fg);background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px;width:100%;resize:vertical}
+.ans-pair{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.ans-pair>*{min-width:0}
+@media (max-width:680px){.ans-pair{grid-template-columns:1fr}}
+
+details.ref{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+details.ref summary{cursor:pointer;padding:12px 16px;font-weight:600}
+details.ref .inner{padding:0 16px 16px;display:grid;gap:14px}
+.deftab{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+td.n{font-family:var(--mono);width:3.5em}
+
+.qs{display:grid;gap:10px;counter-reset:q}
+.q{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:15px}
+.qn{font-family:var(--mono);font-size:13px;color:var(--accent);padding-top:2px;font-variant-numeric:tabular-nums}
+
+/* case */
+.co-cards{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media (max-width:680px){.co-cards{grid-template-columns:1fr}}
+.co-cards .card h3{display:grid;gap:2px}
+.co-cards .card h3 span{font-family:var(--body);font-size:14px;font-weight:400;color:var(--muted);font-stretch:100%}
+.facts{display:grid;gap:6px;font-size:14px}
+.facts div{display:grid;grid-template-columns:7.5em 1fr;gap:8px}
+.facts dt,.facts b{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;padding-top:2px}
+.seq{list-style:none;padding:0;display:grid;gap:0}
+.seq li{display:grid;grid-template-columns:44px 1fr;gap:14px;padding:12px 0;border-top:1px solid var(--line)}
+.seq li:first-child{border-top:0}
+.seq .yr{font-family:var(--mono);font-size:13px;color:var(--muted)}
+.seq .hexn{width:36px;height:40px;display:grid;place-items:center;font-family:var(--display);font-weight:800;color:var(--accent);background:var(--accent-soft);clip-path:polygon(50% 0,100% 25%,100% 75%,50% 100%,0 75%,0 25%)}
+
+/* rating table */
+.rate{display:grid;gap:10px}
+.rate-row{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:var(--r);background:var(--bg)}
+@media (max-width:600px){.rate-row{grid-template-columns:1fr 1fr}.rate-row .sub{grid-column:1/-1}}
+.rate-row .sub{font-weight:600;font-size:15px;min-width:0}
+.rate-row label{display:grid;gap:2px;font-family:var(--mono);font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted)}
+.rate-row select{font:inherit;font-size:14px;padding:5px 6px;border-radius:4px;border:1px solid var(--line);background:var(--surface);color:var(--fg)}
+.rate-row details{grid-column:1/-1;font-size:14px}
+.rate-row details summary{cursor:pointer;color:var(--trl);font-weight:500}
+.rate-row details p{margin-top:6px;color:var(--muted)}
+
+/* curveball */
+.deal{display:grid;gap:14px}
+.cb-card{border:2px dashed var(--accent);border-radius:var(--r);padding:18px;display:grid;gap:8px;background:var(--accent-soft)}
+.cb-card .t{font-family:var(--display);font-stretch:112%;font-weight:800;font-size:19px}
+.cb-left{font-family:var(--mono);font-size:12px;color:var(--muted)}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}
+.calc .box{border:1px solid var(--line);border-radius:var(--r);padding:14px;display:grid;gap:8px;background:var(--bg)}
+.calc label{font-size:14px;font-weight:500;display:grid;gap:4px}
+.calc input{font:inherit;font-family:var(--mono);padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--fg);width:100%}
+.out{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:14px}
+.out .v{font-family:var(--mono);font-variant-numeric:tabular-nums;font-weight:500;text-align:right}
+.out .moon{color:var(--accent)}
+
+.models{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:680px){.models{grid-template-columns:1fr}}
+.model{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--bg);display:grid;gap:6px;align-content:start;min-width:0}
+.deftab td.mono{font-family:var(--body);font-variant-numeric:tabular-nums}
+.hw-sep{display:flex;align-items:center;gap:20px;margin-bottom:-28px}
+.hw-sep::before,.hw-sep::after{content:"";flex:1;border-top:3px solid var(--fg)}
+.hw-sep span{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:clamp(28px,4vw,40px);letter-spacing:.12em;color:var(--fg);text-align:center}
+.hw-due{margin:0 0 -28px;text-align:center;font-family:var(--display);font-stretch:112%;font-weight:700;font-size:clamp(20px,2.6vw,26px);color:var(--bad)}
+.sub{display:grid;gap:14px}
+.sub-h{font-size:22px}
+.due{border-left:4px solid var(--fg);padding:10px 14px;background:var(--surface);font-size:15px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer .wrap{padding-block:24px 40px;display:grid;gap:10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+html{scroll-behavior:smooth}
+.orbits{position:absolute;inset:-40% -10% -40% 50%;opacity:.55;background:repeating-radial-gradient(circle at 70% 50%,transparent 0 26px,var(--line) 26px 27px)}
+.co-cards .card{align-content:start}
+.seq h4{margin-bottom:4px}
+.co-sub{display:block;font-family:var(--body);font-size:14px;font-weight:400;color:var(--muted);font-stretch:100%;margin-top:2px}
+.co-tag{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:500;letter-spacing:.05em;text-transform:uppercase;color:var(--accent);background:var(--accent-soft);padding:2px 6px;border-radius:4px;margin-right:6px;vertical-align:2px}
+.explain{border-left:4px solid var(--trl);background:var(--trl-soft);padding:14px 16px;border-radius:0 var(--r) var(--r) 0;display:grid;gap:8px}
+.formula{font-family:var(--mono);font-size:14px;background:var(--surface);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.cb-card .deftab{background:var(--surface);border-radius:4px}
+table.opts td:nth-child(2),table.opts td:nth-child(3){white-space:nowrap}
+.rate-row{grid-template-columns:1fr auto}
+.rate-row .sub{display:block}
+.site-tab th:first-child,.site-tab td:first-child{min-width:9em}
+.site-tab td{font-size:13.5px}
+.site-tab th{white-space:nowrap}
+.calc select{font:inherit;font-family:var(--mono);padding:6px 8px;border:1px solid var(--line);border-radius:4px;background:var(--surface);color:var(--fg);width:100%}
+.out .v.big{font-size:18px;color:var(--accent)}
+.fx{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:680px){.fx{grid-template-columns:1fr}}
+.cb-card .facts div{grid-template-columns:8em 1fr}
+.vab-wrap{overflow-x:auto}
+.vab{width:100%;min-width:560px;height:auto;display:block}
+.vab .b-in{fill:var(--bad);opacity:.28}
+.vab .b-out{fill:var(--accent);opacity:.22}
+.vab .fl{fill:none;stroke:var(--muted);stroke-width:1;opacity:.55}
+.vab .earth{fill:var(--trl-soft);stroke:var(--trl);stroke-width:1.5}
+.vab .eq{stroke:var(--fg);stroke-width:1;stroke-dasharray:3 3;opacity:.6}
+.vab .tick{stroke:var(--fg);stroke-width:2}
+.vab .mp{fill:var(--fg)}
+.vab .bounce{fill:none;stroke:var(--fg);stroke-width:2.2;stroke-dasharray:6 4}
+.vab .ptr{stroke:var(--muted);stroke-width:1}
+.vab .lab{font-family:var(--body);font-size:13px;fill:var(--fg)}
+.vab .lab.sm{font-size:11.5px;fill:var(--muted)}
+.vab .lab.c{text-anchor:middle}
+.vab .lab.e{text-anchor:end}
+.vab .lab.in{fill:var(--bad);font-weight:600}
+.vab .lab.out{fill:var(--accent);font-weight:600}
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:10px;align-items:stretch}
+.flow .arr{align-self:center;font-family:var(--mono);font-size:22px;color:var(--accent)}
+@media (max-width:680px){.flow{grid-template-columns:1fr}.flow .arr{justify-self:center;transform:rotate(90deg)}}
+.illus{font-size:13px;color:var(--muted);font-style:italic}
+</style>
+
+<header class="top">
+  <div class="orbits" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="eyebrow">EMGT 5061 · Introduction to Space Industry · Fall 2026</span>
+    <h1>Servers and Storms</h1>
+    <p class="lede">Data centers in space meet space weather. A company wants to put computers in orbit and on the Moon, where sunlight is plentiful and there are no neighbors to object. But every site trades distance, bandwidth, power and radiation differently. In class you decide where each customer's work should go. For homework you are the engineer advising an investment firm.</p>
+    <div class="meta"><span>November 4, 2026</span><span>Dr. Bidushi Bhattacharya</span><span>Record your answers in this week's <a href="https://docs.google.com/presentation/d/1kVpHjFgGD37I3a3AjB9TB-9lXuPT1aKNKz96QSnmFEU/copy" target="_blank" rel="noopener">student deck</a></span></div>
+  </div>
+</header>
+
+<nav class="bar" aria-label="Sections">
+  <div class="wrap">
+    <a href="#company">Company</a>
+    <a href="#belts">Radiation belts</a>
+    <a href="#sites">Four sites</a>
+    <a href="#earth">Earth prices</a>
+    <a href="#place">In class</a>
+    <a href="#hw">Homework</a>
+    <a href="#storm">Storm warning</a>
+    <a href="#hw1">Check the pitch</a>
+    <a href="#hw2">TRL</a>
+    <a href="#glossary">Acronyms</a>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<!-- COMPANY -->
+<section id="company">
+  <div class="sec-head">
+    <h2>This week's company</h2>
+    <p class="lede">One fictional company and three of its prospective customers. The company is invented; the physics and the real missions it's modeled on are not.</p>
+  </div>
+
+  <div class="card">
+    <h3>Engage Compute<span class="co-sub">Data center modules for space</span></h3>
+    <div class="facts">
+      <div><b>Product</b><span>Data center modules: racks of servers with their own solar arrays, batteries, radiators and laser links to the ground. Customers rent computing time and storage, the way they rent space in a data center on Earth.</span></div>
+      <div><b>Pitch</b><span>Data centers on Earth are running into limits on power, water and local approval. In space, sunlight is nearly constant and nobody lives next door.</span></div>
+      <div><b>Sites</b><span>Engage Compute has designs for four sites, described below. It can afford to build at <strong>only one</strong> of them first.</span></div>
+      <div><b>Hardware</b><span>Commercial GPUs, the same kind used on Earth, with error-correcting memory and some shielding. Not radiation-hardened chips, which would cost far more and run several generations behind.</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>What space weather does to a data center</h3>
+    <div class="fx">
+      <div class="model"><h4>Storms add drag</h4><p>A geomagnetic storm heats the upper atmosphere and makes it swell. Satellites in low orbit slow down and sink faster. In February 2022, a minor storm brought down 38 new Starlink satellites.</p></div>
+      <div class="model"><h4>Single particles cause errors</h4><p>One cosmic ray or solar proton crossing a chip can flip a bit (a wrong 1 or 0) or trigger a latchup (a short that stays on until the power is cut). Shielding doesn't stop the most energetic particles.</p></div>
+      <div class="model"><h4>Dose builds up</h4><p>Years of radiation slowly damage a chip's insulating layers until its transistors stop switching cleanly. Shielding helps here. How fast the dose builds depends on the site.</p></div>
+    </div>
+  </div>
+
+  <div class="card" id="belts">
+    <h3>The Van Allen radiation belts</h3>
+    <p>Earth's magnetic field traps charged particles in two doughnut-shaped belts. A trapped particle spirals around a magnetic field line, bounces between the north and south "mirror points" where the field gets stronger (about once a second), and slowly drifts around the planet. Together these motions fill out the belts.</p>
+    <div class="vab-wrap"><svg viewBox="0 0 600 330" role="img" aria-labelledby="vab-t" class="vab">
+<title id="vab-t">Cross-section of Earth's radiation belts along magnetic field lines</title>
+<path d="M324.7,191.2 L326.9,192.0 L329.1,192.6 L331.4,193.2 L333.7,193.7 L336.0,194.0 L338.4,194.3 L340.8,194.4 L343.2,194.3 L345.6,194.2 L347.9,193.9 L350.3,193.5 L352.6,192.9 L354.8,192.2 L357.0,191.4 L359.1,190.5 L361.1,189.4 L363.1,188.2 L364.9,186.9 L366.6,185.5 L368.3,184.0 L369.7,182.4 L371.1,180.7 L372.3,178.9 L373.3,177.0 L374.2,175.1 L375.0,173.2 L375.6,171.2 L376.0,169.1 L376.2,167.1 L376.3,165.0 L376.2,162.9 L376.0,160.9 L375.6,158.8 L375.0,156.8 L374.2,154.9 L373.3,153.0 L372.3,151.1 L371.1,149.3 L369.7,147.6 L368.3,146.0 L366.6,144.5 L364.9,143.1 L363.1,141.8 L361.1,140.6 L359.1,139.5 L357.0,138.6 L354.8,137.8 L352.6,137.1 L350.3,136.5 L347.9,136.1 L345.6,135.8 L343.2,135.7 L340.8,135.6 L338.4,135.7 L336.0,136.0 L333.7,136.3 L331.4,136.8 L329.1,137.4 L326.9,138.0 L324.7,138.8 L333.6,152.0 L334.0,152.3 L334.5,152.6 L335.0,152.9 L335.4,153.3 L335.8,153.6 L336.2,154.0 L336.6,154.3 L337.0,154.7 L337.4,155.1 L337.8,155.5 L338.1,155.9 L338.4,156.3 L338.7,156.8 L339.0,157.2 L339.3,157.7 L339.6,158.1 L339.8,158.6 L340.1,159.0 L340.3,159.5 L340.5,160.0 L340.6,160.5 L340.8,161.0 L340.9,161.5 L341.1,162.0 L341.2,162.5 L341.2,163.0 L341.3,163.5 L341.4,164.0 L341.4,164.5 L341.4,165.0 L341.4,165.5 L341.4,166.0 L341.3,166.5 L341.2,167.0 L341.2,167.5 L341.1,168.0 L340.9,168.5 L340.8,169.0 L340.6,169.5 L340.5,170.0 L340.3,170.5 L340.1,171.0 L339.8,171.4 L339.6,171.9 L339.3,172.3 L339.0,172.8 L338.7,173.2 L338.4,173.7 L338.1,174.1 L337.8,174.5 L337.4,174.9 L337.0,175.3 L336.6,175.7 L336.2,176.0 L335.8,176.4 L335.4,176.7 L335.0,177.1 L334.5,177.4 L334.0,177.7 L333.6,178.0 Z" class="b-in"/>
+<path d="M314.7,197.9 L318.8,203.0 L323.4,208.2 L328.7,213.4 L334.6,218.5 L341.0,223.4 L348.0,228.0 L355.5,232.4 L363.5,236.3 L371.9,239.8 L380.7,242.7 L389.7,245.1 L399.1,246.8 L408.5,247.8 L418.1,248.1 L427.6,247.7 L437.1,246.6 L446.4,244.7 L455.4,242.0 L464.0,238.6 L472.3,234.5 L480.0,229.7 L487.1,224.3 L493.6,218.3 L499.4,211.7 L504.3,204.7 L508.5,197.2 L511.7,189.5 L514.1,181.5 L515.5,173.3 L516.0,165.0 L515.5,156.7 L514.1,148.5 L511.7,140.5 L508.5,132.8 L504.3,125.3 L499.4,118.3 L493.6,111.7 L487.1,105.7 L480.0,100.3 L472.3,95.5 L464.0,91.4 L455.4,88.0 L446.4,85.3 L437.1,83.4 L427.6,82.3 L418.1,81.9 L408.5,82.2 L399.1,83.2 L389.7,84.9 L380.7,87.3 L371.9,90.2 L363.5,93.7 L355.5,97.6 L348.0,102.0 L341.0,106.6 L334.6,111.5 L328.7,116.6 L323.4,121.8 L318.8,127.0 L314.7,132.1 L320.8,135.6 L323.7,133.7 L326.8,131.8 L330.0,130.1 L333.4,128.6 L337.0,127.2 L340.6,126.1 L344.4,125.1 L348.3,124.3 L352.2,123.8 L356.1,123.5 L360.1,123.4 L364.1,123.7 L368.0,124.1 L371.9,124.9 L375.6,125.8 L379.3,127.1 L382.9,128.6 L386.3,130.3 L389.5,132.3 L392.5,134.5 L395.3,136.9 L397.9,139.5 L400.2,142.3 L402.2,145.2 L404.0,148.3 L405.4,151.5 L406.5,154.8 L407.3,158.2 L407.8,161.6 L408.0,165.0 L407.8,168.4 L407.3,171.8 L406.5,175.2 L405.4,178.5 L404.0,181.7 L402.2,184.8 L400.2,187.7 L397.9,190.5 L395.3,193.1 L392.5,195.5 L389.5,197.7 L386.3,199.7 L382.9,201.4 L379.3,202.9 L375.6,204.2 L371.9,205.1 L368.0,205.9 L364.1,206.3 L360.1,206.6 L356.1,206.5 L352.2,206.2 L348.3,205.7 L344.4,204.9 L340.6,203.9 L337.0,202.8 L333.4,201.4 L330.0,199.9 L326.8,198.2 L323.7,196.3 L320.8,194.4 Z" class="b-out"/>
+<path d="M275.3,191.2 L273.1,192.0 L270.9,192.6 L268.6,193.2 L266.3,193.7 L264.0,194.0 L261.6,194.3 L259.2,194.4 L256.8,194.3 L254.4,194.2 L252.1,193.9 L249.7,193.5 L247.4,192.9 L245.2,192.2 L243.0,191.4 L240.9,190.5 L238.9,189.4 L236.9,188.2 L235.1,186.9 L233.4,185.5 L231.7,184.0 L230.3,182.4 L228.9,180.7 L227.7,178.9 L226.7,177.0 L225.8,175.1 L225.0,173.2 L224.4,171.2 L224.0,169.1 L223.8,167.1 L223.7,165.0 L223.8,162.9 L224.0,160.9 L224.4,158.8 L225.0,156.8 L225.8,154.9 L226.7,153.0 L227.7,151.1 L228.9,149.3 L230.3,147.6 L231.7,146.0 L233.4,144.5 L235.1,143.1 L236.9,141.8 L238.9,140.6 L240.9,139.5 L243.0,138.6 L245.2,137.8 L247.4,137.1 L249.7,136.5 L252.1,136.1 L254.4,135.8 L256.8,135.7 L259.2,135.6 L261.6,135.7 L264.0,136.0 L266.3,136.3 L268.6,136.8 L270.9,137.4 L273.1,138.0 L275.3,138.8 L266.4,152.0 L266.0,152.3 L265.5,152.6 L265.0,152.9 L264.6,153.3 L264.2,153.6 L263.8,154.0 L263.4,154.3 L263.0,154.7 L262.6,155.1 L262.2,155.5 L261.9,155.9 L261.6,156.3 L261.3,156.8 L261.0,157.2 L260.7,157.7 L260.4,158.1 L260.2,158.6 L259.9,159.0 L259.7,159.5 L259.5,160.0 L259.4,160.5 L259.2,161.0 L259.1,161.5 L258.9,162.0 L258.8,162.5 L258.8,163.0 L258.7,163.5 L258.6,164.0 L258.6,164.5 L258.6,165.0 L258.6,165.5 L258.6,166.0 L258.7,166.5 L258.8,167.0 L258.8,167.5 L258.9,168.0 L259.1,168.5 L259.2,169.0 L259.4,169.5 L259.5,170.0 L259.7,170.5 L259.9,171.0 L260.2,171.4 L260.4,171.9 L260.7,172.3 L261.0,172.8 L261.3,173.2 L261.6,173.7 L261.9,174.1 L262.2,174.5 L262.6,174.9 L263.0,175.3 L263.4,175.7 L263.8,176.0 L264.2,176.4 L264.6,176.7 L265.0,177.1 L265.5,177.4 L266.0,177.7 L266.4,178.0 Z" class="b-in"/>
+<path d="M285.3,197.9 L281.2,203.0 L276.6,208.2 L271.3,213.4 L265.4,218.5 L259.0,223.4 L252.0,228.0 L244.5,232.4 L236.5,236.3 L228.1,239.8 L219.3,242.7 L210.3,245.1 L200.9,246.8 L191.5,247.8 L181.9,248.1 L172.4,247.7 L162.9,246.6 L153.6,244.7 L144.6,242.0 L136.0,238.6 L127.7,234.5 L120.0,229.7 L112.9,224.3 L106.4,218.3 L100.6,211.7 L95.7,204.7 L91.5,197.2 L88.3,189.5 L85.9,181.5 L84.5,173.3 L84.0,165.0 L84.5,156.7 L85.9,148.5 L88.3,140.5 L91.5,132.8 L95.7,125.3 L100.6,118.3 L106.4,111.7 L112.9,105.7 L120.0,100.3 L127.7,95.5 L136.0,91.4 L144.6,88.0 L153.6,85.3 L162.9,83.4 L172.4,82.3 L181.9,81.9 L191.5,82.2 L200.9,83.2 L210.3,84.9 L219.3,87.3 L228.1,90.2 L236.5,93.7 L244.5,97.6 L252.0,102.0 L259.0,106.6 L265.4,111.5 L271.3,116.6 L276.6,121.8 L281.2,127.0 L285.3,132.1 L279.2,135.6 L276.3,133.7 L273.2,131.8 L270.0,130.1 L266.6,128.6 L263.0,127.2 L259.4,126.1 L255.6,125.1 L251.7,124.3 L247.8,123.8 L243.9,123.5 L239.9,123.4 L235.9,123.7 L232.0,124.1 L228.1,124.9 L224.4,125.8 L220.7,127.1 L217.1,128.6 L213.7,130.3 L210.5,132.3 L207.5,134.5 L204.7,136.9 L202.1,139.5 L199.8,142.3 L197.8,145.2 L196.0,148.3 L194.6,151.5 L193.5,154.8 L192.7,158.2 L192.2,161.6 L192.0,165.0 L192.2,168.4 L192.7,171.8 L193.5,175.2 L194.6,178.5 L196.0,181.7 L197.8,184.8 L199.8,187.7 L202.1,190.5 L204.7,193.1 L207.5,195.5 L210.5,197.7 L213.7,199.7 L217.1,201.4 L220.7,202.9 L224.4,204.2 L228.1,205.1 L232.0,205.9 L235.9,206.3 L239.9,206.6 L243.9,206.5 L247.8,206.2 L251.7,205.7 L255.6,204.9 L259.4,203.9 L263.0,202.8 L266.6,201.4 L270.0,199.9 L273.2,198.2 L276.3,196.3 L279.2,194.4 Z" class="b-out"/>
+<path d="M329.4,185.8 L330.7,185.8 L331.9,185.7 L333.2,185.5 L334.5,185.4 L335.7,185.1 L337.0,184.8 L338.2,184.5 L339.3,184.1 L340.5,183.6 L341.6,183.1 L342.7,182.6 L343.8,182.0 L344.8,181.3 L345.8,180.6 L346.7,179.9 L347.6,179.1 L348.5,178.2 L349.3,177.4 L350.0,176.5 L350.7,175.5 L351.3,174.6 L351.9,173.6 L352.3,172.6 L352.8,171.5 L353.2,170.5 L353.5,169.4 L353.7,168.3 L353.9,167.2 L354.0,166.1 L354.0,165.0 L354.0,163.9 L353.9,162.8 L353.7,161.7 L353.5,160.6 L353.2,159.5 L352.8,158.5 L352.3,157.4 L351.9,156.4 L351.3,155.4 L350.7,154.5 L350.0,153.5 L349.3,152.6 L348.5,151.8 L347.6,150.9 L346.7,150.1 L345.8,149.4 L344.8,148.7 L343.8,148.0 L342.7,147.4 L341.6,146.9 L340.5,146.4 L339.3,145.9 L338.2,145.5 L337.0,145.2 L335.7,144.9 L334.5,144.6 L333.2,144.5 L331.9,144.3 L330.7,144.2 L329.4,144.2" class="fl"/>
+<path d="M270.6,185.8 L269.3,185.8 L268.1,185.7 L266.8,185.5 L265.5,185.4 L264.3,185.1 L263.0,184.8 L261.8,184.5 L260.7,184.1 L259.5,183.6 L258.4,183.1 L257.3,182.6 L256.2,182.0 L255.2,181.3 L254.2,180.6 L253.3,179.9 L252.4,179.1 L251.5,178.2 L250.7,177.4 L250.0,176.5 L249.3,175.5 L248.7,174.6 L248.1,173.6 L247.7,172.6 L247.2,171.5 L246.8,170.5 L246.5,169.4 L246.3,168.3 L246.1,167.2 L246.0,166.1 L246.0,165.0 L246.0,163.9 L246.1,162.8 L246.3,161.7 L246.5,160.6 L246.8,159.5 L247.2,158.5 L247.7,157.4 L248.1,156.4 L248.7,155.4 L249.3,154.5 L250.0,153.5 L250.7,152.6 L251.5,151.8 L252.4,150.9 L253.3,150.1 L254.2,149.4 L255.2,148.7 L256.2,148.0 L257.3,147.4 L258.4,146.9 L259.5,146.4 L260.7,145.9 L261.8,145.5 L263.0,145.2 L264.3,144.9 L265.5,144.6 L266.8,144.5 L268.1,144.3 L269.3,144.2 L270.6,144.2" class="fl"/>
+<path d="M322.8,192.9 L325.3,194.2 L327.9,195.4 L330.7,196.4 L333.5,197.4 L336.4,198.1 L339.4,198.8 L342.4,199.2 L345.4,199.5 L348.5,199.6 L351.6,199.6 L354.6,199.3 L357.6,198.9 L360.6,198.3 L363.5,197.5 L366.4,196.5 L369.1,195.3 L371.7,194.0 L374.2,192.5 L376.6,190.8 L378.8,189.0 L380.8,187.0 L382.7,184.9 L384.4,182.7 L385.8,180.4 L387.1,178.0 L388.1,175.5 L388.9,172.9 L389.5,170.3 L389.9,167.7 L390.0,165.0 L389.9,162.3 L389.5,159.7 L388.9,157.1 L388.1,154.5 L387.1,152.0 L385.8,149.6 L384.4,147.3 L382.7,145.1 L380.8,143.0 L378.8,141.0 L376.6,139.2 L374.2,137.5 L371.7,136.0 L369.1,134.7 L366.4,133.5 L363.5,132.5 L360.6,131.7 L357.6,131.1 L354.6,130.7 L351.6,130.4 L348.5,130.4 L345.4,130.5 L342.4,130.8 L339.4,131.2 L336.4,131.9 L333.5,132.6 L330.7,133.6 L327.9,134.6 L325.3,135.8 L322.8,137.1" class="fl"/>
+<path d="M277.2,192.9 L274.7,194.2 L272.1,195.4 L269.3,196.4 L266.5,197.4 L263.6,198.1 L260.6,198.8 L257.6,199.2 L254.6,199.5 L251.5,199.6 L248.4,199.6 L245.4,199.3 L242.4,198.9 L239.4,198.3 L236.5,197.5 L233.6,196.5 L230.9,195.3 L228.3,194.0 L225.8,192.5 L223.4,190.8 L221.2,189.0 L219.2,187.0 L217.3,184.9 L215.6,182.7 L214.2,180.4 L212.9,178.0 L211.9,175.5 L211.1,172.9 L210.5,170.3 L210.1,167.7 L210.0,165.0 L210.1,162.3 L210.5,159.7 L211.1,157.1 L211.9,154.5 L212.9,152.0 L214.2,149.6 L215.6,147.3 L217.3,145.1 L219.2,143.0 L221.2,141.0 L223.4,139.2 L225.8,137.5 L228.3,136.0 L230.9,134.7 L233.6,133.5 L236.5,132.5 L239.4,131.7 L242.4,131.1 L245.4,130.7 L248.4,130.4 L251.5,130.4 L254.6,130.5 L257.6,130.8 L260.6,131.2 L263.6,131.9 L266.5,132.6 L269.3,133.6 L272.1,134.6 L274.7,135.8 L277.2,137.1" class="fl"/>
+<path d="M318.0,196.2 L321.4,199.3 L325.2,202.3 L329.2,205.2 L333.6,208.0 L338.2,210.6 L343.1,212.9 L348.3,215.0 L353.6,216.8 L359.1,218.2 L364.7,219.3 L370.5,220.1 L376.2,220.4 L382.1,220.3 L387.8,219.9 L393.5,219.0 L399.1,217.7 L404.6,216.0 L409.8,213.9 L414.8,211.4 L419.5,208.5 L423.9,205.2 L427.9,201.7 L431.5,197.8 L434.8,193.6 L437.5,189.3 L439.8,184.7 L441.6,179.9 L443.0,175.0 L443.7,170.0 L444.0,165.0 L443.7,160.0 L443.0,155.0 L441.6,150.1 L439.8,145.3 L437.5,140.7 L434.8,136.4 L431.5,132.2 L427.9,128.3 L423.9,124.8 L419.5,121.5 L414.8,118.6 L409.8,116.1 L404.6,114.0 L399.1,112.3 L393.5,111.0 L387.8,110.1 L382.1,109.7 L376.2,109.6 L370.5,109.9 L364.7,110.7 L359.1,111.8 L353.6,113.2 L348.3,115.0 L343.1,117.1 L338.2,119.4 L333.6,122.0 L329.2,124.8 L325.2,127.7 L321.4,130.7 L318.0,133.8" class="fl"/>
+<path d="M282.0,196.2 L278.6,199.3 L274.8,202.3 L270.8,205.2 L266.4,208.0 L261.8,210.6 L256.9,212.9 L251.7,215.0 L246.4,216.8 L240.9,218.2 L235.3,219.3 L229.5,220.1 L223.8,220.4 L217.9,220.3 L212.2,219.9 L206.5,219.0 L200.9,217.7 L195.4,216.0 L190.2,213.9 L185.2,211.4 L180.5,208.5 L176.1,205.2 L172.1,201.7 L168.5,197.8 L165.2,193.6 L162.5,189.3 L160.2,184.7 L158.4,179.9 L157.0,175.0 L156.3,170.0 L156.0,165.0 L156.3,160.0 L157.0,155.0 L158.4,150.1 L160.2,145.3 L162.5,140.7 L165.2,136.4 L168.5,132.2 L172.1,128.3 L176.1,124.8 L180.5,121.5 L185.2,118.6 L190.2,116.1 L195.4,114.0 L200.9,112.3 L206.5,111.0 L212.2,110.1 L217.9,109.7 L223.8,109.6 L229.5,109.9 L235.3,110.7 L240.9,111.8 L246.4,113.2 L251.7,115.0 L256.9,117.1 L261.8,119.4 L266.4,122.0 L270.8,124.8 L274.8,127.7 L278.6,130.7 L282.0,133.8" class="fl"/>
+<path d="M314.1,198.1 L318.3,203.7 L323.2,209.4 L328.7,215.1 L334.9,220.8 L341.7,226.3 L349.2,231.5 L357.2,236.4 L365.8,240.9 L374.9,244.9 L384.5,248.3 L394.3,251.1 L404.5,253.2 L414.9,254.5 L425.4,255.1 L435.9,254.8 L446.3,253.7 L456.6,251.8 L466.6,249.0 L476.2,245.4 L485.3,241.0 L493.9,235.8 L501.8,230.0 L509.0,223.4 L515.5,216.3 L521.0,208.6 L525.6,200.4 L529.3,191.9 L531.9,183.1 L533.5,174.1 L534.0,165.0 L533.5,155.9 L531.9,146.9 L529.3,138.1 L525.6,129.6 L521.0,121.4 L515.5,113.7 L509.0,106.6 L501.8,100.0 L493.9,94.2 L485.3,89.0 L476.2,84.6 L466.6,81.0 L456.6,78.2 L446.3,76.3 L435.9,75.2 L425.4,74.9 L414.9,75.5 L404.5,76.8 L394.3,78.9 L384.5,81.7 L374.9,85.1 L365.8,89.1 L357.2,93.6 L349.2,98.5 L341.7,103.7 L334.9,109.2 L328.7,114.9 L323.2,120.6 L318.3,126.3 L314.1,131.9" class="fl"/>
+<path d="M285.9,198.1 L281.7,203.7 L276.8,209.4 L271.3,215.1 L265.1,220.8 L258.3,226.3 L250.8,231.5 L242.8,236.4 L234.2,240.9 L225.1,244.9 L215.5,248.3 L205.7,251.1 L195.5,253.2 L185.1,254.5 L174.6,255.1 L164.1,254.8 L153.7,253.7 L143.4,251.8 L133.4,249.0 L123.8,245.4 L114.7,241.0 L106.1,235.8 L98.2,230.0 L91.0,223.4 L84.5,216.3 L79.0,208.6 L74.4,200.4 L70.7,191.9 L68.1,183.1 L66.5,174.1 L66.0,165.0 L66.5,155.9 L68.1,146.9 L70.7,138.1 L74.4,129.6 L79.0,121.4 L84.5,113.7 L91.0,106.6 L98.2,100.0 L106.1,94.2 L114.7,89.0 L123.8,84.6 L133.4,81.0 L143.4,78.2 L153.7,76.3 L164.1,75.2 L174.6,74.9 L185.1,75.5 L195.5,76.8 L205.7,78.9 L215.5,81.7 L225.1,85.1 L234.2,89.1 L242.8,93.6 L250.8,98.5 L258.3,103.7 L265.1,109.2 L271.3,114.9 L276.8,120.6 L281.7,126.3 L285.9,131.9" class="fl"/>
+<path d="M290,129 L278.0,87" class="fl"/>
+<path d="M300,129 L300.0,87" class="fl"/>
+<path d="M310,129 L322.0,87" class="fl"/>
+<path d="M290,201 L278.0,243" class="fl"/>
+<path d="M300,201 L300.0,243" class="fl"/>
+<path d="M310,201 L322.0,243" class="fl"/>
+<circle cx="300" cy="165" r="36" class="earth"/>
+<text x="300" y="170" class="lab c">Earth</text>
+<line x1="339.1" y1="159" x2="339.1" y2="171" class="tick"/>
+<line x1="369.9" y1="159" x2="369.9" y2="171" class="tick"/>
+<line x1="538.2" y1="159" x2="538.2" y2="171" class="tick"/>
+<line x1="336" y1="165" x2="538.2" y2="165" class="eq"/>
+<text x="341" y="155" class="lab sm">LEO</text>
+<text x="370" y="185" class="lab sm c">6,000 km</text>
+<text x="538" y="185" class="lab sm c">GEO</text>
+<text x="242" y="169" class="lab c in">inner belt</text>
+<text x="142" y="169" class="lab c out">outer belt</text>
+<text x="64" y="58" class="lab sm">horns: belts dip low</text><text x="64" y="72" class="lab sm">at high latitudes</text>
+<line x1="150" y1="76" x2="273" y2="116" class="ptr"/>
+<text x="300" y="22" class="lab sm c">open field lines over the poles:</text><text x="300" y="36" class="lab sm c">solar storm particles get in</text>
+<circle cx="223.8" cy="220.4" r="4" class="mp"/><circle cx="223.8" cy="109.6" r="4" class="mp"/>
+<text x="218" y="236" class="lab sm e">mirror point</text>
+<text x="218" y="102" class="lab sm e">mirror point</text>
+<path d="M223.8,220.4 L217.9,220.3 L212.2,219.9 L206.5,219.0 L200.9,217.7 L195.4,216.0 L190.2,213.9 L185.2,211.4 L180.5,208.5 L176.1,205.2 L172.1,201.7 L168.5,197.8 L165.2,193.6 L162.5,189.3 L160.2,184.7 L158.4,179.9 L157.0,175.0 L156.3,170.0 L156.0,165.0 L156.3,160.0 L157.0,155.0 L158.4,150.1 L160.2,145.3 L162.5,140.7 L165.2,136.4 L168.5,132.2 L172.1,128.3 L176.1,124.8 L180.5,121.5 L185.2,118.6 L190.2,116.1 L195.4,114.0 L200.9,112.3 L206.5,111.0 L212.2,110.1 L217.9,109.7 L223.8,109.6" class="bounce"/>
+<text x="300" y="318" class="lab sm c">Not to scale. The South Atlantic Anomaly, where the inner belt dips to about 200 km, is not shown.</text>
+</svg></div>
+    <ul>
+      <li><b>Inner belt:</b> energetic protons, tens to hundreds of MeV, from roughly 1,000 km out to about 6,000 km or a little beyond, above the equator. They are most intense around 3,000 km. They pass through shielding and cause both dose damage and bit flips.</li>
+      <li><b>Outer belt:</b> mostly energetic electrons, from roughly 13,000 km outward, swelling and shrinking with solar storms. They build up electric charge on and inside spacecraft.</li>
+      <li><b>Latitude matters.</b> The belts follow the field lines, so they sit highest over the equator and dip lower toward the poles (the "horns"). Over the polar caps the field lines open into space, so nothing is trapped there, but particles from solar storms can stream straight down.</li>
+      <li><b>The South Atlantic Anomaly.</b> Earth's magnetic field is tilted and off-center. Over South America and the South Atlantic it is weaker, and the inner belt dips to about 200 km. Satellites in low orbit cross it several times a day.</li>
+    </ul>
+    <p class="note">Sources differ on exactly where each belt begins and ends; the figures here are approximate.</p>
+  </div>
+
+  <div class="card" id="flow">
+    <h3>How data moves through a space data center</h3>
+    <div class="flow">
+      <div class="model"><h4>1. Up</h4><p>From the customer's ground station by radio or laser, or through a relay satellite. Data from other satellites can arrive by laser links between satellites, without touching the ground. Uplinks are usually slower than downlinks.</p></div>
+      <span class="arr" aria-hidden="true">→</span>
+      <div class="model"><h4>2. In space</h4><p>Data is written to solid-state drives, processed by GPUs or TPUs, and the results are stored until the next downlink. Everything runs on solar power and sheds heat through radiators. Error-correcting memory and regular saves of progress handle bit flips.</p></div>
+      <span class="arr" aria-hidden="true">→</span>
+      <div class="model"><h4>3. Down</h4><p>By laser or radio during passes over ground stations, continuously from GEO, or through a relay from the Moon. Clouds block laser links, so operators need several ground stations in different weather zones.</p></div>
+    </div>
+    <p><strong>Rule of thumb:</strong> the link to the ground is the narrowest part of the pipe. Computing in space makes the most sense when the data starts in space, or when the results are much smaller than the input.</p>
+  </div>
+</section>
+
+<!-- SITES -->
+<section id="sites">
+  <div class="sec-head">
+    <h2>Engage Compute's four sites</h2>
+    <p class="lede">Light delay is set by physics: radio and laser signals travel at the speed of light. Link speeds, sunlight and radiation are simplified for teaching.</p>
+  </div>
+
+  <div class="card">
+    <div class="deftab"><table class="site-tab">
+      <thead><tr><th></th><th>LEO<br>550 km</th><th>MEO<br>6,000 km</th><th>GEO<br>35,786 km</th><th>Moon<br>south pole</th></tr></thead>
+      <tbody>
+        <tr><td><b>Orbit</b></td><td>Low Earth orbit, dawn-dusk sun-synchronous: it rides the line between day and night</td><td>Medium Earth orbit</td><td>Geostationary: stays over one spot on the equator</td><td>On the surface, on a ridge near the south pole, buried under regolith</td></tr>
+        <tr><td><b>Round-trip light delay to Earth</b></td><td class="mono">about 4 ms</td><td class="mono">about 40 ms</td><td class="mono">about 240 ms</td><td class="mono">about 2.6 s</td></tr>
+        <tr><td><b>Downlink to Earth*</b> (average)</td><td><b>20 Gbps</b> (up to 100 Gbps during passes over a laser ground station)</td><td><b>10 Gbps</b>, with an hour or more of contact per pass</td><td><b>5 Gbps</b>, always in view of one ground station</td><td><b>1 Gbps</b> through a relay satellite (NASA's 2013 Moon laser link reached 0.622 Gbps)</td></tr>
+        <tr><td><b>Uplink from Earth*</b> (average)</td><td><b>10 Gbps</b></td><td><b>5 Gbps</b></td><td><b>2 Gbps</b></td><td><b>1 Gbps</b> (a relay built for two-way traffic)</td></tr>
+        <tr><td><b>Sunlight</b></td><td>Almost constant</td><td>Mostly sunlit, short eclipses</td><td>Sunlit except up to 72 min a day in eclipse seasons</td><td>Sunlit most of the year, but dark spells of several days need large batteries</td></tr>
+        <tr><td><b>Radiation</b></td><td><b>Low to moderate.</b> Below the belts, but its near-polar path crosses the South Atlantic Anomaly, the belts' high-latitude horns and the poles, where solar storm particles get in</td><td><b>Very high.</b> Inside the inner proton belt; needs radiation-hardened parts and heavy shielding, which cancels out the cost advantage of commercial GPUs</td><td><b>Moderate.</b> Outer-belt electrons, and charging of surfaces during storms</td><td><b>High at the surface</b>, with no magnetic field or air. A couple of metres of regolith blocks most of it</td></tr>
+        <tr><td><b>Other hazards</b></td><td>Storm drag; crowded with debris (see <a href="https://astrobidushi.github.io/EMGT-5061-Fall-2026/crystals-and-collisions/">Crystals and Collisions</a>)</td><td>Few</td><td>Crowded, regulated orbital slots</td><td>Constant micrometeoroid hits on anything exposed; the module must be buried by robots, as in <a href="https://astrobidushi.github.io/EMGT-5061-Fall-2026/who-builds-the-moon/">Who Builds the Moon?</a></td></tr>
+        <tr><td><b>Life and cost*</b></td><td>About 5 years, then replaced. Cheapest to reach</td><td>About 5 to 10 years, and only with costly hardened parts and shielding. More costly to reach</td><td>About 15 years. More costly to reach; can't be serviced</td><td>Longer lifetime if buried. By far the most expensive: launch plus landing</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">* Link speeds, sunlight, radiation, life and cost are illustrative examples, not current data. Light delay is set by physics and is the minimum: real networks add routing and processing time on top.</p>
+  </div>
+
+  <div class="card" id="calc">
+    <h3>Delay and transfer calculator</h3>
+    <p>Pick a site, a direction and a data size to see the light delay and how long the data takes to move at that site's link speed.</p>
+    <div class="calc">
+      <div class="box">
+        <label>Site
+          <select id="c-site">
+            <option value="550" data-dn="20" data-up="10">LEO, 550 km</option>
+            <option value="6000" data-dn="10" data-up="5">MEO, 6,000 km</option>
+            <option value="35786" data-dn="5" data-up="2">GEO, 35,786 km</option>
+            <option value="384400" data-dn="1" data-up="1">Moon</option>
+          </select>
+        </label>
+        <label>Direction
+          <select id="c-dir">
+            <option value="dn">Down to Earth</option>
+            <option value="up">Up from Earth</option>
+          </select>
+        </label>
+        <label>Data to move (TB)<input id="c-tb" type="number" min="0" step="0.1" value="2"></label>
+        <label>Link speed (Gbps)<input id="c-g" type="number" min="0.01" step="0.1" value="20"></label>
+      </div>
+      <div class="box">
+        <div class="out">
+          <span>One-way light delay</span><span class="v" id="o-1"></span>
+          <span>Round-trip light delay</span><span class="v" id="o-2"></span>
+          <span>Transfer time</span><span class="v big" id="o-t"></span>
+        </div>
+        <p class="note">Transfer time = data × 8 ÷ link speed. 1 TB = 8,000 gigabits.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="card" id="earth">
+    <h3>What Earth charges: the price to beat</h3>
+    <p>Engage Compute's customers can always rent a data center on Earth instead. List prices from the three biggest cloud companies in U.S. regions, November 2026 (long-term contracts cost less):</p>
+    <div class="deftab"><table>
+      <thead><tr><th>Item</th><th>Amazon Web Services</th><th>Microsoft Azure</th><th>Google Cloud</th></tr></thead>
+      <tbody>
+        <tr><td>One AI chip for an hour</td><td class="mono">$6.88 (NVIDIA H100)</td><td class="mono">about $12.29 (NVIDIA H100)</td><td class="mono">$2.70 (Google TPU)</td></tr>
+        <tr><td>Storing 1 TB for a month (read often)</td><td class="mono">about $23</td><td class="mono">about $18</td><td class="mono">about $20</td></tr>
+        <tr><td>Storing 1 TB for a month (archive, rarely read)</td><td class="mono">about $1</td><td class="mono">about $1 to $4</td><td class="mono">about $1.20</td></tr>
+        <tr><td>Uploading data</td><td>Free</td><td>Free</td><td>Free</td></tr>
+        <tr><td>Downloading 1 TB to the internet</td><td class="mono">about $90</td><td class="mono">about $87</td><td class="mono">about $120</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Sources: AI chips: <a href="https://www.opslyft.com/blog/aws-gpu-pricing">AWS (OpsLyft)</a>, <a href="https://spheron.network/blog/azure-h100-pricing">Azure (Spheron)</a>, <a href="https://cloud.google.com/tpu/pricing">Google Cloud TPU pricing</a>. Storage: <a href="https://www.cloudforecast.io/amazon-s3-pricing-and-optimization-guide/">AWS S3 (CloudForecast)</a>, <a href="https://finout.io/blog/cloud-storage-pricing-comparison">all three clouds (Finout)</a>. Downloads: <a href="https://egresscost.com/aws/s3-egress-pricing">AWS (EgressCost)</a>, <a href="https://egresscost.com/gcp/">Google Cloud (EgressCost)</a>, <a href="https://www.opslyft.com/blog/cloud-storage-pricing-s3-blob-gcs">Azure (OpsLyft)</a>.</p>
+    <h4>Round-trip delay on Earth</h4>
+    <div class="deftab"><table>
+      <tbody>
+        <tr><td>Between data centers in one cloud region</td><td class="mono">about 1 ms</td></tr>
+        <tr><td>Home broadband to a nearby data center</td><td class="mono">about 10–20 ms</td></tr>
+        <tr><td>U.S. coast to coast by fiber</td><td class="mono">about 60–80 ms*</td></tr>
+        <tr><td>Starlink user to the internet</td><td class="mono">about 25–40 ms</td></tr>
+        <tr><td>Internet through a GEO satellite</td><td class="mono">about 600–750 ms</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Sources: <a href="https://aws.amazon.com/blogs/architecture/improving-performance-and-reducing-cost-using-availability-zone-affinity">AWS Architecture Blog</a> (within a region); <a href="https://www.rcrwireless.com/20220316/test-and-measurement/ookla-starlinks-median-speed-hits-100-mbps-in-the-us">Ookla via RCR Wireless</a> (home broadband); <a href="https://teslanorth.com/2026/05/05/starlink-performance-reaches-new-heights-across-the-united-states/">Ookla via Tesla North</a> (Starlink and GEO); <a href="https://www.commscope.com/globalassets/digizuite/2799-latency-in-optical-fiber-systems-wp-111432-en.pdf">CommScope</a> (speed of light in fiber, for the coast-to-coast estimate).</p>
+    <p class="note">A TPU and a GPU do different amounts of work per hour, so prices per chip aren't a straight comparison. * Estimate: light in fiber travels at about two-thirds of its speed in vacuum.</p>
+  </div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="In class"><span>IN CLASS</span></div>
+
+<!-- IN CLASS -->
+<section id="place">
+  <div class="sec-head">
+    <span class="tag class">Small Group Exercises</span>
+    <h2>Where should the work go?</h2>
+    <p class="lede">You are Engage Compute's site engineers. Three customers want to sign up. For each one, pick the best site and a second choice, and name the one factor that decided it. Then pick the site Engage Compute should build first.</p>
+  </div>
+
+  <div class="deal">
+    <div class="cb-card"><span class="step">Card 1</span><p class="t">Training an AI model</p>
+      <div class="facts">
+        <div><b>Customer</b><span>An AI lab on Earth.</span></div>
+        <div><b>Needs</b><span>Three months of nonstop computing that uses a lot of power. 500 TB of training data uploaded at the start; the finished 2 TB model downloaded at the end. Delay doesn't matter. The job saves its progress every hour, so a crash costs at most an hour of rework.</span></div>
+      </div></div>
+    <div class="cb-card"><span class="step">Card 2</span><p class="t">A lunar base</p>
+      <div class="facts">
+        <div><b>Customer</b><span>A crew of four at a base near the lunar south pole, with robotic rovers.</span></div>
+        <div><b>Needs</b><span>The data starts on the Moon: rovers and base systems produce about 200 GB a day. Rovers need hazard-avoidance answers in under half a second. Crew medical and operations data must stay available even when the link to Earth drops. Summaries and science, about 10–20 GB a day, go to Earth.</span></div>
+      </div></div>
+    <div class="cb-card"><span class="step">Card 3</span><p class="t">A bank's nightly backup</p>
+      <div class="facts">
+        <div><b>Customer</b><span>A bank on Earth.</span></div>
+        <div><b>Needs</b><span>A 2 TB copy of its records every night, finished within an 8-hour overnight window. The copy must survive a disaster that hits its data centers on Earth. It's rarely read back.</span></div>
+      </div></div>
+  </div>
+
+  <div class="card">
+    <h3>The three customers at a glance</h3>
+    <div class="deftab"><table>
+      <thead><tr><th>Card</th><th>Data in, and where it starts</th><th>Computing in space</th><th>Data out</th><th>Delay need</th><th>How often</th></tr></thead>
+      <tbody>
+        <tr><td>1. AI training</td><td>500 TB from Earth</td><td>Heavy: about 1,000 GPUs, about 1 MW, nonstop for 3 months</td><td>The finished model: 2 TB</td><td>Doesn't matter</td><td>Once each way</td></tr>
+        <tr><td>2. Lunar base</td><td>About 200 GB a day, starting on the Moon</td><td>Light but urgent: rover hazard checks, base operations</td><td>About 10–20 GB a day to Earth</td><td>Under 0.5 s for rovers</td><td>Daily</td></tr>
+        <tr><td>3. Bank backup</td><td>2 TB from Earth</td><td>Almost none: checking the copy is intact</td><td>Almost nothing; after a disaster, everything (60 TB or more)</td><td>Doesn't matter, but must finish in 8 hours</td><td>Nightly</td></tr>
+      </tbody>
+    </table></div>
+    <p class="illus">Data volumes are illustrative examples, not current data.</p>
+  </div>
+
+  <div class="card">
+    <h3>Your log</h3>
+    <p>Fill in the log in the <a href="https://docs.google.com/presentation/d/1kVpHjFgGD37I3a3AjB9TB-9lXuPT1aKNKz96QSnmFEU/copy" target="_blank" rel="noopener">student deck</a>, one row per card. Use the site table, the calculator and the Earth prices above. If none of Engage Compute's sites can serve a customer, say so.</p>
+    <div class="deftab"><table>
+      <thead><tr><th>Card</th><th>Best site</th><th>Second choice</th><th>Deciding factor</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td></td><td></td><td></td></tr>
+        <tr><td>2</td><td></td><td></td><td></td></tr>
+        <tr><td>3</td><td></td><td></td><td></td></tr>
+      </tbody>
+    </table></div>
+    <div class="qs">
+      <div class="q"><span class="qn">Data check</span><p>Use the calculator to find how long it takes to upload card 1's 500 TB of training data to each of the four sites. Which sites are practical for a 3-month job?</p></div>
+      <div class="q"><span class="qn">Price check</span><p>The bank in card 3 keeps its last 30 nightly backups, 2 TB each. Using the AWS prices in "What Earth charges," what does storing them cost per month if they're read often, and in archive? What would Engage Compute have to offer to win this customer?</p></div>
+      <div class="q"><span class="qn">Last</span><p>Engage Compute can build at only one site first. Which one, and which customers does that choice give up?</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="Homework"><span>HOMEWORK</span></div>
+<p class="hw-due">Due before November 11, 3 pm</p>
+
+<!-- HOMEWORK -->
+<section id="hw">
+  <div class="sec-head">
+    <p class="due">Answer in this week's <a href="https://docs.google.com/presentation/d/1kVpHjFgGD37I3a3AjB9TB-9lXuPT1aKNKz96QSnmFEU/copy" target="_blank" rel="noopener">student deck</a> and upload it to <a href="https://nmt.instructure.com/courses/42326/assignments/201396">Canvas</a>.</p>
+  </div>
+
+  <div class="card" id="storm">
+    <span class="step">Homework 1</span>
+    <h3>Storm warning</h3>
+    <p><b>This builds on the work you did in class.</b> For each card, use the best site you chose in your log.</p>
+    <p>NOAA's Space Weather Prediction Center issues a watch: a fast coronal mass ejection is expected to arrive in about 36 hours, with a <b>G4 (severe) geomagnetic storm</b> and an <b>S3 (strong) solar radiation storm</b>.</p>
+    <div class="qs">
+      <div class="q"><span class="qn">H1.1</span><p>For each card, what is at risk at the site you chose, and what should Engage Compute's operators do before the storm arrives?</p></div>
+    </div>
+  </div>
+
+  <div class="card" id="hw1">
+    <span class="step">Homework 2</span>
+    <h3>Check the pitch: power and heat</h3>
+    <p>Engage Compute is raising money for a 1 MW module in LEO. Its pitch deck says, "Power is free and cooling in space is free." Check both claims with two rules of thumb.</p>
+    <div class="explain">
+      <h4>Two rules of thumb</h4>
+      <p><b>Solar power.</b> Sunlight in Earth orbit delivers 1,361 W per square metre. Good space solar cells turn about 30% of that into electricity, so each m² of array gives about <b>400 W</b>.</p>
+      <p><b>Getting rid of heat.</b> Nearly all the electricity a computer uses ends up as heat. In a vacuum there is no air or water to carry it away, so heat can only leave as infrared radiation from a radiator panel. A two-sided panel at about room temperature (27 °C) radiates about <b>800 W per m²</b>.</p>
+      <p class="formula">Area needed = power ÷ watts per m²</p>
+      <p class="note">These ignore sunlight and Earth's heat landing on the radiator, which make the real radiator larger.</p>
+    </div>
+    <div class="qs">
+      <div class="q"><span class="qn">H2.1</span><p>About how many m² of solar array does a 1 MW module need? How many m² of radiator?</p></div>
+      <div class="q"><span class="qn">H2.2</span><p>Every square metre has to be launched. Is power "free" in space? Is cooling? What do you tell the investment committee?</p></div>
+      <div class="q"><span class="qn">H2.3</span><p>A real startup, Starcloud, has pitched a 5 GW data center powered by a solar array of about 4 km². How much sunlight falls on 4 km² in orbit? What does that tell you about the pitch, and what question would you ask the founders?</p></div>
+      <div class="q"><span class="qn">H2.4</span><p>A satellite broadband company runs a constellation of about a dozen satellites in an equatorial orbit at about 8,000 km. It sells internet links to cruise ships, airlines, governments and mobile phone networks in remote areas, with round-trip times under 150 ms, and has operated there for more than ten years. Engage Compute's MEO site is at 6,000 km. Why would a company choose 8,000 km over 6,000 km? And why that altitude rather than low Earth orbit or GEO?</p></div>
+    </div>
+  </div>
+
+  <div class="sub" id="hw2">
+    <h3 class="sub-h">TRL</h3>
+    <p class="lede">For worked examples, see <a href="https://astrobidushi.github.io/EMGT-5061-Fall-2026/space%20nuc%20%26%20lunar%20infra/">Ready for the Moon?</a> Use it and the definitions below for Homework 3.</p>
+    <details class="ref">
+      <summary>TRL definitions (1–9)</summary>
+      <div class="inner">
+        <div class="deftab"><table>
+          <thead><tr><th>TRL</th><th>Technology Readiness (NASA)</th></tr></thead>
+          <tbody id="def-t"></tbody>
+        </table></div>
+      </div>
+    </details>
+  </div>
+
+  <div class="card">
+    <span class="step">Homework 3</span>
+    <h3>Rate what has flown</h3>
+    <p>These are real. For each item, read the evidence, pick a TRL and defend it in the box. There is no single right answer: the grade is for the reasons you give, not the number.</p>
+    <div class="rate" id="rate"></div>
+    <div class="qs">
+      <div class="q"><span class="qn">H3.1</span><p>Which of these ratings matters most for the site you chose for Engage Compute in class, and why?</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="glossary">
+  <div class="card" id="acronyms">
+    <h3>Acronyms and units</h3>
+    <div class="deftab"><table>
+      <thead><tr><th>Acronym</th><th>Meaning</th></tr></thead>
+      <tbody><tr><td><b>AI</b></td><td>Artificial intelligence</td></tr><tr><td><b>DNA</b></td><td>Deoxyribonucleic acid, the molecule that carries genetic information</td></tr><tr><td><b>FCC</b></td><td>Federal Communications Commission, the U.S. agency that licenses satellites’ radio use</td></tr><tr><td><b>G4, S3</b></td><td>Levels on NOAA’s space weather scales: G4 is a severe geomagnetic storm, S3 a strong solar radiation storm (each scale runs 1 to 5)</td></tr><tr><td><b>GEO</b></td><td>Geostationary orbit, 35,786 km above the equator, where a satellite stays over one spot</td></tr><tr><td><b>GPU</b></td><td>Graphics processing unit, the chip most AI computing runs on</td></tr><tr><td><b>HPE</b></td><td>Hewlett Packard Enterprise</td></tr><tr><td><b>IM-2</b></td><td>Intuitive Machines’ second Moon landing mission (2025)</td></tr><tr><td><b>ISS</b></td><td>International Space Station</td></tr><tr><td><b>LEO</b></td><td>Low Earth orbit, up to about 2,000 km</td></tr><tr><td><b>MEO</b></td><td>Medium Earth orbit, between low Earth orbit and GEO</td></tr><tr><td><b>NASA</b></td><td>National Aeronautics and Space Administration</td></tr><tr><td><b>NOAA</b></td><td>National Oceanic and Atmospheric Administration, whose Space Weather Prediction Center issues space weather forecasts</td></tr><tr><td><b>TPU</b></td><td>Tensor processing unit, Google’s chip designed for AI</td></tr><tr><td><b>TRL</b></td><td>Technology Readiness Level, NASA’s 1-to-9 scale of how proven a technology is</td></tr></tbody>
+    </table></div>
+    <div class="deftab"><table>
+      <thead><tr><th>Unit</th><th>Meaning</th></tr></thead>
+      <tbody><tr><td><b>ms</b></td><td>Millisecond, one thousandth of a second</td></tr><tr><td><b>km</b></td><td>Kilometer</td></tr><tr><td><b>W, MW, GW</b></td><td>Watt, megawatt (a million watts), gigawatt (a billion watts)</td></tr><tr><td><b>m², km²</b></td><td>Square meter, square kilometer</td></tr><tr><td><b>MeV</b></td><td>Million electron volts, a measure of a particle’s energy</td></tr><tr><td><b>GB, TB</b></td><td>Gigabyte, terabyte (1 TB = 1,000 GB = 8,000 gigabits)</td></tr><tr><td><b>Mbps, Gbps</b></td><td>Megabits per second, gigabits per second: link speed</td></tr></tbody>
+    </table></div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Engage Compute and its customers are fictional, and the site figures are simplified for teaching. The missions in Homework 3 are real: HPE's Spaceborne Computer, Starcloud-1, Lonestar's Freedom on the IM-2 lander, NASA's Lunar Laser Communication Demonstration and SpaceX's 2026 FCC filing. TRL definitions follow NASA's Technology Readiness Levels.</p>
+    <p>EMGT 5061 · New Mexico Tech · Fall 2026</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+const TRL_DEF=["","Basic principles observed","Technology concept formulated","Proof of concept in the lab, parts tested separately","Components work together in the lab","Components work together in a relevant environment","Full-scale prototype demonstrated in a relevant environment","Prototype demonstrated in space","Flight system qualified","Flight proven on a real mission"];
+function el(tag,attrs,html){const e=document.createElement(tag);if(attrs)for(const k in attrs)e.setAttribute(k,attrs[k]);if(html!=null)e.innerHTML=html;return e}
+function esc(s){return s.replace(/&/g,"&amp;").replace(/</g,"&lt;")}
+
+const dt=document.getElementById("def-t");
+for(let i=1;i<=9;i++)dt.appendChild(el("tr",null,`<td class="n">${i}</td><td>${TRL_DEF[i]}</td>`));
+
+// calculator
+const C=299792.458, site=document.getElementById("c-site"), tb=document.getElementById("c-tb"), g=document.getElementById("c-g");
+function fmtT(s){
+  if(s<1)return (s*1000).toFixed(s<0.01?1:0)+" ms";
+  if(s<60)return s.toFixed(2)+" s";
+  if(s<3600)return (s/60).toFixed(0)+" min";
+  if(s<86400*2)return (s/3600).toFixed(1)+" hours";
+  return (s/86400).toFixed(1)+" days";
+}
+function calc(){
+  const d=+site.value, one=d/C;
+  document.getElementById("o-1").textContent=fmtT(one);
+  document.getElementById("o-2").textContent=fmtT(2*one);
+  const gb=Math.max(+g.value||0,0), t=+tb.value||0;
+  document.getElementById("o-t").textContent=gb>0?fmtT(t*8000/gb):"—";
+}
+const dir=document.getElementById("c-dir");
+function setG(){g.value=site.selectedOptions[0].dataset[dir.value];calc()}
+site.addEventListener("change",setG);dir.addEventListener("change",setG);
+tb.addEventListener("input",calc);g.addEventListener("input",calc);calc();
+
+// [item, evidence]
+const ITEMS=[
+ ["Commercial servers working on the ISS",
+  "HPE's Spaceborne Computer-1 ran on the ISS for about 1.5 years from 2017 with no added shielding. Spaceborne Computer-2 has run since 2021, completed 24 experiments in its first year, and processes real ISS research data, such as DNA sequences, for investigators."],
+ ["A data-center GPU training AI in orbit",
+  "Starcloud-1 launched in November 2025 with one NVIDIA H100 GPU. It trained a small AI model and ran another in orbit, and is still operating. A second GPU on board failed during launch."],
+ ["Data storage on the Moon",
+  "Lonestar's Freedom payload, 8 TB of storage, flew on Intuitive Machines' IM-2 lander, which landed on its side in March 2025. Lonestar says the payload worked. No one else has confirmed it."],
+ ["Laser links from the Moon",
+  "NASA's Lunar Laser Communication Demonstration sent data from lunar orbit at up to 622 Mbps in 2013, during a short test campaign. Its main ground station was at White Sands, New Mexico."],
+ ["A constellation of a million data center satellites",
+  "In January 2026, SpaceX asked the FCC for permission to launch up to one million data center satellites between 500 and 2,000 km. No such satellite has flown."],
+];
+const rate=document.getElementById("rate");
+ITEMS.forEach((s,i)=>{
+  const r=el("div",{class:"rate-row"});
+  r.appendChild(el("div",{class:"sub"},esc(s[0])));
+  const ev=el("div",{class:"evid"});ev.appendChild(el("b",null,"Evidence to weigh"));ev.appendChild(el("p",null,esc(s[1])));r.appendChild(ev);
+  const l1=el("label",{for:`lv-${i}`},"TRL");const s1=el("select",{id:`lv-${i}`});s1.appendChild(el("option",{value:""},"Pick"));
+  for(let L=1;L<=9;L++)s1.appendChild(el("option",{value:L},`TRL ${L}`));l1.appendChild(s1);r.appendChild(l1);
+  const why=el("label",{for:`why-${i}`,class:"why"},"Defend your choice");why.appendChild(el("textarea",{id:`why-${i}`,rows:"3"}));r.appendChild(why);
+  rate.appendChild(r);
+});
+})();
+</script>
+
+</body>
+</html>
