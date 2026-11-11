@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>The Full-Stack Powers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f2f3f1; --surface:#ffffff; --sunk:#e7e9e5; --fg:#1d2124; --muted:#5b6266; --line:#cdd1cc;
+  --accent:#b8650f; --accent-soft:#f6e6d2; --trl:#2f5d8a; --trl-soft:#dfe8f2; --mrl:#7a4f9a; --mrl-soft:#ece3f3;
+  --bad:#b03a2e;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#15181a; --surface:#1d2124; --sunk:#252a2d; --fg:#e8eae6; --muted:#a2a9ac; --line:#363c40;
+  --accent:#e59a45; --accent-soft:#3a2a17; --trl:#8fb6e0; --trl-soft:#1f2c3a; --mrl:#c9a3e6; --mrl-soft:#2d2338;
+  --bad:#f0938a; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:860px;margin:0 auto;padding-left:16px;padding-right:16px}
+a{color:var(--trl)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{font-family:var(--display);font-stretch:118%;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,7vw,56px);font-weight:900;letter-spacing:-.01em}
+h2{font-size:clamp(24px,4vw,32px);font-weight:800}
+h3{font-size:20px;font-weight:800}
+h4{font-size:16px;font-weight:700}
+p{margin:0}
+.lede{color:var(--muted);max-width:62ch}
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.orbits{position:absolute;inset:-40% -10% -40% 50%;opacity:.55;background:repeating-radial-gradient(circle at 70% 50%,transparent 0 26px,var(--line) 26px 27px)}
+header.top .wrap{position:relative;display:grid;gap:14px;padding-block:40px 32px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted)}
+nav.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.bar .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--fg);font-size:14px;font-weight:500;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+nav.bar a:hover{border-color:var(--accent)}
+main .wrap{display:grid;gap:56px;padding-block:40px 64px}
+section{display:grid;gap:20px;scroll-margin-top:64px}
+.sec-head{display:grid;gap:8px}
+.tag{justify-self:start;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:14px;min-width:0}
+.step{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.note{font-size:14px;color:var(--muted)}
+ul,ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
+.models{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:680px){.models{grid-template-columns:1fr}}
+.model{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--bg);display:grid;gap:6px;align-content:start;min-width:0}
+.deal{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.deal .grp{grid-column:1/-1;padding-top:6px}
+@media (max-width:680px){.deal{grid-template-columns:1fr}}
+.cb-card{border:2px dashed var(--accent);border-radius:var(--r);padding:18px;display:grid;gap:8px;align-content:start;background:var(--accent-soft)}
+.cb-card .t{font-family:var(--display);font-stretch:112%;font-weight:800;font-size:19px}
+.when{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.cb-card .src{font-size:12.5px;color:var(--muted);line-height:1.4}
+.qs{display:grid;gap:10px}
+.q{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:15px}
+.qn{font-family:var(--mono);font-size:13px;color:var(--accent);padding-top:2px;min-width:3.2em}
+.deftab{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+td.n{font-family:var(--mono);width:3.5em}
+.fields td:first-child{font-weight:600;white-space:nowrap;width:13em}
+.mrlrow td{background:var(--mrl-soft)}
+.rule{border-left:4px solid var(--bad);background:var(--surface);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;font-size:15px}
+.bonus{border-left:4px solid var(--trl);background:var(--trl-soft);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;font-size:15px}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:680px){.cats{grid-template-columns:1fr}}
+details.ref{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+details.ref summary{cursor:pointer;padding:12px 16px;font-weight:600}
+details.ref .inner{padding:0 16px 16px;display:grid;gap:14px}
+.hw-sep{display:flex;align-items:center;gap:20px;margin-bottom:-28px}
+.hw-sep::before,.hw-sep::after{content:"";flex:1;border-top:3px solid var(--fg)}
+.hw-sep span{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:clamp(28px,4vw,40px);letter-spacing:.12em;text-align:center}
+.hw-due{margin:0 0 -28px;text-align:center;font-family:var(--display);font-stretch:112%;font-weight:700;font-size:clamp(20px,2.6vw,26px);color:var(--bad)}
+.due{border-left:4px solid var(--fg);padding:10px 14px;background:var(--surface);font-size:15px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer .wrap{padding-block:24px 40px;display:grid;gap:10px}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="orbits" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="eyebrow">EMGT 5061 · Introduction to Space Industry · Fall 2026</span>
+    <h1>The Full-Stack Powers</h1>
+    <p class="lede">Global Space Ecosystems I: the United States, Europe, China, Russia, India and Japan. Each can build, launch and operate almost everything it needs in space. But how full is "full stack" when one rocket fails? In class you stress-test the six powers, then start mapping New Mexico's own space assets. For homework you finish the map.</p>
+    <div class="meta"><span>November 11, 2026</span><span>Dr. Bidushi Bhattacharya</span><span>Record your answers in this week's <a href="https://docs.google.com/presentation/d/1xDiSb9ckYkYJxgbf3MJ7oRDfX6o0tsH3PEdbSFRDGDg/edit?usp=drive_link" target="_blank" rel="noopener">student deck</a>, and upload it to <a href="https://nmt.instructure.com/courses/42326/assignments/201705">Canvas</a> when you're finished with your homework</span></div>
+  </div>
+</header>
+
+<nav class="bar" aria-label="Sections">
+  <div class="wrap">
+    <a href="#framework">Framework</a>
+    <a href="#stress">Stress test</a>
+    <a href="#sites">NM launch &amp; test sites</a>
+    <a href="#hw">Homework</a>
+    <a href="#ref">TRL, MRL, value chain</a>
+    <a href="#glossary">Acronyms</a>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<!-- FRAMEWORK -->
+<section id="framework">
+  <div class="sec-head">
+    <h2>How we compare the powers</h2>
+    <p class="lede">Today's lecture looks at every country through the same seven questions. Use them in both exercises.</p>
+  </div>
+  <div class="card">
+    <div class="models">
+      <div class="model"><h4>1. Governance</h4><p>Who runs the space program, and where does it sit in government?</p></div>
+      <div class="model"><h4>2. Money</h4><p>How big is the budget, and who pays: civil, military or commercial?</p></div>
+      <div class="model"><h4>3. Access to space</h4><p>Can it launch its own satellites and people? On how many rockets, from how many pads?</p></div>
+      <div class="model"><h4>4. Flagship programs</h4><p>What does it fly that others notice: stations, Moon missions, navigation?</p></div>
+      <div class="model"><h4>5. Commercial policy tools</h4><p>How does it grow companies: contracts, licensing, funds, technology transfer?</p></div>
+      <div class="model"><h4>6. International alignment</h4><p>Who are its partners? Artemis Accords, ILRS, both or neither?</p></div>
+      <div class="model"><h4>7. Workforce</h4><p>Where do its engineers come from, and can it keep them?</p></div>
+    </div>
+  </div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="In class"><span>IN CLASS</span></div>
+
+<!-- EXERCISE 1 -->
+<section id="stress">
+  <div class="sec-head">
+    <span class="tag">Small Group Exercise 1</span>
+    <h2>Stress test: how full is full stack?</h2>
+    <p class="lede">Each shock card below puts one of the six full-stack powers in a real crisis: its main way to reach orbit is suddenly gone. What happens next? All six events really happened.</p>
+  </div>
+
+  <div class="card">
+    <h3>How this works</h3>
+    <p>You're running a country's space program when disaster strikes. Your group is assigned two cards.</p>
+    <p><b>Dependence costs more than money.</b> When a country relies on someone else to reach orbit, it can also pay in:</p>
+    <ul style="margin:0 0 12px 22px;padding:0;line-height:1.55">
+      <li><b>Leverage:</b> the provider can use your need as a bargaining chip.</li>
+      <li><b>Schedule:</b> you fly when they can fit you in, not when you want to.</li>
+      <li><b>Skills:</b> your own workforce and industry shrink while you wait.</li>
+      <li><b>Prestige and autonomy:</b> you can't claim independence in space.</li>
+      <li><b>Security:</b> your satellites or astronauts sit inside someone else's system.</li>
+    </ul>
+    <p><b>We put it all together at the end.</b> Each group reports back on its two cards, and then the whole class ranks all six powers from most to least resilient.</p>
+  </div>
+
+  <div class="deal">
+    <h3 class="grp">Group A</h3>
+    <div class="cb-card"><span class="step">Group A · Card A1</span><p class="t">China</p><span class="when">July 2, 2017</span>
+      <p>The second Long March 5, China's most powerful rocket, fails minutes after liftoff because of a fault in a first-stage engine. China's lunar sample return mission, its space station modules and its first Mars mission all need this rocket.</p>
+      <p class="src">Source, to open after you answer in your student deck: <a href="https://phys.org/news/2017-07-china-rocket-failure-space-missions.html" target="_blank" rel="noopener">AP via Phys.org: China rocket failure likely to set back next space missions</a></p></div>
+    <div class="cb-card"><span class="step">Group A · Card A2</span><p class="t">Europe</p><span class="when">July 2023</span>
+      <p>The last Ariane 5 flies. Its replacement, Ariane 6, is years late. The smaller Vega-C has been grounded since a failure in December 2022. Russia pulled its Soyuz rockets out of Europe's spaceport in 2022. ESA has satellites ready to go.</p>
+      <p class="src">Source, to open after you answer in your student deck: <a href="https://www.esa.int/Enabling_Support/Space_Transportation/Ariane_5_bows_out_in_style_dual_payloads_perfect_delivery" target="_blank" rel="noopener">ESA: Ariane 5 bows out in style</a></p></div>
+    <h3 class="grp">Group B</h3>
+    <div class="cb-card"><span class="step">Group B · Card B1</span><p class="t">India</p><span class="when">May 2025 and January 2026</span>
+      <p>PSLV, India's workhorse rocket with a long record of successes, fails twice in eight months, both times in its third stage. The second flight was a commercial mission carrying an Earth observation satellite and 15 smaller satellites, some for foreign customers.</p>
+      <p class="src">Source, to open after you answer in your student deck: <a href="https://www.nasaspaceflight.com/2026/01/indias-pslv-solve-third-stage-second-failure/" target="_blank" rel="noopener">NASASpaceflight: India's PSLV and its second third-stage failure</a></p></div>
+    <div class="cb-card"><span class="step">Group B · Card B2</span><p class="t">Japan</p><span class="when">December 22, 2025</span>
+      <p>Japan's flagship H3 rocket fails: separating the nose cone damages the satellite's mount, and the Michibiki 5 navigation satellite is lost. Japan retired its older H-IIA rocket in June 2025.</p>
+      <p class="src">Source, to open after you answer in your student deck: <a href="https://global.jaxa.jp/press/2025/12/20251222-2_e.html" target="_blank" rel="noopener">JAXA: Launch failure of the 8th H3 launch vehicle</a></p></div>
+    <h3 class="grp">Group C</h3>
+    <div class="cb-card"><span class="step">Group C · Card C1</span><p class="t">Russia</p><span class="when">November 27, 2025</span>
+      <p>The Soyuz MS-28 crew reaches orbit safely, but the launch collapses the mobile service platform at Baikonur's Site 31 into the flame trench below the pad. Site 31 is Russia's only pad for sending crews and cargo to the ISS.</p>
+      <p class="src">Source, to open after you answer in your student deck: <a href="https://russianspaceweb.com/baikonur-r7-31-2025-accident.html" target="_blank" rel="noopener">RussianSpaceWeb: Baikonur Site 31 accident</a></p></div>
+    <div class="cb-card"><span class="step">Group C · Card C2</span><p class="t">United States</p><span class="when">July 2011</span>
+      <p>The Space Shuttle flies its last mission. NASA has no other vehicle that can launch its astronauts, and the International Space Station still needs crews. The replacement spacecraft are years away.</p>
+      <p class="src">Source, to open after you answer in your student deck: <a href="https://www.nasa.gov/feature/10-years-ago-sts-135-the-space-shuttle-s-grand-finale" target="_blank" rel="noopener">NASA: STS-135, the space shuttle's grand finale</a></p></div>
+  </div>
+
+  <div class="card">
+    <h3>For each of your cards</h3>
+    <p>Record your answers in this week's <a href="https://docs.google.com/presentation/d/1xDiSb9ckYkYJxgbf3MJ7oRDfX6o0tsH3PEdbSFRDGDg/edit?usp=drive_link" target="_blank" rel="noopener">student deck</a>. Once you have finished your homework, upload the whole student deck to <a href="https://nmt.instructure.com/courses/42326/assignments/201705">Canvas</a>.</p>
+    <p><b>Answer first, then check.</b> Decide from what you know about that country's space system before you look up what really happened.</p>
+    <div class="qs">
+      <div class="q"><span class="qn">Q1</span><p>Capacity lost: can the country no longer launch its crews, its payloads (satellites and cargo), or both?</p></div>
+      <div class="q"><span class="qn">Today</span><p><b>For Q2 to Q6, imagine the shock happens today.</b> Some of these events are years old, and the options for a backup have changed since then. In 2011, for example, no American company could fly NASA astronauts; SpaceX's Crew Dragon didn't carry a crew until 2020. Answer with today's rockets, companies and partners.</p></div>
+      <div class="q"><span class="qn">Q2</span><p>What's the backup for each capacity lost: another domestic rocket or pad, another country's rocket, or nothing? Answer separately for crews and payloads.</p></div>
+      <div class="q"><span class="qn">Q3</span><p>Who pays to recover?</p></div>
+      <div class="q"><span class="qn">Q4</span><p>Who does the country now depend on, and what does that dependence cost besides money?</p></div>
+      <div class="q"><span class="qn">Q5</span><p>Rate its resilience from 1 (no backup at all) to 5 (barely slowed down).</p></div>
+      <div class="q"><span class="qn">Q6</span><p>Justify your rating: which facts about the country's space ecosystem increased or lowered your resilience score?</p></div>
+      <div class="q"><span class="qn">Check</span><p>Now look up what actually happened at the time. How does what really happened compare with your answers for today, and what explains the difference?</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Whole class</h3>
+    <div class="qs">
+      <div class="q"><span class="qn">Rank</span><p>Rank all six powers from most to least resilient. Is the biggest space program also the most resilient?</p></div>
+      <div class="q"><span class="qn">Last</span><p>Is "full stack" the same as resilient? What would you add to the seven framework questions to capture the difference?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXERCISE 2 -->
+<section id="sites">
+  <div class="sec-head">
+    <span class="tag">Small Group Exercise 2</span>
+    <h2>New Mexico, part 1: launch and test sites</h2>
+    <p class="lede">New Mexico isn't a country, but it hosts a remarkable share of America's space activity. Over the next two weeks you'll map it. Today you start with the places where things are launched and tested.</p>
+  </div>
+
+  <div class="card">
+    <h3>Your task</h3>
+    <p>Each group researches <b>one New Mexico launch or test site</b>, assigned below, and records it in the student deck. Group A: <b>Spaceport America</b>. Group B: <b>White Sands Missile Range</b>. Group C: <b>NASA White Sands Test Facility</b>.</p>
+    <p>Record:</p>
+    <div class="deftab"><table class="fields">
+      <tbody>
+        <tr><td>Name</td><td>The site, and who runs it</td></tr>
+        <tr><td>Location</td><td>Nearest town and county</td></tr>
+        <tr><td>Product or capability</td><td>What it launches or tests, or the main service it sells</td></tr>
+        <tr><td>TRL</td><td>The TRL (1–9) of that main product or capability. See the <a href="#ref">TRL definitions</a>.</td></tr>
+        <tr><td>Why New Mexico?</td><td>What about this location makes it work here: airspace, altitude, open land, weather, a lab nearby?</td></tr>
+        <tr><td>Value-chain position</td><td>Upstream, midstream or downstream. See the <a href="#vc">value chain</a>.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">MRL isn't needed for a site. You'll rate MRL for a company in the homework.</p>
+  </div>
+
+  <div class="bonus"><b>Know of something we don't?</b> If you find more sites, projects or companies in New Mexico, add them to the "More finds" slide in the student deck. Your instructor would like to hear about them.</div>
+
+  <div class="rule"><b>One rule:</b> you may not choose a site, lab, university or company where you currently work. If anyone in your group works at your assigned site, tell your instructor and your group will take the Holloman High Speed Test Track instead.</div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="Homework"><span>HOMEWORK</span></div>
+<p class="hw-due">Due before November 18, 3 pm</p>
+
+<!-- HOMEWORK -->
+<section id="hw">
+  <div class="sec-head">
+    <p class="due">Answer in this week's <a href="https://docs.google.com/presentation/d/1xDiSb9ckYkYJxgbf3MJ7oRDfX6o0tsH3PEdbSFRDGDg/edit?usp=drive_link" target="_blank" rel="noopener">student deck</a> and upload it to <a href="https://nmt.instructure.com/courses/42326/assignments/201705">Canvas</a>.</p>
+  </div>
+
+  <div class="card">
+    <span class="step">Homework 1</span>
+    <h3>New Mexico, part 2: labs, universities and companies</h3>
+    <p>On your own, find <b>one</b> entity in New Mexico in <b>each</b> of the three categories below, and record the same fields you used in class. For the company, also rate its <b>MRL</b>.</p>
+    <div class="cats">
+      <div class="model"><h4>Labs and military research</h4><p>National laboratories and military research or test organizations working on space.</p></div>
+      <div class="model"><h4>Universities and observatories</h4><p>Universities, research centers and observatories with space work.</p></div>
+      <div class="model"><h4>Companies</h4><p>Private companies with a space product or service, based or operating in New Mexico.</p></div>
+    </div>
+    <div class="deftab"><table class="fields">
+      <thead><tr><th>Field</th><th>What to record</th></tr></thead>
+      <tbody>
+        <tr><td>Name</td><td>The entity</td></tr>
+        <tr><td>Location</td><td>Nearest town and county</td></tr>
+        <tr><td>Product</td><td>Its main space product, technology or capability</td></tr>
+        <tr><td>TRL</td><td>TRL (1–9) of that product</td></tr>
+        <tr class="mrlrow"><td>MRL (company only)</td><td>MRL (0–9) of the company's product.</td></tr>
+        <tr><td>Why New Mexico?</td><td>What about the location makes it work here</td></tr>
+        <tr><td>Value-chain position</td><td>Upstream, midstream or downstream</td></tr>
+        <tr><td>Source</td><td>A link to the page where you found your information. If there's no link, explain where it came from, such as a conversation, an event or a printed source.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="qs">
+      <div class="q"><span class="qn">H1.1</span><p>Of the four entities you've worked on (your group's site from class plus your three), which matters most if New Mexico wanted its own space strategy? Why? Answer in three to five sentences. We'll use your answers next week.</p></div>
+    </div>
+  </div>
+
+  <div class="bonus"><b>Extra credit:</b> add other New Mexico space companies to the "More finds" slide in the student deck. For each one, include a link to the company's website or a page about it. If there's no link, explain where your information comes from, such as a conversation, an event or a printed source. You'll receive 1 point for each additional company you identify, up to 5 points. Full credit for this assignment is 10 out of 10 points, so a perfect score plus five new companies gives you 15 out of 10.</div>
+
+  <div class="rule"><b>Same rule:</b> you may not choose an organization where you currently work.</div>
+</section>
+
+<!-- REFERENCES -->
+<section id="ref">
+  <div class="sec-head">
+    <h2>TRL, MRL and the value chain</h2>
+    <p class="lede">For worked TRL and MRL examples, see <a href="https://astrobidushi.github.io/EMGT-5061-Fall-2026/space%20nuc%20%26%20lunar%20infra/">Ready for the Moon?</a></p>
+  </div>
+  <details class="ref" id="ref-trl">
+    <summary>TRL definitions (1–9)</summary>
+    <div class="inner"><div class="deftab"><table>
+      <thead><tr><th>TRL</th><th>Technology Readiness (NASA)</th></tr></thead>
+      <tbody id="def-t"></tbody>
+    </table></div></div>
+  </details>
+  <details class="ref" id="ref-mrl">
+    <summary>MRL definitions (0–9)</summary>
+    <div class="inner"><div class="deftab"><table>
+      <thead><tr><th>MRL</th><th>Market Readiness (Mealing, Starbridge Venture Capital)</th></tr></thead>
+      <tbody id="def-m"></tbody>
+    </table></div>
+    <p class="note">TRL asks "does it work?" MRL asks "has the market been tested: who are the customers, do they want it, and will they pay?" A product can be TRL 9 and still be MRL 3 if no one has tested who will buy it.</p></div>
+  </details>
+  <details class="ref" id="vc">
+    <summary>The space value chain</summary>
+    <div class="inner"><div class="deftab"><table>
+      <thead><tr><th>Position</th><th>What belongs there</th></tr></thead>
+      <tbody>
+        <tr><td><b>Upstream</b></td><td>Research and development, manufacturing, testing and launch</td></tr>
+        <tr><td><b>Midstream</b></td><td>Satellite operations and ground infrastructure</td></tr>
+        <tr><td><b>Downstream</b></td><td>Data, analytics, applications and services for end users</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">The same framework from Commercial Space Markets. Some entities sit in more than one position: name the main one and say why.</p></div>
+  </details>
+  <p class="note"><b>Sources:</b> TRL: <a href="https://www.nasa.gov/directorates/somd/space-communications-navigation-program/technology-readiness-levels/" target="_blank" rel="noopener">NASA, Technology Readiness Levels</a>. MRL: <a href="https://www.slideshare.net/slideshow/market-readiness-levels/242923970" target="_blank" rel="noopener">Michael Mealing, “Market Readiness Levels: Product Development Metrics for Investment and Deployment Decision Making,” Starbridge Venture Capital</a>. Value chain: <a href="https://newspaceeconomy.ca/2023/01/19/what-is-the-value-chain-of-the-space-economy-a-quick-overview/" target="_blank" rel="noopener">New Space Economy, “What Is the Value Chain of the Space Economy?”</a> and <a href="https://doi.org/10.1787/cbf9b240-en" target="_blank" rel="noopener">OECD, The Space Economy at a Glance 2026</a>.</p>
+</section>
+
+<section id="glossary">
+  <div class="card">
+    <h3>Acronyms</h3>
+    <div class="deftab"><table>
+      <thead><tr><th>Acronym</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><b>ESA</b></td><td>European Space Agency</td></tr>
+        <tr><td><b>H-IIA, H3</b></td><td>Japan's previous and current flagship rockets</td></tr>
+        <tr><td><b>ILRS</b></td><td>International Lunar Research Station, the China–Russia lunar base project</td></tr>
+        <tr><td><b>ISS</b></td><td>International Space Station</td></tr>
+        <tr><td><b>MRL</b></td><td>Market Readiness Level, a 0-to-9 scale (Mealing, Starbridge Venture Capital) of how well a product's customers, value proposition and business model have been tested, from a perceived need to a go-to-market decision</td></tr>
+        <tr><td><b>NASA</b></td><td>National Aeronautics and Space Administration</td></tr>
+        <tr><td><b>PSLV</b></td><td>Polar Satellite Launch Vehicle, India's workhorse rocket</td></tr>
+        <tr><td><b>TRL</b></td><td>Technology Readiness Level, NASA's 1-to-9 scale of how proven a technology is</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>The six shock cards describe real events; each card links to a source.</p>
+    <p>EMGT 5061 · New Mexico Tech · Fall 2026</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const TRL=["Basic principles observed","Technology concept formulated","Proof of concept in the lab, parts tested separately","Components work together in the lab","Components work together in a relevant environment","Full-scale prototype demonstrated in a relevant environment","Prototype demonstrated in space","Flight system qualified","Flight proven on a real mission"];
+  const MRL=[
+   "<b>Perceived need.</b> Exit criteria: documented conversations, existing market research, and rough outlines of the problem.",
+   "<b>Value proposition drafted.</b> Exit criteria: at least one draft value proposition statement.",
+   "<b>Customers characterized.</b> Exit criteria: the customer side of the Business Model Canvas completed, and potential customers identified to validate the value proposition and the canvas.",
+   "<b>Customer discovery.</b> Exit criteria: the customer side of the canvas validated by customer feedback, plus documented interviews on the value of the problem, past solutions, and the financial value of solving it.",
+   "<b>Low-fi MVP designed.</b> Exit criteria: a low-fidelity minimum viable product, metrics that measure how well the canvas matches actual use, and a large enough set of diverse customers.",
+   "<b>Low-fi MVP tested.</b> Exit criteria: usage metrics and all feedback from customers and stakeholders.",
+   "<b>Model revalidated.</b> Exit criteria: a fully validated canvas and all resources needed to build and test a high-fidelity MVP.",
+   "<b>High-fi MVP tested.</b> Exit criteria: data, customer feedback and metrics from the high-fidelity MVP campaign.",
+   "<b>Model validated with MVP.</b> Exit criteria: a fully validated and documented Business Model Canvas.",
+   "<b>Go-to-market decision.</b> Exit criteria: a yes or no decision to launch."];
+  function fill(id,arr,start){const tb=document.getElementById(id);arr.forEach((d,i)=>{const tr=document.createElement("tr");const a=document.createElement("td");a.className="n";a.textContent=i+start;const b=document.createElement("td");b.innerHTML=d;tr.append(a,b);tb.appendChild(tr);});}
+  fill("def-t",TRL,1);fill("def-m",MRL,0);
+  // Links to the references open the matching section
+  const openFor={"#vc":["vc"],"#ref":["ref-trl","ref-mrl"]};
+  document.querySelectorAll('a[href="#vc"],a[href="#ref"]').forEach(a=>a.addEventListener("click",()=>{
+    const ids=a.textContent.includes("MRL")?["ref-mrl"]:a.textContent.includes("TRL")?["ref-trl"]:openFor[a.getAttribute("href")];
+    ids.forEach(id=>{const d=document.getElementById(id);if(d)d.open=true;});
+  }));
+})();
+</script>
+</body>
+</html>
