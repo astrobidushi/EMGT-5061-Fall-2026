@@ -11,14 +11,14 @@
 :root{
   --bg:#f2f3f1; --surface:#ffffff; --sunk:#e7e9e5; --fg:#1d2124; --muted:#5b6266; --line:#cdd1cc;
   --accent:#b8650f; --accent-soft:#f6e6d2; --trl:#2f5d8a; --trl-soft:#dfe8f2; --mrl:#7a4f9a; --mrl-soft:#ece3f3;
-  --bad:#b03a2e;
+  --bad:#b03a2e; --deck:#1e7a55; --deck-soft:#e1f2e9;
   --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
   --r:6px;
 }
 @media (prefers-color-scheme: dark){:root{
   --bg:#15181a; --surface:#1d2124; --sunk:#252a2d; --fg:#e8eae6; --muted:#a2a9ac; --line:#363c40;
   --accent:#e59a45; --accent-soft:#3a2a17; --trl:#8fb6e0; --trl-soft:#1f2c3a; --mrl:#c9a3e6; --mrl-soft:#2d2338;
-  --bad:#f0938a; color-scheme:dark}}
+  --bad:#f0938a; --deck:#6fd3a5; --deck-soft:#16302a; color-scheme:dark}}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
 .wrap{max-width:860px;margin:0 auto;padding-left:16px;padding-right:16px}
@@ -100,8 +100,21 @@ table.cmp td{width:45%}
 table.cmp td:first-child{width:10%}
 #artemis h4{margin-top:6px}
 ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
-.deal3.stand{grid-template-columns:1fr 2.4fr 1fr}
+.deal3.stand{grid-template-columns:1fr 1.8fr 1.4fr}
 @media (max-width:760px){.deal3.stand{grid-template-columns:1fr}}
+.card.deck{background:var(--deck-soft);border:1px solid var(--deck);border-left:6px solid var(--deck)}
+.card.deck .qn,.card.deck .step{color:var(--deck)}
+.card.deck .deftab table{background:var(--surface)}
+.card.hwk{background:var(--mrl-soft);border:1px solid var(--mrl);border-left:6px solid var(--mrl)}
+.card.hwk .qn,.card.hwk .step{color:var(--mrl)}
+.card.hwk .deftab table{background:var(--surface)}
+.card.hwk .decklabel{background:var(--mrl)}
+.lead-class,.lead-hw{max-width:70ch;padding:8px 12px;border-radius:0 var(--r) var(--r) 0}
+.lead-class{color:var(--fg);background:var(--deck-soft);border-left:5px solid var(--deck)}
+.lead-hw{color:var(--fg);background:var(--mrl-soft);border-left:5px solid var(--mrl)}
+.lead-class b{color:var(--deck)}.lead-hw b{color:var(--mrl)}
+.decklabel{justify-self:start;font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:4px;background:var(--deck);color:#fff}
+@media (prefers-color-scheme:dark){.decklabel{color:#0d1f17}}
 </style>
 </head>
 <body>
@@ -111,7 +124,9 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
   <div class="wrap">
     <span class="eyebrow">EMGT 5061 · Introduction to Space Industry · Fall 2026</span>
     <h1>Emerging Space Nations, Specialists and Climbers</h1>
-    <p class="lede">Global Space Ecosystems II: Luxembourg, New Zealand, Singapore, the United Kingdom, the UAE, Australia and South Korea. None of them can do everything in space, so each picks a playbook. In class you spend a country's space budget and see the implications. For homework you pick a playbook for New Mexico and pitch it to the governor.</p>
+    <p class="lede">Global Space Ecosystems II: Luxembourg, New Zealand, Singapore, the United Kingdom, the UAE, Australia, South Korea and Senegal. None of them can do everything in space, so each picks a playbook.</p>
+    <p class="lede lead-class"><b>In class</b>, you first discuss how countries handle belonging to both Moon clubs, the Artemis Accords and the International Lunar Research Station (ILRS). Then you spend a country's space budget and see the implications.</p>
+    <p class="lede lead-hw"><b>For homework</b>, you pick a playbook for New Mexico and pitch it to the governor.</p>
     <div class="meta"><span>November 18, 2026</span><span>Dr. Bidushi Bhattacharya</span><span>Record your answers in this week's <a href="https://docs.google.com/presentation/d/1aCtObYk2LKGoOuKRMgzGCzxPm_ZhK7eTAU_EwMLxyM4/edit?usp=sharing" target="_blank" rel="noopener">student deck</a>, and upload it to <a href="https://nmt.instructure.com/courses/42326/assignments/201932" target="_blank" rel="noopener">Canvas</a> when you're finished with your homework</span></div>
   </div>
 </header>
@@ -119,6 +134,7 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
 <nav class="bar" aria-label="Sections">
   <div class="wrap">
     <a href="#playbooks">Playbooks</a>
+    <a href="#discussion">Discussion</a>
     <a href="#spend">Spend $1 billion</a>
     <a href="#menu">The menu</a>
     <a href="#hw">Homework</a>
@@ -140,7 +156,7 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
       <div class="model"><span class="step">Regulators</span><h4>Luxembourg, New Zealand</h4><p>Small countries that win with laws. Clear rules and fast licensing bring companies to them from abroad.</p></div>
       <div class="model"><span class="step">Hubs</span><h4>Singapore, United Kingdom</h4><p>Places where space companies and money gather: finance, insurance, talent and partnerships with bigger programs.</p></div>
       <div class="model"><span class="step">Nation-builders</span><h4>UAE, Australia</h4><p>Countries using space to build a new industry, a workforce and national pride, often by buying help from abroad at first.</p></div>
-      <div class="model"><span class="step">Climber</span><h4>South Korea</h4><p>A country climbing step by step toward full stack: its own rockets, its own satellites, and now the Moon.</p></div>
+      <div class="model"><span class="step">Climbers</span><h4>South Korea, Senegal</h4><p>Countries climbing step by step toward full stack. South Korea is far up the ladder: its own rockets, its own satellites, and now the Moon. Senegal is on the first rung: a first satellite built with a partner, the next one on its own.</p></div>
     </div>
     <p style="margin-top:16px">Each country is listed under the playbook it leans on most today, but most do more than one thing:</p>
     <ul class="also">
@@ -148,9 +164,10 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
       <li><b>New Zealand</b> (regulator) also launches: Rocket Lab flies from its soil.</li>
       <li><b>Singapore</b> (hub) also builds satellites: ST Engineering's TeLEOS-1 (2015) and its radar satellite TeLEOS-2 (2023), both launched on Indian rockets.</li>
       <li><b>United Kingdom</b> (hub) also licenses launches and has a spaceport in Cornwall.</li>
-      <li><b>UAE</b> (nation-builder) also explores deep space: after Hope at Mars, its MBR Explorer is set to launch to the asteroid belt in early 2028, on a Japanese rocket.</li>
+      <li><b>UAE</b> (nation-builder) also explores deep space, and spreads the work across partners: after Hope at Mars, its MBR Explorer is set to launch to the asteroid belt in March 2028 on Japan's H3 rocket, with the University of Colorado's LASP as a technical partner, while the mission's asteroid lander and its Sirb radar satellites are built at home.</li>
       <li><b>Australia</b> (nation-builder) also regulates launches: it licensed its first orbital spaceport and rocket, Gilmour Space's Eris, whose first launch attempt failed in 2025.</li>
       <li><b>South Korea</b> (climber) already flies its own rocket, Nuri, and also still uses foreign rockets.</li>
+      <li><b>Senegal</b> (climber) also spreads its bets across partners: its first satellite, GaindéSat-1A, was built with a French university and launched on a SpaceX rocket in 2024, and Senegal belongs to both Moon clubs (see <a href="#artemis">Two Moon clubs</a>).</li>
     </ul>
   </div>
   <div class="card">
@@ -173,6 +190,16 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
 
 <div class="hw-sep" role="separator" aria-label="In class"><span>IN CLASS</span></div>
 
+<!-- DISCUSSION -->
+<section id="discussion">
+  <div class="card deck" id="dual-question">
+    <span class="decklabel">In class · Discussion first</span>
+    <h3>An engineering manager's question</h3>
+    <p>How should a systems engineering manager at an aerospace contractor handle hardware export controls (such as ITAR and EAR) when delivering a payload for a nation like Senegal or Thailand that holds formal memberships in both Artemis and the ILRS?</p>
+    <p class="note">Background: <a href="#artemis">Two Moon clubs</a>, including the paragraph on partner diversification. ITAR and EAR are defined in the <a href="#glossary">acronyms</a>.</p>
+  </div>
+</section>
+
 <!-- EXERCISE -->
 <section id="spend">
   <div class="sec-head">
@@ -186,8 +213,8 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
       <p>Australia's space agency opened in 2018 with A$41 million (about $28 million) over four years. Your $1 billion is more than 30 times that start.</p></div>
     <div class="cb-card"><span class="step">Group B · Nation-builder</span><p class="t">United Arab Emirates</p>
       <p>In 2022 the UAE created a National Space Fund of AED 3 billion (about $817 million). Your $1 billion is a bit more than that whole fund.</p></div>
-    <div class="cb-card"><span class="step">Group C · Climber</span><p class="t">South Korea</p>
-      <p>KASA, South Korea's space agency, opened in 2024 with about $550 million for the year and is asking for about $1.2 billion for 2027. Your $1 billion is less than one year of spending.</p></div>
+    <div class="cb-card"><span class="step">Group C · Climber</span><p class="t">Senegal</p>
+      <p>Senegal doesn't publish an annual space budget, but assume it's $50 million a year. Your $1 billion is about 20 times that.</p></div>
   </div>
 
   <div class="card">
@@ -195,13 +222,15 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
     <div class="qs">
       <div class="q"><span class="qn">1</span><p><b>Budget:</b> $1 billion total over five years. You can't go over.</p></div>
       <div class="q"><span class="qn">2</span><p><b>Prices:</b> buy only from the <a href="#menu">menu</a>. Each price is a rounded, real cost from a country's program, in US dollars.</p></div>
-      <div class="q"><span class="qn">3</span><p><b>Big items:</b> you can start something that costs more than you have left, or takes longer than five years, but it won't be finished. Say what you'll have at year five.</p></div>
-      <div class="q"><span class="qn">4</span><p><b>Repeats:</b> you can buy an item more than once, such as several launches abroad. If your country already has something on the menu, you can still buy more of it, but say why.</p></div>
-      <div class="q"><span class="qn">5</span><p><b>Reasons:</b> tie every purchase to one of the seven framework questions.</p></div>
+      <div class="q"><span class="qn">3</span><p><b>International partners:</b> none of these three countries has yet reached orbit on its own rocket, so at least half your purchases must involve an international partner: another country's space agency, a foreign company or a foreign university. A launch bought abroad, or a satellite built with a foreign university, counts.</p></div>
+      <div class="q"><span class="qn">4</span><p><b>Big items:</b> you can start something that costs more than you have left, or takes longer than five years, but it won't be finished. Say what you'll have at year five.</p></div>
+      <div class="q"><span class="qn">5</span><p><b>Repeats:</b> you can buy an item more than once, such as several launches abroad. If your country already has something on the menu, you can still buy more of it, but say why.</p></div>
+      <div class="q"><span class="qn">6</span><p><b>Reasons:</b> tie every purchase to one of the seven framework questions.</p></div>
     </div>
   </div>
 
-  <div class="card">
+  <div class="card deck">
+    <span class="decklabel">✎ Type into the student deck</span>
     <h3>How it runs</h3>
     <p>Record your answers in this week's <a href="https://docs.google.com/presentation/d/1aCtObYk2LKGoOuKRMgzGCzxPm_ZhK7eTAU_EwMLxyM4/edit?usp=sharing" target="_blank" rel="noopener">student deck</a>. Once you have finished your homework, upload the whole student deck to <a href="https://nmt.instructure.com/courses/42326/assignments/201932" target="_blank" rel="noopener">Canvas</a>.</p>
     <div class="qs">
@@ -211,7 +240,8 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
     </div>
   </div>
 
-  <div class="card">
+  <div class="card deck">
+    <span class="decklabel">✎ Type into the student deck</span>
     <h3>Your report-back slide</h3>
     <p>Each group presents one slide from the student deck, with these six parts:</p>
     <div class="qs">
@@ -264,9 +294,9 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
     </ul>
     <p><b>What a country gets:</b> a voice in writing the rules for the Moon, and a door into NASA's Artemis program. In March 2026 NASA announced a Moon Base at the lunar south pole, to be built with companies and partner countries. Signing opens that door; the actual role (contracts, instruments on missions, astronaut seats, hardware for the base) comes through a separate deal with NASA.</p>
     <div class="deal3">
-      <div class="model"><h4>Australia</h4><p>A founding signer, October 2020. Its agency is building a small rover, Roo-ver, to go to the Moon with NASA.</p></div>
-      <div class="model"><h4>UAE</h4><p>A founding signer, October 2020. In 2024 it agreed to build the airlock for NASA's Gateway, a planned station in orbit around the Moon, in exchange for an Emirati astronaut seat. In March 2026 NASA cancelled Gateway to build its Moon Base instead. The UAE says it's staying in Artemis.</p></div>
-      <div class="model"><h4>South Korea</h4><p>Signed in May 2021, the tenth country to join. Its lunar orbiter, Danuri, carries a NASA camera, ShadowCam, that images permanently shadowed craters.</p></div>
+      <div class="model"><h4>Australia</h4><p>A founding signer, October 2020. Its agency is building a small rover, Roo-ver, to go to the Moon with NASA. Roo-ver will scoop up lunar soil so NASA can try to extract oxygen from it, and is set to fly on a US commercial lander by 2030.</p></div>
+      <div class="model"><h4>UAE</h4><p>A founding signer, October 2020. Its planned airlock for NASA's Gateway was cancelled in March 2026. NASA has replaced Gateway with a Moon Base.</p></div>
+      <div class="model"><h4>Senegal</h4><p>Signed in July 2025, the 56th country to join and the fourth in Africa. It had already joined the ILRS ten months earlier (see below).</p></div>
     </div>
     <h4>The International Lunar Research Station (ILRS)</h4>
     <p>The ILRS is a plan led by China and Russia, which signed an agreement in March 2021, to build a permanent research base near the Moon's south pole. Construction is planned for 2026 to 2035, starting with China's Chang'e-7 and Chang'e-8 missions. Unlike the Artemis Accords, its rules for members haven't been made public.</p>
@@ -276,7 +306,7 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
       <thead><tr><th></th><th>Artemis Accords</th><th>ILRS</th></tr></thead>
       <tbody>
         <tr><td><b>Pros</b></td>
-          <td><ul><li>Free to sign, with published principles</li><li>The bigger club: more than 70 countries</li><li>A door into NASA's Artemis program and its planned Moon Base: contracts, instruments on missions, even astronaut seats</li></ul></td>
+          <td><ul><li>Free to sign, with published principles</li><li>The bigger club: 78 countries as of October 2026</li><li>A door into NASA's Artemis program and its planned Moon Base: contracts, instruments on missions, even astronaut seats</li></ul></td>
           <td><ul><li>Joining means joining the Moon base project itself, with room on Chinese lunar missions</li><li>Chinese training and technology, often for countries with little access to US programs</li><li>China has already landed three times on the Moon and brought back samples</li></ul></td></tr>
         <tr><td><b>Cons</b></td>
           <td><ul><li>Signing alone brings no money or seats: each benefit is a separate deal with NASA</li><li>Lines a country up with the United States</li><li>NASA can change course: when it cancelled Gateway in 2026, partners' hardware, like the UAE's airlock, lost its home</li><li>Critics say its rules on using Moon resources stretch the Outer Space Treaty's ban on claiming territory</li></ul></td>
@@ -284,10 +314,8 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
       </tbody>
     </table></div>
     <p><b>You can join both.</b> Thailand (2024), Senegal (2025) and Serbia (2026) belong to both clubs, and the US says ILRS members are welcome to sign the Accords.</p>
-    <div class="model" id="dual-question">
-      <h4>Discussion: an engineering manager's question</h4>
-      <p>How should a systems engineering manager at an aerospace contractor handle hardware export controls (such as ITAR and EAR) when delivering a payload for a nation like Senegal or Thailand that holds formal memberships in both Artemis and the ILRS?</p>
-    </div>
+    <p><b>Partner diversification.</b> For developing space nations like these three, joining both clubs is a strategy, not an accident. Signing the Artemis Accords (78 signers) and joining the ILRS (13 member countries) lets an emerging program reach scientific data, payload opportunities and ground station networks in both of the major space coalitions, instead of depending on one.</p>
+    <p class="note">This section is the background for the <a href="#dual-question">in-class discussion question</a>.</p>
     <h4>Where our three countries stand</h4>
     <div class="deal3 stand">
       <div class="model"><h4>Australia</h4><p>Artemis Accords only.</p></div>
@@ -297,9 +325,25 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
           <li><b>Rashid 2 rover:</b> in 2022 the UAE agreed to fly it on China's Chang'e-7. US export rules stopped it.</li>
           <li><b>Not officially committed:</b> Chinese and Russian officials have called the UAE an ILRS partner, but the UAE government has never confirmed joining, and it isn't on the list of member countries.</li>
         </ul></div>
-      <div class="model"><h4>South Korea</h4><p>Artemis Accords only.</p></div>
+      <div class="model"><h4>Senegal</h4><p>Both clubs.</p>
+        <ul>
+          <li><b>ILRS:</b> joined September 5, 2024, through an agreement between its space agency, ASES, and China's space agency. The deal includes training Senegalese scientists and engineers for lunar missions.</li>
+          <li><b>Artemis Accords:</b> signed July 24, 2025, at NASA headquarters.</li>
+        </ul></div>
     </div>
-    <p class="note">Sources: <a href="https://www.nasa.gov/artemis-accords/" target="_blank" rel="noopener">NASA, Artemis Accords</a>; <a href="https://www.space.gov.au/node/290" target="_blank" rel="noopener">Australian Space Agency, Moon to Mars</a>; <a href="https://www.nasa.gov/news-release/nasa-united-arab-emirates-announce-artemis-lunar-gateway-airlock" target="_blank" rel="noopener">NASA, UAE Gateway airlock</a>; <a href="https://www.nasa.gov/wp-content/uploads/2026/03/building-the-moon-base.pdf" target="_blank" rel="noopener">NASA, Moon Base plan</a>; <a href="https://www.khaleejtimes.com/space/uae-continue-moon-exploration-goals-nasa-pause-gateway-project" target="_blank" rel="noopener">Khaleej Times, UAE after Gateway</a>; <a href="https://www.space.com/south-korea-artemis-accords-moon-exploration" target="_blank" rel="noopener">Space.com, South Korea signs</a>; <a href="https://azmth.space/moon/missions/ilrs" target="_blank" rel="noopener">Azmth, ILRS members and status</a>; <a href="https://spacepolicyonline.com/news/serbia-mauritius-bring-artemis-accords-to-70/" target="_blank" rel="noopener">SpacePolicyOnline, countries in both clubs</a>; <a href="https://spacenews.com/?p=209388" target="_blank" rel="noopener">SpaceNews, University of Sharjah joins ILRS</a>; <a href="https://www.scmp.com/news/china/science/article/3214396/us-tech-rules-bar-uae-moon-rover-chinas-change-7-mission-sources" target="_blank" rel="noopener">South China Morning Post, Rashid 2 blocked</a>.</p>
+    <h4>Surviving the lunar night: RHUs and RTGs</h4>
+    <p>A night at the Moon's south pole lasts about two weeks and is bitterly cold. NASA's Moon Base plan, announced at its "Ignition" event in March 2026, tests nuclear heat sources in its first phase, alongside solar power and, later, a fission reactor. Two kinds of nuclear device are often confused:</p>
+    <div class="deftab"><table class="cmp">
+      <thead><tr><th></th><th>Radioisotope heater unit (RHU)</th><th>Radioisotope thermoelectric generator (RTG)</th></tr></thead>
+      <tbody>
+        <tr><td><b>Makes</b></td><td>Heat only, about 1 watt each</td><td>Electricity, tens to hundreds of watts</td></tr>
+        <tr><td><b>Size</b></td><td>About 40 grams, the size of a C-cell battery</td><td>About 45 kilograms for a Mars rover's RTG</td></tr>
+        <tr><td><b>Job</b></td><td>Keeps instruments and batteries from freezing</td><td>Powers a spacecraft or rover</td></tr>
+        <tr><td><b>Examples</b></td><td>Two 15-watt heaters warmed Apollo 11's seismometer in 1969; Cassini carried 82 RHUs</td><td>Cassini carried three; Curiosity and Perseverance on Mars run on one each</td></tr>
+      </tbody>
+    </table></div>
+    <p>Both use the heat of decaying plutonium-238, and neither is new. What's new is the fuel: Zeno Power's 5-watt americium-241 RHU is set to fly on a Firefly lander no earlier than 2028. Americium is easier to get than scarce plutonium-238. <b>Why it matters for emerging nations:</b> these heat sources take nuclear fuel and government approvals, so a country can't simply buy one. A partner that can supply them is what lets a payload survive the lunar night.</p>
+    <p class="note">Sources: <a href="https://www.nasa.gov/artemis-accords/" target="_blank" rel="noopener">NASA, Artemis Accords</a>; <a href="https://www.space.gov.au/node/290" target="_blank" rel="noopener">Australian Space Agency, Moon to Mars</a>; <a href="https://space.gov.au/meet-roo-ver" target="_blank" rel="noopener">Australian Space Agency, meet Roo-ver</a>; <a href="https://ia.acs.org.au/article/2025/nasa-sending-australian-rover-to-moon-by-2030.html" target="_blank" rel="noopener">Information Age, Roo-ver by 2030</a>; <a href="https://www.nasa.gov/news-release/nasa-united-arab-emirates-announce-artemis-lunar-gateway-airlock" target="_blank" rel="noopener">NASA, UAE Gateway airlock</a>; <a href="https://www.nasa.gov/wp-content/uploads/2026/03/building-the-moon-base.pdf" target="_blank" rel="noopener">NASA, Moon Base plan</a>; <a href="https://www.khaleejtimes.com/space/uae-continue-moon-exploration-goals-nasa-pause-gateway-project" target="_blank" rel="noopener">Khaleej Times, UAE after Gateway</a>; <a href="https://www.space.com/south-korea-artemis-accords-moon-exploration" target="_blank" rel="noopener">Space.com, South Korea signs</a>; <a href="https://azmth.space/moon/missions/ilrs" target="_blank" rel="noopener">Azmth, ILRS members and status</a>; <a href="https://spacepolicyonline.com/news/serbia-mauritius-bring-artemis-accords-to-70/" target="_blank" rel="noopener">SpacePolicyOnline, countries in both clubs</a>; <a href="https://spacenews.com/?p=209388" target="_blank" rel="noopener">SpaceNews, University of Sharjah joins ILRS</a>; <a href="https://www.scmp.com/news/china/science/article/3214396/us-tech-rules-bar-uae-moon-rover-chinas-change-7-mission-sources" target="_blank" rel="noopener">South China Morning Post, Rashid 2 blocked</a>; <a href="https://www.diplomacy.edu/?p=338657" target="_blank" rel="noopener">Diplo, Artemis Accords reach 78</a>; <a href="https://universemagazine.com/en/56th-participant-senegal-joins-the-artemis-accords/" target="_blank" rel="noopener">Universe Magazine, Senegal signs the Accords</a>; <a href="https://www.bricsafricachannel.com/topics/lion-eyes-the-stars" target="_blank" rel="noopener">BRICS Africa Channel, Senegal joins the ILRS</a>; <a href="https://science.nasa.gov/resource/radioisotope-heater-units-fact-sheet" target="_blank" rel="noopener">NASA, RHU fact sheet</a>; <a href="https://science.nasa.gov/mission/cassini/radioisotope-thermoelectric-generator" target="_blank" rel="noopener">NASA, Cassini's RTGs and RHUs</a>; <a href="https://www.ans.org/news/2026-03-25/article-7879/nasa-announces-plan-for-space-nuclear-propulsion-by-2028/" target="_blank" rel="noopener">ANS, Moon Base phase one</a>; <a href="https://www.world-nuclear-news.org/articles/blue-ghost-to-carry-nuclear-power-source-to-the-moon" target="_blank" rel="noopener">World Nuclear News, Zeno RHU on Blue Ghost</a>.</p>
   </div>
 </section>
 
@@ -319,7 +363,8 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
     <p><b>Your budget:</b> the state can put <b>$100 million over five years</b> into your plan. Price your choices with the <a href="#menu">menu</a>.</p>
   </div>
 
-  <div class="card">
+  <div class="card hwk">
+    <span class="decklabel">✎ Type into the student deck</span>
     <span class="step">Part A · In the student deck</span>
     <h3>New Mexico's playbook</h3>
     <p><b>Part A records your choices; the memo in Part B makes the case for them.</b> Don't repeat your reasons in both places.</p>
@@ -351,7 +396,8 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
     <p><b>Step 3: spend New Mexico's $100 million.</b> Buy from the <a href="#menu">menu</a>, the same way you did in class: menu number, item, amount, the framework question it answers, and a short reason. The total must come to $100 million over five years.</p>
   </div>
 
-  <div class="card">
+  <div class="card hwk">
+    <span class="decklabel">✎ Type into the student deck</span>
     <span class="step">Part B · In the student deck</span>
     <h3>The memo</h3>
     <p>Write a memo to the governor by typing it into the memo slides at the end of the student deck, one section per slide, about 800 to 1,200 words in all (two to three pages' worth). It must address your playbook and each of the seven framework questions. Fill in the memo heading (To, From, Date, Subject) and these five sections:</p>
@@ -375,7 +421,7 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
   <div class="sec-head">
     <span class="tag">For the in-class exercise</span>
     <h2>Twist cards</h2>
-    <p class="lede">Your instructor deals one of these to each group, picked to hit that group's biggest bet. Don't read ahead. Each one really happened.</p>
+    <p class="lede">Your instructor deals one of these to each group, picked to hit that group's biggest bet. Each one really happened. This section is for the second part of the in-class exercise. Your instructor will tell you when to use it, so don't read it until then.</p>
   </div>
   <div class="models">
     <div class="cb-card"><span class="step">If you bought a spaceport</span><p class="t">Your spaceport has no rocket</p><span class="when">January–April 2023</span>
@@ -394,6 +440,10 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
       <p>Australia's new government cuts $77 million from three space programs, including its spaceports program. A month later it cancels its A$1.2 billion Earth-observation satellite program for "budget repair."</p>
       <p><b>Your move:</b> lose $200 million of the money you haven't spent yet. What goes?</p>
       <p class="src">Sources: <a href="https://ia.acs.org.au/article/2023/-chilling--space-program-cuts-threaten-local-space-tech.html" target="_blank" rel="noopener">Information Age: space program cuts</a>; <a href="https://phys.org/news/2023-06-australia-scraps-billion-dollar-satellite.html" target="_blank" rel="noopener">AFP via Phys.org</a></p></div>
+    <div class="cb-card"><span class="step">If you're in both Moon clubs</span><p class="t">Export rules block your payload</p><span class="when">September 2022–March 2023</span>
+      <p>The UAE agrees to fly its Rashid 2 Moon rover on China's Chang'e-7 mission. Six months later, reports confirm the deal is blocked: the rover contains US-made parts, and US export rules (ITAR) keep them off a Chinese spacecraft.</p>
+      <p><b>Your move:</b> your payload has US parts and is booked on an ILRS mission. Redesign it without them (more money, a year late), or move it to a ride on the Artemis side?</p>
+      <p class="src">Sources: <a href="https://spacenews.com/?p=147227" target="_blank" rel="noopener">SpaceNews: export rules hit UAE rover deal</a>; <a href="https://www.scmp.com/news/china/science/article/3214396/us-tech-rules-bar-uae-moon-rover-chinas-change-7-mission-sources" target="_blank" rel="noopener">South China Morning Post</a></p></div>
   </div>
 </section>
 
@@ -405,14 +455,18 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
       <tbody>
         <tr><td><b>AED</b></td><td>UAE dirham, the UAE's currency</td></tr>
         <tr><td><b>Artemis Accords</b></td><td>US-led principles for peaceful exploration of the Moon and beyond, signed country by country</td></tr>
+        <tr><td><b>ASES</b></td><td>Agence Sénégalaise d’Études Spatiales, Senegal's space agency since 2023</td></tr>
+        <tr><td><b>CFA franc</b></td><td>The currency of Senegal and several other West African countries, pegged to the euro at about 656 francs per euro</td></tr>
         <tr><td><b>CubeSat</b></td><td>A small, standard-sized satellite built from 10 cm cubes, popular with universities</td></tr>
         <tr><td><b>EAR</b></td><td>Export Administration Regulations, US Commerce Department rules on exporting dual-use technology, including many satellite parts</td></tr>
-        <tr><td><b>Gateway</b></td><td>A space station NASA planned to put in orbit around the Moon; cancelled in March 2026 in favor of a Moon Base on the surface</td></tr>
+        <tr><td><b>Gateway</b></td><td>A small space station NASA planned to put in a near-rectilinear halo orbit (NRHO) around the Moon: a long, stretched-out loop that passes about 3,000 km above the lunar north pole and about 70,000 km above the south pole, about once a week. Cancelled in March 2026 in favor of a Moon Base on the surface</td></tr>
         <tr><td><b>ILRS</b></td><td>International Lunar Research Station, the China–Russia lunar base project</td></tr>
         <tr><td><b>ITAR</b></td><td>International Traffic in Arms Regulations, US State Department rules on exporting defense and some space technology</td></tr>
         <tr><td><b>KASA</b></td><td>Korea AeroSpace Administration, South Korea's space agency since 2024</td></tr>
         <tr><td><b>Nuri</b></td><td>South Korea's own medium rocket, also called KSLV-II</td></tr>
+        <tr><td><b>RHU</b></td><td>Radioisotope heater unit: a small nuclear heat source, about 1 watt, that keeps spacecraft parts warm</td></tr>
         <tr><td><b>Rideshare</b></td><td>A launch where many small satellites share one rocket and split the cost</td></tr>
+        <tr><td><b>RTG</b></td><td>Radioisotope thermoelectric generator: turns nuclear decay heat into electricity for a spacecraft</td></tr>
         <tr><td><b>SAR</b></td><td>Synthetic aperture radar, an imaging radar that sees through clouds and at night</td></tr>
         <tr><td><b>Spaceport</b></td><td>A site licensed to launch or land spacecraft</td></tr>
       </tbody>
@@ -425,7 +479,7 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
 
 <footer>
   <div class="wrap">
-    <p>Menu prices come from real programs; each row links to a source. The four twist cards describe real events.</p>
+    <p>Menu prices come from real programs; each row links to a source. The five twist cards describe real events.</p>
     <p>EMGT 5061 · New Mexico Tech · Fall 2026</p>
   </div>
 </footer>
