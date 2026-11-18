@@ -16,6 +16,7 @@ Repository: https://github.com/astrobidushi/EMGT-5061-Fall-2026
 | Crystals and Collisions | Space medicine meets space debris: three fictional companies, a collision-warning decision log and an investor homework (Oct 28) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/crystals-and-collisions/) |
 | Servers and Storms | Data centers in space meet space weather: one fictional company, three customers, a site-choice log and a storm-warning homework (Nov 4) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/servers-and-storms/) |
 | The Full-Stack Powers | Global Space Ecosystems I: six real shock cards stress-test the US, Europe, China, Russia, India and Japan, then students map New Mexico's launch and test sites, labs, universities and companies (Nov 11) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/full-stack-powers/) |
+| Emerging Space Nations, Specialists and Climbers | Global Space Ecosystems II: four playbooks (regulators, hubs, nation-builders, a climber), a "Spend $1 billion" exercise as Australia, the UAE or South Korea, and a memo to the governor with a New Mexico playbook (Nov 18) | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/emerging-space-nations/) |
 | Legal Links Map | The Wilco site's Legal Links menu as one searchable tree, tied to the case-study missions. Not linked from the course home page. | [Open](https://astrobidushi.github.io/EMGT-5061-Fall-2026/legal-links-map/) |
 
 ## How the repo is laid out
@@ -41,6 +42,8 @@ EMGT-5061-Fall-2026/
 │   └── index.html
 ├── full-stack-powers/
 │   └── index.html                The Full-Stack Powers
+├── emerging-space-nations/
+│   └── index.html                Emerging Space Nations, Specialists and Climbers
 └── legal-links-map/
     └── index.html                not on the home page
 ```

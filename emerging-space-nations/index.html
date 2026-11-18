@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Emerging Space Nations, Specialists and Climbers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@112..125,600..900&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{
+  --bg:#f2f3f1; --surface:#ffffff; --sunk:#e7e9e5; --fg:#1d2124; --muted:#5b6266; --line:#cdd1cc;
+  --accent:#b8650f; --accent-soft:#f6e6d2; --trl:#2f5d8a; --trl-soft:#dfe8f2; --mrl:#7a4f9a; --mrl-soft:#ece3f3;
+  --bad:#b03a2e;
+  --display:"Archivo","Arial Narrow",Arial,sans-serif; --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --r:6px;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#15181a; --surface:#1d2124; --sunk:#252a2d; --fg:#e8eae6; --muted:#a2a9ac; --line:#363c40;
+  --accent:#e59a45; --accent-soft:#3a2a17; --trl:#8fb6e0; --trl-soft:#1f2c3a; --mrl:#c9a3e6; --mrl-soft:#2d2338;
+  --bad:#f0938a; color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55}
+.wrap{max-width:860px;margin:0 auto;padding-left:16px;padding-right:16px}
+a{color:var(--trl)}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+h1,h2,h3,h4{font-family:var(--display);font-stretch:118%;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(34px,7vw,56px);font-weight:900;letter-spacing:-.01em}
+h2{font-size:clamp(24px,4vw,32px);font-weight:800}
+h3{font-size:20px;font-weight:800}
+h4{font-size:16px;font-weight:700}
+p{margin:0}
+.lede{color:var(--muted);max-width:62ch}
+header.top{background:var(--surface);border-bottom:1px solid var(--line);position:relative;overflow:hidden}
+.orbits{position:absolute;inset:-40% -10% -40% 50%;opacity:.55;background:repeating-radial-gradient(circle at 70% 50%,transparent 0 26px,var(--line) 26px 27px)}
+header.top .wrap{position:relative;display:grid;gap:14px;padding-block:40px 32px}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.meta{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted)}
+nav.bar{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+nav.bar .wrap{display:flex;gap:6px;overflow-x:auto;padding-block:8px;scrollbar-width:none}
+nav.bar a{flex:none;text-decoration:none;color:var(--fg);font-size:14px;font-weight:500;padding:6px 12px;border-radius:999px;border:1px solid var(--line);background:var(--bg)}
+nav.bar a:hover{border-color:var(--accent)}
+main .wrap{display:grid;gap:56px;padding-block:40px 64px}
+section{display:grid;gap:20px;scroll-margin-top:64px}
+.sec-head{display:grid;gap:8px}
+.tag{justify-self:start;font-family:var(--mono);font-size:12px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px;border-radius:4px;background:var(--accent-soft);color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;display:grid;gap:14px;min-width:0}
+.step{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.note{font-size:14px;color:var(--muted)}
+ul,ol{margin:0;padding-left:1.3em;display:grid;gap:6px}
+.models{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:680px){.models{grid-template-columns:1fr}}
+.model{border:1px solid var(--line);border-radius:var(--r);padding:14px;background:var(--bg);display:grid;gap:6px;align-content:start;min-width:0}
+.deal{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.deal .grp{grid-column:1/-1;padding-top:6px}
+@media (max-width:680px){.deal{grid-template-columns:1fr}}
+.cb-card{border:2px dashed var(--accent);border-radius:var(--r);padding:18px;display:grid;gap:8px;align-content:start;background:var(--accent-soft)}
+.cb-card .t{font-family:var(--display);font-stretch:112%;font-weight:800;font-size:19px}
+.when{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.cb-card .src{font-size:12.5px;color:var(--muted);line-height:1.4}
+.qs{display:grid;gap:10px}
+.q{display:grid;grid-template-columns:auto 1fr;gap:10px;font-size:15px}
+.qn{font-family:var(--mono);font-size:13px;color:var(--accent);padding-top:2px;min-width:3.2em}
+.deftab{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:12px;font-weight:500;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+td.n{font-family:var(--mono);width:3.5em}
+.fields td:first-child{font-weight:600;white-space:nowrap;width:13em}
+.mrlrow td{background:var(--mrl-soft)}
+.rule{border-left:4px solid var(--bad);background:var(--surface);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;font-size:15px}
+.bonus{border-left:4px solid var(--trl);background:var(--trl-soft);padding:12px 14px;border-radius:0 var(--r) var(--r) 0;font-size:15px}
+.cats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:680px){.cats{grid-template-columns:1fr}}
+details.ref{border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+details.ref summary{cursor:pointer;padding:12px 16px;font-weight:600}
+details.ref .inner{padding:0 16px 16px;display:grid;gap:14px}
+.hw-sep{display:flex;align-items:center;gap:20px;margin-bottom:-28px}
+.hw-sep::before,.hw-sep::after{content:"";flex:1;border-top:3px solid var(--fg)}
+.hw-sep span{font-family:var(--display);font-stretch:118%;font-weight:800;font-size:clamp(28px,4vw,40px);letter-spacing:.12em;text-align:center}
+.hw-due{margin:0 0 -28px;text-align:center;font-family:var(--display);font-stretch:112%;font-weight:700;font-size:clamp(20px,2.6vw,26px);color:var(--bad)}
+.due{border-left:4px solid var(--fg);padding:10px 14px;background:var(--surface);font-size:15px}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+footer .wrap{padding-block:24px 40px;display:grid;gap:10px}
+html{scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+.deal3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-items:start}
+@media (max-width:760px){.deal3{grid-template-columns:1fr}}
+.fw{display:grid;grid-template-columns:1fr 1fr;gap:6px 28px}
+.fw ul{list-style:disc;align-content:start}
+@media (max-width:680px){.fw{grid-template-columns:1fr}}
+table.menu td.p{font-family:var(--mono);font-size:13px;white-space:nowrap}
+table.menu td:nth-child(4){white-space:nowrap}
+table.menu td:last-child{font-size:13px;color:var(--muted)}
+.estrow td{background:var(--mrl-soft)}
+.est{display:inline-block;font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;padding:2px 6px;border-radius:4px;background:var(--mrl);color:var(--surface);margin-left:4px;vertical-align:1px}
+#twists .models{align-items:stretch}
+table.cmp td ul{padding-left:1.1em;gap:4px}
+table.cmp td{width:45%}
+table.cmp td:first-child{width:10%}
+#artemis h4{margin-top:6px}
+ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
+.deal3.stand{grid-template-columns:1fr 2.4fr 1fr}
+@media (max-width:760px){.deal3.stand{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="orbits" aria-hidden="true"></div>
+  <div class="wrap">
+    <span class="eyebrow">EMGT 5061 · Introduction to Space Industry · Fall 2026</span>
+    <h1>Emerging Space Nations, Specialists and Climbers</h1>
+    <p class="lede">Global Space Ecosystems II: Luxembourg, New Zealand, Singapore, the United Kingdom, the UAE, Australia and South Korea. None of them can do everything in space, so each picks a playbook. In class you spend a country's space budget and see the implications. For homework you pick a playbook for New Mexico and pitch it to the governor.</p>
+    <div class="meta"><span>November 18, 2026</span><span>Dr. Bidushi Bhattacharya</span><span>Record your answers in this week's <a href="https://docs.google.com/presentation/d/1aCtObYk2LKGoOuKRMgzGCzxPm_ZhK7eTAU_EwMLxyM4/edit?usp=sharing" target="_blank" rel="noopener">student deck</a>, and upload it to <a href="https://nmt.instructure.com/courses/42326/assignments/201932" target="_blank" rel="noopener">Canvas</a> when you're finished with your homework</span></div>
+  </div>
+</header>
+
+<nav class="bar" aria-label="Sections">
+  <div class="wrap">
+    <a href="#playbooks">Playbooks</a>
+    <a href="#spend">Spend $1 billion</a>
+    <a href="#menu">The menu</a>
+    <a href="#hw">Homework</a>
+    <a href="#glossary">Acronyms</a>
+  </div>
+</nav>
+
+<main>
+<div class="wrap">
+
+<!-- PLAYBOOKS -->
+<section id="playbooks">
+  <div class="sec-head">
+    <h2>Four playbooks</h2>
+    <p class="lede">Last week's full-stack powers can build, launch and operate almost everything themselves. Today's countries can't, so each chooses where to compete. We look at all of them through the same seven framework questions, listed below the playbooks.</p>
+  </div>
+  <div class="card">
+    <div class="models">
+      <div class="model"><span class="step">Regulators</span><h4>Luxembourg, New Zealand</h4><p>Small countries that win with laws. Clear rules and fast licensing bring companies to them from abroad.</p></div>
+      <div class="model"><span class="step">Hubs</span><h4>Singapore, United Kingdom</h4><p>Places where space companies and money gather: finance, insurance, talent and partnerships with bigger programs.</p></div>
+      <div class="model"><span class="step">Nation-builders</span><h4>UAE, Australia</h4><p>Countries using space to build a new industry, a workforce and national pride, often by buying help from abroad at first.</p></div>
+      <div class="model"><span class="step">Climber</span><h4>South Korea</h4><p>A country climbing step by step toward full stack: its own rockets, its own satellites, and now the Moon.</p></div>
+    </div>
+    <p style="margin-top:16px">Each country is listed under the playbook it leans on most today, but most do more than one thing:</p>
+    <ul class="also">
+      <li><b>Luxembourg</b> (regulator) is also a hub: it's home to SES, one of the world's largest satellite operators, and the government is its biggest shareholder.</li>
+      <li><b>New Zealand</b> (regulator) also launches: Rocket Lab flies from its soil.</li>
+      <li><b>Singapore</b> (hub) also builds satellites: ST Engineering's TeLEOS-1 (2015) and its radar satellite TeLEOS-2 (2023), both launched on Indian rockets.</li>
+      <li><b>United Kingdom</b> (hub) also licenses launches and has a spaceport in Cornwall.</li>
+      <li><b>UAE</b> (nation-builder) also explores deep space: after Hope at Mars, its MBR Explorer is set to launch to the asteroid belt in early 2028, on a Japanese rocket.</li>
+      <li><b>Australia</b> (nation-builder) also regulates launches: it licensed its first orbital spaceport and rocket, Gilmour Space's Eris, whose first launch attempt failed in 2025.</li>
+      <li><b>South Korea</b> (climber) already flies its own rocket, Nuri, and also still uses foreign rockets.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h3>The seven framework questions</h3>
+    <div class="fw">
+      <ul>
+        <li><b>Governance:</b> who runs the space program, and where does it sit in government?</li>
+        <li><b>Money:</b> how big is the budget, and who pays: civil, military or commercial?</li>
+        <li><b>Access to space:</b> can it launch its own satellites and people, or does it buy launches abroad?</li>
+        <li><b>Flagship programs:</b> what does it fly that others notice?</li>
+      </ul>
+      <ul start="5">
+        <li><b>Commercial policy tools:</b> how does it grow companies: contracts, licensing, funds, grants?</li>
+        <li><b>International alignment:</b> who are its partners? Artemis Accords, ILRS, both or neither?</li>
+        <li><b>Workforce:</b> where do its engineers come from, and can it keep them?</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="In class"><span>IN CLASS</span></div>
+
+<!-- EXERCISE -->
+<section id="spend">
+  <div class="sec-head">
+    <span class="tag">Small Group Exercise</span>
+    <h2>Spend $1 billion</h2>
+    <p class="lede">You run your country's space agency. The government has just given you $1 billion to spend over the next five years. What do you buy, and what happens when something goes wrong?</p>
+  </div>
+
+  <div class="deal3">
+    <div class="cb-card"><span class="step">Group A · Nation-builder</span><p class="t">Australia</p>
+      <p>Australia's space agency opened in 2018 with A$41 million (about $28 million) over four years. Your $1 billion is more than 30 times that start.</p></div>
+    <div class="cb-card"><span class="step">Group B · Nation-builder</span><p class="t">United Arab Emirates</p>
+      <p>In 2022 the UAE created a National Space Fund of AED 3 billion (about $817 million). Your $1 billion is a bit more than that whole fund.</p></div>
+    <div class="cb-card"><span class="step">Group C · Climber</span><p class="t">South Korea</p>
+      <p>KASA, South Korea's space agency, opened in 2024 with about $550 million for the year and is asking for about $1.2 billion for 2027. Your $1 billion is less than one year of spending.</p></div>
+  </div>
+
+  <div class="card">
+    <h3>The rules</h3>
+    <div class="qs">
+      <div class="q"><span class="qn">1</span><p><b>Budget:</b> $1 billion total over five years. You can't go over.</p></div>
+      <div class="q"><span class="qn">2</span><p><b>Prices:</b> buy only from the <a href="#menu">menu</a>. Each price is a rounded, real cost from a country's program, in US dollars.</p></div>
+      <div class="q"><span class="qn">3</span><p><b>Big items:</b> you can start something that costs more than you have left, or takes longer than five years, but it won't be finished. Say what you'll have at year five.</p></div>
+      <div class="q"><span class="qn">4</span><p><b>Repeats:</b> you can buy an item more than once, such as several launches abroad. If your country already has something on the menu, you can still buy more of it, but say why.</p></div>
+      <div class="q"><span class="qn">5</span><p><b>Reasons:</b> tie every purchase to one of the seven framework questions.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>How it runs</h3>
+    <p>Record your answers in this week's <a href="https://docs.google.com/presentation/d/1aCtObYk2LKGoOuKRMgzGCzxPm_ZhK7eTAU_EwMLxyM4/edit?usp=sharing" target="_blank" rel="noopener">student deck</a>. Once you have finished your homework, upload the whole student deck to <a href="https://nmt.instructure.com/courses/42326/assignments/201932" target="_blank" rel="noopener">Canvas</a>.</p>
+    <div class="qs">
+      <div class="q"><span class="qn">Step 1</span><p><b>Spend.</b> Fill in your shopping list in the student deck: each item, its cost, the framework question it answers, and why you bought it.</p></div>
+      <div class="q"><span class="qn">Step 2</span><p><b>Twist.</b> Partway through, your instructor deals your group a twist card based on what you bought: something goes wrong, as it did for real countries. Money you've already spent is gone. Rebalance what's left on the twist slide.</p></div>
+      <div class="q"><span class="qn">Step 3</span><p><b>Report back.</b> Fill in the report-back slide below and present it to the class.</p></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>Your report-back slide</h3>
+    <p>Each group presents one slide from the student deck, with these six parts:</p>
+    <div class="qs">
+      <div class="q"><span class="qn">Q1</span><p><b>First purchase:</b> what you bought first, and why.</p></div>
+      <div class="q"><span class="qn">Q2</span><p><b>The bottom line:</b> total spent, money left, and what you'll actually have at year five.</p></div>
+      <div class="q"><span class="qn">Q3</span><p><b>Balance:</b> which framework question got the most money, and which got none.</p></div>
+      <div class="q"><span class="qn">Q4</span><p><b>Twist:</b> the card you got, and what you cut or added.</p></div>
+      <div class="q"><span class="qn">Q5</span><p><b>Playbook:</b> does your spending fit your country's playbook, or would it move your country into a different one?</p></div>
+      <div class="q"><span class="qn">Check</span><p><b>Reality:</b> your instructor shows what your country really bought first with the money it actually had, which was far less or far more than $1 billion. Compare priorities, not totals: did you put the same things first?</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- MENU -->
+<section id="menu">
+  <div class="sec-head">
+    <h2>The menu</h2>
+    <p class="lede">Every price comes from a real program, rounded and converted to US dollars. Open the source if you want the details.</p>
+  </div>
+  <div class="card">
+    <div class="deftab"><table class="menu">
+      <thead><tr><th>#</th><th>Item</th><th>Price (USD)</th><th>Time</th><th>Real example</th></tr></thead>
+      <tbody>
+        <tr><td class="n">1</td><td><b>Develop your own medium rocket</b></td><td class="p">about $1.5B</td><td>12+ years</td><td>South Korea's Nuri, 2010–2022. <a href="https://www.asiae.co.kr/en/article/2022061517030960908" target="_blank" rel="noopener">Asia Economy</a></td></tr>
+        <tr><td class="n">2</td><td><b>Back a private small-launch company</b></td><td class="p">about $100M</td><td>4–5 years</td><td>Rocket Lab's Electron cost about $100 million to develop. <a href="https://payloadspace.com/rocket-development-costs-by-vehicle-payload-research/" target="_blank" rel="noopener">Payload</a></td></tr>
+        <tr><td class="n">3</td><td><b>Build a spaceport at an existing airport</b></td><td class="p">about $25M</td><td>3–4 years</td><td>Spaceport Cornwall, UK: up to £20 million in public money. <a href="https://www.gov.uk/government/news/leading-the-new-space-age-government-backs-ambitious-plans-for-the-uk-in-space" target="_blank" rel="noopener">UK government</a></td></tr>
+        <tr><td class="n">4</td><td><b>Buy launches abroad</b> (price each)</td><td class="p">$350K: rideshare, 50 kg<br>about $7.5M: Electron<br>$74M: Falcon 9</td><td>months</td><td>SpaceX and Rocket Lab list prices, 2026. <a href="https://spacenexus.us/guide/cost-to-launch" target="_blank" rel="noopener">SpaceNexus</a></td></tr>
+        <tr><td class="n">5</td><td><b>Flagship science mission with university partners</b></td><td class="p">about $200M</td><td>6 years</td><td>The UAE's Hope Mars mission. <a href="https://www.scientificamerican.com/article/arab-worlds-first-mars-probe-takes-to-the-skies/" target="_blank" rel="noopener">Scientific American</a></td></tr>
+        <tr><td class="n">6</td><td><b>National Earth-observation satellite constellation</b> (four satellites)</td><td class="p">about $800M</td><td>10+ years</td><td>Australia's planned National Space Mission for Earth Observation, A$1.2 billion. <a href="https://phys.org/news/2023-06-australia-scraps-billion-dollar-satellite.html" target="_blank" rel="noopener">AFP via Phys.org</a></td></tr>
+        <tr><td class="n">7</td><td><b>Anchor a space venture fund with private investors</b></td><td class="p">$20M stake<br>to $140M whole fund</td><td>ongoing</td><td>Luxembourg's Orbital Ventures closed at €120 million; a state investment body put in €18 million. <a href="https://www.snci.lu/en/participation/orbital-ventures-s-c-a-sicav-raif/" target="_blank" rel="noopener">SNCI</a></td></tr>
+        <tr><td class="n">8</td><td><b>Set up and run a space agency with a licensing office</b></td><td class="p">about $30M</td><td>4 years</td><td>Australia's first agency budget, A$41 million over four years. <a href="https://theconversation.edu.au/budget-2018-space-agency-details-still-scant-but-gps-and-satellite-imagery-funded-96011" target="_blank" rel="noopener">The Conversation</a></td></tr>
+        <tr><td class="n">9</td><td><b>Industry R&amp;D grants</b> (about 10 projects)</td><td class="p">about $30M</td><td>2–3 years</td><td>Australia's Moon to Mars Demonstrator grants, about A$40 million. <a href="https://www.space.gov.au/node/290" target="_blank" rel="noopener">Australian Space Agency</a></td></tr>
+        <tr><td class="n">10</td><td><b>National space workforce program:</b> undergraduate and graduate scholarship programs, internships, new university labs, and professional development</td><td class="p">about $50M</td><td>5 years</td><td>No single real price. Pieces of it: Canada gave 9 student CubeSat teams C$3.15 million over three years (<a href="https://satnews.com/2023/06/16/canadas-space-agency-selects-canadian-student-teams-that-build-and-launch-their-own-small-satellites/" target="_blank" rel="noopener">SatNews</a>), a 50 kg rideshare launch costs $350K (item 4), and New Mexico Tech's 12-credit <a href="https://www.nmt.edu/academics/management/space-resource.php" target="_blank" rel="noopener">Space Resource Management graduate certificate</a>, which includes this course, is an example of professional development.</td></tr>
+        <tr><td class="n">11</td><td><b>Sign the Artemis Accords</b></td><td class="p">$0</td><td>immediate</td><td>Free in dollars. See <a href="#artemis">what it gets you</a>.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">Converted at November 2026 rates where the original was in another currency (A$1 ≈ US$0.69). Times are how long the real program took to deliver.</p>
+    <p class="note">All prices are rounded approximations based on the sources quoted. Treat them as a realistic sense of scale for your decisions, not exact quotes.</p>
+  </div>
+
+  <div class="card" id="artemis">
+    <h3>Two Moon clubs: the Artemis Accords and the ILRS</h3>
+    <h4>The Artemis Accords</h4>
+    <p>The Artemis Accords are a set of principles, drafted by NASA and the US State Department, for peaceful and responsible exploration of the Moon, Mars, comets and asteroids. They aren't a treaty and cost nothing to sign. Signers commit to:</p>
+    <ul>
+      <li>being open about what they do in space, and releasing their scientific data</li>
+      <li>building systems that can work with each other's, and helping astronauts in distress</li>
+      <li>protecting historic sites, planning for the safe disposal of debris, and setting up "safety zones" so missions don't interfere with one another</li>
+      <li>following shared rules for extracting and using resources found in space</li>
+    </ul>
+    <p><b>What a country gets:</b> a voice in writing the rules for the Moon, and a door into NASA's Artemis program. In March 2026 NASA announced a Moon Base at the lunar south pole, to be built with companies and partner countries. Signing opens that door; the actual role (contracts, instruments on missions, astronaut seats, hardware for the base) comes through a separate deal with NASA.</p>
+    <div class="deal3">
+      <div class="model"><h4>Australia</h4><p>A founding signer, October 2020. Its agency is building a small rover, Roo-ver, to go to the Moon with NASA.</p></div>
+      <div class="model"><h4>UAE</h4><p>A founding signer, October 2020. In 2024 it agreed to build the airlock for NASA's Gateway, a planned station in orbit around the Moon, in exchange for an Emirati astronaut seat. In March 2026 NASA cancelled Gateway to build its Moon Base instead. The UAE says it's staying in Artemis.</p></div>
+      <div class="model"><h4>South Korea</h4><p>Signed in May 2021, the tenth country to join. Its lunar orbiter, Danuri, carries a NASA camera, ShadowCam, that images permanently shadowed craters.</p></div>
+    </div>
+    <h4>The International Lunar Research Station (ILRS)</h4>
+    <p>The ILRS is a plan led by China and Russia, which signed an agreement in March 2021, to build a permanent research base near the Moon's south pole. Construction is planned for 2026 to 2035, starting with China's Chang'e-7 and Chang'e-8 missions. Unlike the Artemis Accords, its rules for members haven't been made public.</p>
+    <p><b>Who has joined:</b> 13 countries as of July 2026. They are China, Russia, Azerbaijan, Belarus, Egypt, Kazakhstan, Nicaragua, Pakistan, Senegal, Serbia, South Africa, Thailand and Venezuela. China's space agency gives a bigger number, "17 countries and international organizations," because it also counts groups such as the Asia-Pacific Space Cooperation Organization.</p>
+    <p><b>What members expect to get:</b> a role in a Moon base they could never build alone, such as room for an instrument or a small rover on a Chinese lunar mission, or running a ground station (Venezuela's role), plus Chinese training and technology. China is aiming for 50 countries, 500 research institutions and 5,000 scientists.</p>
+    <div class="deftab"><table class="cmp">
+      <thead><tr><th></th><th>Artemis Accords</th><th>ILRS</th></tr></thead>
+      <tbody>
+        <tr><td><b>Pros</b></td>
+          <td><ul><li>Free to sign, with published principles</li><li>The bigger club: more than 70 countries</li><li>A door into NASA's Artemis program and its planned Moon Base: contracts, instruments on missions, even astronaut seats</li></ul></td>
+          <td><ul><li>Joining means joining the Moon base project itself, with room on Chinese lunar missions</li><li>Chinese training and technology, often for countries with little access to US programs</li><li>China has already landed three times on the Moon and brought back samples</li></ul></td></tr>
+        <tr><td><b>Cons</b></td>
+          <td><ul><li>Signing alone brings no money or seats: each benefit is a separate deal with NASA</li><li>Lines a country up with the United States</li><li>NASA can change course: when it cancelled Gateway in 2026, partners' hardware, like the UAE's airlock, lost its home</li><li>Critics say its rules on using Moon resources stretch the Outer Space Treaty's ban on claiming territory</li></ul></td>
+          <td><ul><li>Its rules for members aren't public</li><li>The smaller club: 13 countries</li><li>US export rules can block a country from putting US-linked parts on Chinese missions</li><li>Schedule risk: Chang'e-7 was postponed in August 2026 with no new date</li></ul></td></tr>
+      </tbody>
+    </table></div>
+    <p><b>You can join both.</b> Thailand (2024), Senegal (2025) and Serbia (2026) belong to both clubs, and the US says ILRS members are welcome to sign the Accords.</p>
+    <h4>Where our three countries stand</h4>
+    <div class="deal3 stand">
+      <div class="model"><h4>Australia</h4><p>Artemis Accords only.</p></div>
+      <div class="model"><h4>UAE</h4><p>Artemis Accords, with ties to the ILRS.</p>
+        <ul>
+          <li><b>University of Sharjah:</b> in November 2023 it signed an agreement with China's Deep Space Exploration Laboratory to cooperate on the ILRS. That's a university signing, not the government.</li>
+          <li><b>Rashid 2 rover:</b> in 2022 the UAE agreed to fly it on China's Chang'e-7. US export rules stopped it.</li>
+          <li><b>Not officially committed:</b> Chinese and Russian officials have called the UAE an ILRS partner, but the UAE government has never confirmed joining, and it isn't on the list of member countries.</li>
+        </ul></div>
+      <div class="model"><h4>South Korea</h4><p>Artemis Accords only.</p></div>
+    </div>
+    <p class="note">Sources: <a href="https://www.nasa.gov/artemis-accords/" target="_blank" rel="noopener">NASA, Artemis Accords</a>; <a href="https://www.space.gov.au/node/290" target="_blank" rel="noopener">Australian Space Agency, Moon to Mars</a>; <a href="https://www.nasa.gov/news-release/nasa-united-arab-emirates-announce-artemis-lunar-gateway-airlock" target="_blank" rel="noopener">NASA, UAE Gateway airlock</a>; <a href="https://www.nasa.gov/wp-content/uploads/2026/03/building-the-moon-base.pdf" target="_blank" rel="noopener">NASA, Moon Base plan</a>; <a href="https://www.khaleejtimes.com/space/uae-continue-moon-exploration-goals-nasa-pause-gateway-project" target="_blank" rel="noopener">Khaleej Times, UAE after Gateway</a>; <a href="https://www.space.com/south-korea-artemis-accords-moon-exploration" target="_blank" rel="noopener">Space.com, South Korea signs</a>; <a href="https://azmth.space/moon/missions/ilrs" target="_blank" rel="noopener">Azmth, ILRS members and status</a>; <a href="https://spacepolicyonline.com/news/serbia-mauritius-bring-artemis-accords-to-70/" target="_blank" rel="noopener">SpacePolicyOnline, countries in both clubs</a>; <a href="https://spacenews.com/?p=209388" target="_blank" rel="noopener">SpaceNews, University of Sharjah joins ILRS</a>; <a href="https://www.scmp.com/news/china/science/article/3214396/us-tech-rules-bar-uae-moon-rover-chinas-change-7-mission-sources" target="_blank" rel="noopener">South China Morning Post, Rashid 2 blocked</a>.</p>
+  </div>
+</section>
+
+<div class="hw-sep" role="separator" aria-label="Homework"><span>HOMEWORK</span></div>
+<p class="hw-due">Due before December 2, 3 pm</p>
+
+<!-- HOMEWORK -->
+<section id="hw">
+  <div class="sec-head">
+    <p class="due">Do both parts in this week's <a href="https://docs.google.com/presentation/d/1aCtObYk2LKGoOuKRMgzGCzxPm_ZhK7eTAU_EwMLxyM4/edit?usp=sharing" target="_blank" rel="noopener">student deck</a>, including your memo, then upload the one deck to <a href="https://nmt.instructure.com/courses/42326/assignments/201932" target="_blank" rel="noopener">Canvas</a>.</p>
+  </div>
+
+  <div class="card">
+    <span class="step">Homework 2</span>
+    <h3>A space playbook for New Mexico: memo to the governor</h3>
+    <p>The governor of New Mexico wants a state space strategy and has asked you which playbook to follow. Use what you've built over the last two weeks: your group's site from class, your three entities from Homework 1, and your H1.1 answer.</p>
+    <p><b>Your budget:</b> the state can put <b>$100 million over five years</b> into your plan. Price your choices with the <a href="#menu">menu</a>.</p>
+  </div>
+
+  <div class="card">
+    <span class="step">Part A · In the student deck</span>
+    <h3>New Mexico's playbook</h3>
+    <p><b>Part A records your choices; the memo in Part B makes the case for them.</b> Don't repeat your reasons in both places.</p>
+    <p><b>Step 1: choose New Mexico's playbook.</b> Pick one of the four, or mix two, such as a regulator that's also a hub, if New Mexico's strengths call for it.</p>
+    <div class="deftab"><table class="fields">
+      <thead><tr><th>Playbook</th><th>What it means for New Mexico</th></tr></thead>
+      <tbody>
+        <tr><td>Regulator</td><td>Win with rules: make New Mexico the easiest, clearest place to license and run a space business.</td></tr>
+        <tr><td>Hub</td><td>Draw companies and money: be the place where space firms, investors, talent and partners gather.</td></tr>
+        <tr><td>Nation-builder</td><td>Use space to build a new industry and workforce, buying help from outside at first.</td></tr>
+        <tr><td>Climber</td><td>Build up your own capabilities step by step: your own launches, satellites and missions.</td></tr>
+        <tr><td>Mix of two</td><td>Combine two of the above; in the memo, say what each one contributes.</td></tr>
+      </tbody>
+    </table></div>
+    <p><b>Step 2: answer each of the seven framework questions for New Mexico.</b></p>
+    <div class="deftab"><table class="fields">
+      <thead><tr><th>Framework question</th><th>What to record</th></tr></thead>
+      <tbody>
+        <tr><td>1. Governance</td><td>Who would run the strategy?</td></tr>
+        <tr><td>2. Money</td><td>Who pays for space in New Mexico: state, federal or private sources? (Your $100 million goes in Step 3.)</td></tr>
+        <tr><td>3. Access to space</td><td>Which New Mexico sites and companies reach space, and what's missing</td></tr>
+        <tr><td>4. Flagship programs</td><td>The one project New Mexico should be known for</td></tr>
+        <tr><td>5. Commercial policy tools</td><td>Grants, tax breaks, contracts or licensing that would bring companies here</td></tr>
+        <tr><td>6. International alignment</td><td>Which countries, states or federal programs New Mexico should partner with, and whether it would join the Artemis Accords, the ILRS, both or neither (explain why in the memo)</td></tr>
+        <tr><td>7. Workforce</td><td>Where the engineers and technicians come from, and how to keep them</td></tr>
+      </tbody>
+    </table></div>
+    <p>For each answer, write two columns: <b>New Mexico today</b> and <b>your plan</b>.</p>
+    <p><b>Step 3: spend New Mexico's $100 million.</b> Buy from the <a href="#menu">menu</a>, the same way you did in class: menu number, item, amount, the framework question it answers, and a short reason. The total must come to $100 million over five years.</p>
+  </div>
+
+  <div class="card">
+    <span class="step">Part B · In the student deck</span>
+    <h3>The memo</h3>
+    <p>Write a memo to the governor by typing it into the memo slides at the end of the student deck, one section per slide, about 800 to 1,200 words in all (two to three pages' worth). It must address your playbook and each of the seven framework questions. Fill in the memo heading (To, From, Date, Subject) and these five sections:</p>
+    <div class="qs">
+      <div class="q"><span class="qn">1</span><p><b>Recommendation.</b> In two or three sentences: which playbook (or mix of two), and the single most important first step. If you mix two, say what each one contributes.</p></div>
+      <div class="q"><span class="qn">2</span><p><b>Why New Mexico.</b> Three New Mexico assets from your Lecture 1 research (your group's site from class and the entities you found for Homework 1) that make this playbook work here.</p></div>
+      <div class="q"><span class="qn">3</span><p><b>The seven framework questions.</b> A few sentences on each, making the case for the plan you recorded in Part A. Two of them need more:</p></div>
+      <div class="q"><span class="qn">3a</span><p><b>Money:</b> where the money comes from, and of the items you listed in Part A, Step 3, which comes first and why it's worth more than the others.</p></div>
+      <div class="q"><span class="qn">3b</span><p><b>International alignment:</b> imagine New Mexico were its own sovereign nation, with defense contracts with many nations, including the United States. Would there be any advantages to joining the ILRS rather than the Artemis Accords? Which would you join: Artemis, the ILRS, both or neither? Use the <a href="#artemis">pros and cons</a> from class, and New Mexico's own assets, to explain.</p></div>
+      <div class="q"><span class="qn">4</span><p><b>Lessons from abroad.</b> One country whose move New Mexico should copy, and one mistake New Mexico should avoid. Your examples can come from anything we've covered this semester, not just this lecture. You can also choose another nation you think offers a model or a warning; if you do, justify your answer.</p></div>
+      <div class="q"><span class="qn">5</span><p><b>Risk.</b> One thing that could go wrong, like a twist card from class, and how your plan survives it.</p></div>
+    </div>
+    <p class="note">End the memo with a short list of sources: a link for each, or where the information came from if there's no link.</p>
+  </div>
+
+  <div class="rule"><b>Same rule:</b> you may not recommend funding for an organization where you currently work.</div>
+</section>
+
+<!-- TWIST CARDS -->
+<section id="twists">
+  <div class="sec-head">
+    <span class="tag">For the in-class exercise</span>
+    <h2>Twist cards</h2>
+    <p class="lede">Your instructor deals one of these to each group, picked to hit that group's biggest bet. Don't read ahead. Each one really happened.</p>
+  </div>
+  <div class="models">
+    <div class="cb-card"><span class="step">If you bought a spaceport</span><p class="t">Your spaceport has no rocket</p><span class="when">January–April 2023</span>
+      <p>The first launch from Spaceport Cornwall, in England, fails to reach orbit and loses all nine satellites. Three months later the launch company, Virgin Orbit, goes bankrupt. The spaceport is built, but nothing can launch from it.</p>
+      <p><b>Your move:</b> the money is spent. Do you pay to attract a new launch company, or leave the spaceport idle?</p>
+      <p class="src">Source: <a href="https://www.euronews.com/next/2023/04/04/richard-bransons-virgin-orbit-declares-bankruptcy" target="_blank" rel="noopener">Euronews: Virgin Orbit declares bankruptcy</a></p></div>
+    <div class="cb-card"><span class="step">If you're building a rocket</span><p class="t">Your first flight fails</p><span class="when">October 21, 2021</span>
+      <p>South Korea's Nuri reaches the right altitude, but its third stage shuts down early and the dummy satellite falls short of orbit. The next try comes eight months later.</p>
+      <p><b>Your move:</b> your rocket is now a year late. Do you buy launches abroad in the meantime? From where?</p>
+      <p class="src">Source: <a href="https://everydayastronaut.com/test-flight-nuri-2/" target="_blank" rel="noopener">Everyday Astronaut: Nuri's maiden flight</a></p></div>
+    <div class="cb-card"><span class="step">If you bought launches abroad</span><p class="t">Your launch provider walks away</p><span class="when">February 26, 2022</span>
+      <p>After sanctions over the invasion of Ukraine, Russia stops all Soyuz launches from Europe's spaceport and pulls its 87 workers out. European satellites booked on Soyuz, including two Galileo navigation satellites, have no ride.</p>
+      <p><b>Your move:</b> your launches on the cancelled rocket are gone. Rebook on another one: it costs more, and you wait.</p>
+      <p class="src">Source: <a href="https://www.space.com/russia-halts-soyuz-launches-french-guiana" target="_blank" rel="noopener">Space.com: Russia halts Soyuz launches from French Guiana</a></p></div>
+    <div class="cb-card"><span class="step">Any group</span><p class="t">A new government cuts your budget</p><span class="when">May–June 2023</span>
+      <p>Australia's new government cuts $77 million from three space programs, including its spaceports program. A month later it cancels its A$1.2 billion Earth-observation satellite program for "budget repair."</p>
+      <p><b>Your move:</b> lose $200 million of the money you haven't spent yet. What goes?</p>
+      <p class="src">Sources: <a href="https://ia.acs.org.au/article/2023/-chilling--space-program-cuts-threaten-local-space-tech.html" target="_blank" rel="noopener">Information Age: space program cuts</a>; <a href="https://phys.org/news/2023-06-australia-scraps-billion-dollar-satellite.html" target="_blank" rel="noopener">AFP via Phys.org</a></p></div>
+  </div>
+</section>
+
+<section id="glossary">
+  <div class="card">
+    <h3>Acronyms and terms</h3>
+    <div class="deftab"><table>
+      <thead><tr><th>Term</th><th>Meaning</th></tr></thead>
+      <tbody>
+        <tr><td><b>AED</b></td><td>UAE dirham, the UAE's currency</td></tr>
+        <tr><td><b>Artemis Accords</b></td><td>US-led principles for peaceful exploration of the Moon and beyond, signed country by country</td></tr>
+        <tr><td><b>CubeSat</b></td><td>A small, standard-sized satellite built from 10 cm cubes, popular with universities</td></tr>
+        <tr><td><b>Gateway</b></td><td>A space station NASA planned to put in orbit around the Moon; cancelled in March 2026 in favor of a Moon Base on the surface</td></tr>
+        <tr><td><b>ILRS</b></td><td>International Lunar Research Station, the China–Russia lunar base project</td></tr>
+        <tr><td><b>KASA</b></td><td>Korea AeroSpace Administration, South Korea's space agency since 2024</td></tr>
+        <tr><td><b>Nuri</b></td><td>South Korea's own medium rocket, also called KSLV-II</td></tr>
+        <tr><td><b>Rideshare</b></td><td>A launch where many small satellites share one rocket and split the cost</td></tr>
+        <tr><td><b>SAR</b></td><td>Synthetic aperture radar, an imaging radar that sees through clouds and at night</td></tr>
+        <tr><td><b>Spaceport</b></td><td>A site licensed to launch or land spacecraft</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+</section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>Menu prices come from real programs; each row links to a source. The four twist cards describe real events.</p>
+    <p>EMGT 5061 · New Mexico Tech · Fall 2026</p>
+  </div>
+</footer>
+</body>
+</html>
