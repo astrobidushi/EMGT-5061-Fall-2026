@@ -99,6 +99,12 @@ table.cmp td ul{padding-left:1.1em;gap:4px}
 table.cmp td{width:45%}
 table.cmp td:first-child{width:10%}
 #artemis h4{margin-top:6px}
+.opts-row td{border-top:none;padding-top:0}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;font-size:14px;line-height:1.4}
+.opts>div{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:8px 10px}
+.opts-note{font-size:13.5px;color:var(--muted);margin:8px 0 0}
+@media (max-width:760px){.opts{grid-template-columns:1fr}}
+.goal{display:block;color:var(--bad);margin-top:4px;font-size:15px}
 ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
 .deal3.stand{grid-template-columns:1fr 1.8fr 1.4fr}
 @media (max-width:760px){.deal3.stand{grid-template-columns:1fr}}
@@ -238,14 +244,14 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
     </div>
     <p style="margin-top:16px">Each country is listed under the playbook it leans on most today, but most do more than one thing:</p>
     <ul class="also">
-      <li><b>Luxembourg</b> (regulator) is also a hub: it's home to SES, one of the world's largest satellite operators, and the government is its biggest shareholder.</li>
-      <li><b>New Zealand</b> (regulator) also launches: Rocket Lab flies from its soil.</li>
-      <li><b>Singapore</b> (hub) also builds satellites: ST Engineering's TeLEOS-1 (2015) and its radar satellite TeLEOS-2 (2023), both launched on Indian rockets.</li>
-      <li><b>United Kingdom</b> (hub) also licenses launches and has a spaceport in Cornwall.</li>
-      <li><b>UAE</b> (nation-builder) also explores deep space, and spreads the work across partners: after Hope at Mars, its MBR Explorer is set to launch to the asteroid belt in March 2028 on Japan's H3 rocket, with the University of Colorado's LASP as a technical partner, while the mission's asteroid lander and its Sirb radar satellites are built at home.</li>
-      <li><b>Australia</b> (nation-builder) also regulates launches: it licensed its first orbital spaceport and rocket, Gilmour Space's Eris, whose first launch attempt failed in 2025.</li>
-      <li><b>South Korea</b> (climber) already flies its own rocket, Nuri, and also still uses foreign rockets.</li>
-      <li><b>Senegal</b> (climber) also spreads its bets across partners: its first satellite, GaindéSat-1A, was built with a French university and launched on a SpaceX rocket in 2024, and Senegal belongs to both Moon clubs (see <a href="#artemis">Two Moon clubs</a>).</li>
+      <li><b>Luxembourg</b> (regulator) is also a hub: it's home to SES, one of the world's largest satellite operators, and the government is its biggest shareholder.<span class="goal">Goal: make Luxembourg Europe's home for commercial space, especially companies working on space resources. Space is part of a long-running plan to diversify an economy once built on steel and now on finance.</span></li>
+      <li><b>New Zealand</b> (regulator) also launches: Rocket Lab flies from its soil.<span class="goal">Goal: grow a high-value space industry built on its launch licensing and its southern location. It wants that growth to be safe and responsible and to serve its national interests, which is why it reviews every payload.</span></li>
+      <li><b>Singapore</b> (hub) also builds satellites: ST Engineering's TeLEOS-1 (2015) and its radar satellite TeLEOS-2 (2023), both launched on Indian rockets.<span class="goal">Goal: make space a growth sector for the economy and for skilled jobs, and be the region's hub for space companies. It also wants satellite capabilities that serve its own needs, such as climate monitoring and maritime security.</span></li>
+      <li><b>United Kingdom</b> (hub) also licenses launches and has a spaceport in Cornwall.<span class="goal">Goal: be one of the world's most innovative and attractive space economies, drawing companies and investment to the UK. It also wants to launch satellites from British soil for the first time and protect its defense interests in space.</span></li>
+      <li><b>UAE</b> (nation-builder) also explores deep space, and spreads the work across partners: after Hope at Mars, its MBR Explorer is set to launch to the asteroid belt in March 2028 on Japan's H3 rocket, with the University of Colorado's LASP as a technical partner, while the mission's asteroid lander and its Sirb radar satellites are built at home.<span class="goal">Goal: use space to diversify the economy away from oil, building an Emirati workforce and a home-grown space industry. Missions like Hope also aim to inspire young people and earn the country prestige.</span></li>
+      <li><b>Australia</b> (nation-builder) also regulates launches: it licensed its first orbital spaceport and rocket, Gilmour Space's Eris, whose first launch attempt failed in 2025.<span class="goal">Goal: triple the size of its space industry to A$12 billion and add 20,000 jobs by 2030, a target set in 2019. Since the 2023 cuts, the government pursues it mainly through regulation and by investing in companies rather than through grants.</span></li>
+      <li><b>South Korea</b> (climber) already flies its own rocket, Nuri, and also still uses foreign rockets.<span class="goal">Goal: become one of the world's leading space powers, with its own rockets, a Moon landing by 2032 and a Mars landing by 2045. It also wants Korean companies to win a much larger share of the global space market.</span></li>
+      <li><b>Senegal</b> (climber) also spreads its bets across partners: its first satellite, GaindéSat-1A, was built with a French university and launched on a SpaceX rocket in 2024, and Senegal belongs to both Moon clubs (see <a href="#artemis">Two Moon clubs</a>).<span class="goal">Goal: use satellite data to manage water, farming, climate and security, and build what its president called technological sovereignty. It wants Senegalese engineers, not foreign contractors, to build its future satellites.</span></li>
     </ul>
   </div>
   <div class="card">
@@ -336,7 +342,15 @@ ul.also{padding-left:1.2em;display:grid;gap:6px;margin-top:8px}
         <tr><td class="n">1</td><td><b>Develop your own medium rocket</b></td><td class="p">about $1.5B</td><td>12+ years</td><td>South Korea's Nuri, 2010–2022. <a href="https://www.asiae.co.kr/en/article/2022061517030960908" target="_blank" rel="noopener">Asia Economy</a></td></tr>
         <tr><td class="n">2</td><td><b>Back a private small-launch company</b></td><td class="p">about $100M</td><td>4–5 years</td><td>Rocket Lab's Electron cost about $100 million to develop. <a href="https://payloadspace.com/rocket-development-costs-by-vehicle-payload-research/" target="_blank" rel="noopener">Payload</a></td></tr>
         <tr><td class="n">3</td><td><b>Build a spaceport at an existing airport</b></td><td class="p">about $25M</td><td>3–4 years</td><td>Spaceport Cornwall, UK: up to £20 million in public money. <a href="https://www.gov.uk/government/news/leading-the-new-space-age-government-backs-ambitious-plans-for-the-uk-in-space" target="_blank" rel="noopener">UK government</a></td></tr>
-        <tr><td class="n">4</td><td><b>Buy launches abroad</b> (price each)</td><td class="p">$350K: rideshare, 50 kg<br>about $7.5M: Electron<br>$74M: Falcon 9</td><td>months</td><td>SpaceX and Rocket Lab list prices, 2026. <a href="https://spacenexus.us/guide/cost-to-launch" target="_blank" rel="noopener">SpaceNexus</a></td></tr>
+        <tr><td class="n">4</td><td><b>Buy launches abroad</b> (price per launch; three options, compared below)</td><td class="p">$350K: rideshare<br>about $7.5M: Electron<br>$74M: Falcon 9</td><td>months</td><td>SpaceX and Rocket Lab list prices, 2026. <a href="https://spacenexus.us/guide/cost-to-launch" target="_blank" rel="noopener">SpaceNexus</a></td></tr>
+        <tr class="opts-row"><td></td><td colspan="4">
+          <div class="opts">
+            <div><b>Rideshare, $350K</b> (about $7,000/kg)<br>Your satellite, up to 50 kg, shares a SpaceX Falcon 9 with dozens of others. Cheapest way up, but you go when and where the rocket goes. Senegal's first satellite flew this way.</div>
+            <div><b>Rocket Lab Electron, about $7.5M</b> (about $25,000/kg if full)<br>A small rocket all to yourself, up to about 300 kg. You pick the exact orbit and date.</div>
+            <div><b>SpaceX Falcon 9, $74M</b> (about $4,000–4,500/kg if full)<br>A big rocket all to yourself, up to about 17 tonnes. Only worth it for big satellites or a batch of a constellation.</div>
+          </div>
+          <p class="opts-note">The cheapest per kilogram isn't the cheapest overall: match the ride to what you're launching. Every launch bought abroad counts as an international partner purchase (rule 3).</p>
+        </td></tr>
         <tr><td class="n">5</td><td><b>Flagship science mission with university partners</b></td><td class="p">about $200M</td><td>6 years</td><td>The UAE's Hope Mars mission. <a href="https://www.scientificamerican.com/article/arab-worlds-first-mars-probe-takes-to-the-skies/" target="_blank" rel="noopener">Scientific American</a></td></tr>
         <tr><td class="n">6</td><td><b>National Earth-observation satellite constellation</b> (four satellites)</td><td class="p">about $800M</td><td>10+ years</td><td>Australia's planned National Space Mission for Earth Observation, A$1.2 billion. <a href="https://phys.org/news/2023-06-australia-scraps-billion-dollar-satellite.html" target="_blank" rel="noopener">AFP via Phys.org</a></td></tr>
         <tr><td class="n">7</td><td><b>Anchor a space venture fund with private investors</b></td><td class="p">$20M stake<br>to $140M whole fund</td><td>ongoing</td><td>Luxembourg's Orbital Ventures closed at €120 million; a state investment body put in €18 million. <a href="https://www.snci.lu/en/participation/orbital-ventures-s-c-a-sicav-raif/" target="_blank" rel="noopener">SNCI</a></td></tr>
